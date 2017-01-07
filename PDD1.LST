@@ -1,0 +1,3247 @@
+				;
+				;	Disassembled by:
+				;		DASMx object code disassembler
+				;		(c) Copyright 1996-2003   Conquest Consultants
+				;		Version 1.40 (Oct 18 2003)
+				;
+				;	File:		pdd.bin
+				;
+				;	Size:		4096 bytes
+				;	Checksum:	70AE
+				;	CRC-32:		84C64747
+				;
+				;	Date:		Tue Nov 29 18:34:29 2016
+				;
+				;	CPU:		Hitachi 6301 (6301/6303 family)
+				;
+				;
+				;
+					org	$F000
+				;
+F000				ProgramStart:
+F000 : 0F		" "		sei
+F001 : 8E 87 FF		"   "		lds	#$87FF
+F004 : 86 FC		"  "		ldaa	#$FC
+F006 : 97 00		"  "		staa	_register_PORT1Direction
+F008 : 86 34		" 4"		ldaa	#$34
+F00A : 97 02		"  "		staa	_register_PORT1Data
+F00C : 86 FF		"  "		ldaa	#$FF
+F00E : 97 04		"  "		staa	_register_PORT3Direction
+F010 : 97 05		"  "		staa	_register_PORT4Direction
+F012 : 86 A0		"  "		ldaa	#$A0
+F014 : B7 40 00		" @ "		staa	_CPLD_4000
+F017 : F6 40 01		" @ "		ldab	_CPLD_4001
+F01A : C4 F0		"  "		andb	#$F0
+F01C : 37		"7"		pshb
+F01D : 54		"T"		lsrb
+F01E : 54		"T"		lsrb
+F01F : 54		"T"		lsrb
+F020 : 54		"T"		lsrb
+F021 : CE FF B7		"   "		ldx	#$FFB7
+F024 : 3A		":"		abx
+F025 : A6 00		"  "		ldaa	$00,x
+F027 : 97 80		"  "		staa	X0080
+F029 : B7 40 01		" @ "		staa	_CPLD_4001
+F02C : 86 10		"  "		ldaa	#$10
+F02E : 97 01		"  "		staa	_register_PORT2Direction
+F030 : 86 0C		"  "		ldaa	#$0C
+F032 : 97 10		"  "		staa	_register_SCI_RateAndModeControl
+F034 : 86 0A		"  "		ldaa	#$0A
+F036 : 97 11		"  "		staa	_register_SCI_TxRxControlAndStatus
+F038 : CE 00 81		"   "		ldx	#$0081
+F03B : CC 00 7F		"   "		ldd	#$007F
+F03E : BD F9 AD		"   "		jsr	_sub_ClearMemory(X=StartAddress_D=Length)
+F041 : 72 FF 86		"r  "		oim	#$FFX0086
+F044 : C6 64		" d"		ldab	#$64
+F046 : BD F9 BC		"   "		jsr	_sub_Delay_Units=ACCB
+F049 : BD F4 51		"  Q"		jsr	LF451
+F04C : 33		"3"		pulb
+F04D : C1 D0		"  "		cmpb	#$D0
+F04F : 24 30		"$0"		bcc	LF081
+F051 : C1 30		" 0"		cmpb	#$30
+F053 : 25 2F		"%/"		bcs	LF084
+F055				LF055:
+F055 : BD F9 FE		"   "		jsr	LF9FE
+F058 : BD F9 B6		"   "		jsr	_sub_Delay_Units=14
+F05B				LF05B:
+F05B : CE 00 8D		"   "		ldx	#$008D
+F05E : CC 00 23		"  #"		ldd	#$0023
+F061 : BD F9 AD		"   "		jsr	_sub_ClearMemory(X=StartAddress_D=Length)
+F064 : 96 11		"  "		ldaa	_register_SCI_TxRxControlAndStatus
+F066 : 96 12		"  "		ldaa	_register_SCI_RxData
+F068 : BD F9 BA		"   "		jsr	_sub_Delay_Units=1
+F06B : CE 00 8E		"   "		ldx	#$008E
+F06E : DF 9C		"  "		stx	X009C
+F070				LF070:
+F070 : BD F1 45		"  E"		jsr	LF145
+F073 : 27 3A		"':"		beq	LF0AF
+F075 : 81 E2		"  "		cmpa	#$E2
+F077 : 26 6F		"&o"		bne	LF0E8
+F079 : 72 80 9F		"r  "		oim	#$80X009F
+F07C : 7F 00 8D		"   "		clr	X008D
+F07F : 20 EF		"  "		bra	LF070
+F081				LF081:
+F081 : 7E FA E2		"~  "		jmp	LFAE2
+				;
+F084				LF084:
+F084 : C1 20		"  "		cmpb	#$20
+F086 : 27 03		"' "		beq	_EntryPoint_SpecialRomJumpBootLoader
+F088 : 7E FA 17		"~  "		jmp	LFA17
+				;
+F08B				_EntryPoint_SpecialRomJumpBootLoader:
+F08B : BD F6 5A		"  Z"		jsr	LF65A
+F08E : 26 1C		"& "		bne	LF0AC
+F090 : CE 85 15		"   "		ldx	#$8515
+F093 : DF BC		"  "		stx	X00BC
+F095 : CE 80 13		"   "		ldx	#$8013
+F098				LF098:
+F098 : A6 00		"  "		ldaa	$00,x
+F09A : 08		" "		inx
+F09B : 3C		"<"		pshx
+F09C : DE BC		"  "		ldx	X00BC
+F09E : A7 00		"  "		staa	$00,x
+F0A0 : 08		" "		inx
+F0A1 : DF BC		"  "		stx	X00BC
+F0A3 : 38		"8"		pulx
+F0A4 : 8C 82 ED		"   "		cpx	#$82ED
+F0A7 : 26 EF		"& "		bne	LF098
+F0A9 : BD 85 15		"   "		jsr	_EntryPoint_CodeExecutionAddress(8515)
+F0AC				LF0AC:
+F0AC : 7E FA 71		"~ q"		jmp	LFA71
+				;
+F0AF				LF0AF:
+F0AF : DE 9C		"  "		ldx	X009C
+F0B1 : 8C 00 9C		"   "		cpx	#$009C
+F0B4 : 26 05		"& "		bne	LF0BB
+F0B6 : 72 01 9F		"r  "		oim	#$01X009F
+F0B9 : 20 05		"  "		bra	LF0C0
+				;
+F0BB				LF0BB:
+F0BB : E7 00		"  "		stab	$00,x
+F0BD : 08		" "		inx
+F0BE : DF 9C		"  "		stx	X009C
+F0C0				LF0C0:
+F0C0 : C1 0D		"  "		cmpb	#$0D
+F0C2 : 26 13		"& "		bne	LF0D7
+F0C4 : 96 9F		"  "		ldaa	X009F
+F0C6 : 27 20		"' "		beq	LF0E8
+F0C8 : 79 00 9F		"y  "		rol	X009F
+F0CB : 25 06		"% "		bcs	LF0D3
+F0CD : 86 C0		"  "		ldaa	#$C0
+F0CF				LF0CF:
+F0CF : 97 8D		"  "		staa	X008D
+F0D1 : 20 15		"  "		bra	LF0E8
+				;
+F0D3				LF0D3:
+F0D3 : 86 D0		"  "		ldaa	#$D0
+F0D5 : 20 F8		"  "		bra	LF0CF
+				;
+F0D7				LF0D7:
+F0D7 : C1 20		"  "		cmpb	#$20
+F0D9 : 26 07		"& "		bne	LF0E2
+F0DB				LF0DB:
+F0DB : DE 9C		"  "		ldx	X009C
+F0DD : 09		" "		dex
+F0DE : DF 9C		"  "		stx	X009C
+F0E0 : 20 8E		"  "		bra	LF070
+				;
+F0E2				LF0E2:
+F0E2 : C1 0A		"  "		cmpb	#$0A
+F0E4 : 27 F5		"' "		beq	LF0DB
+F0E6 : 20 88		"  "		bra	LF070
+				;
+F0E8				LF0E8:
+F0E8 : 96 84		"  "		ldaa	X0084
+F0EA : 26 19		"& "		bne	LF105
+F0EC : 96 8D		"  "		ldaa	X008D
+F0EE : 26 15		"& "		bne	LF105
+F0F0 : CE FF C7		"   "		ldx	#$FFC7
+F0F3				LF0F3:
+F0F3 : 96 8E		"  "		ldaa	X008E
+F0F5 : A1 00		"  "		cmpa	$00,x
+F0F7 : 27 11		"' "		beq	LF10A
+F0F9 : 08		" "		inx
+F0FA : 08		" "		inx
+F0FB : 08		" "		inx
+F0FC : 8C FF E8		"   "		cpx	#$FFE8
+F0FF : 26 F2		"& "		bne	LF0F3
+F101 : 86 C1		"  "		ldaa	#$C1
+F103 : 97 8D		"  "		staa	X008D
+F105				LF105:
+F105 : CE F1 E8		"   "		ldx	#$F1E8
+F108 : 20 02		"  "		bra	LF10C
+				;
+F10A				LF10A:
+F10A : EE 01		"  "		ldx	$01,x
+F10C				LF10C:
+F10C : AD 00		"  "		jsr	$00,x						;INFO: index jump
+F10E : BD F5 9D		"   "		jsr	LF59D
+F111 : 26 10		"& "		bne	LF123
+F113 : 79 00 A0		"y  "		rol	X00A0
+F116 : 24 2A		"$*"		bcc	LF142
+F118				LF118:
+F118 : 7F 00 9E		"   "		clr	X009E
+F11B : 8D 28		" ("		bsr	LF145
+F11D : 27 07		"' "		beq	LF126
+F11F : 81 E2		"  "		cmpa	#$E2
+F121 : 27 1F		"' "		beq	LF142
+F123				LF123:
+F123 : 7E F0 55		"~ U"		jmp	LF055
+				;
+F126				LF126:
+F126 : C1 0A		"  "		cmpb	#$0A
+F128 : 27 EE		"' "		beq	LF118
+F12A : C1 0D		"  "		cmpb	#$0D
+F12C : 26 14		"& "		bne	LF142
+F12E : DE A5		"  "		ldx	X00A5
+F130				LF130:
+F130 : E6 00		"  "		ldab	$00,x
+F132 : 8D 4B		" K"		bsr	LF17F
+F134 : 26 ED		"& "		bne	LF123
+F136 : 08		" "		inx
+F137 : DC A7		"  "		ldd	X00A7
+F139 : 27 07		"' "		beq	LF142
+F13B : 83 00 01		"   "		subd	#$0001
+F13E : DD A7		"  "		std	X00A7
+F140 : 26 EE		"& "		bne	LF130
+F142				LF142:
+F142 : 7E F0 5B		"~ ["		jmp	LF05B
+				;
+F145				LF145:
+F145 : 7B 03 02		"{  "		tim	#$03_register_PORT1Data
+F148 : 27 0A		"' "		beq	LF154
+F14A : 8D 52		" R"		bsr	LF19E
+F14C : 27 F7		"' "		beq	LF145
+F14E				LF14E:
+F14E : 72 04 02		"r  "		oim	#$04_register_PORT1Data
+F151 : 96 8D		"  "		ldaa	X008D
+F153 : 39		"9"		rts
+				;
+F154				LF154:
+F154 : 71 F3 02		"q  "		aim	#$F3_register_PORT1Data
+F157				LF157:
+F157 : 96 11		"  "		ldaa	_register_SCI_TxRxControlAndStatus
+F159 : 84 C0		"  "		anda	#$C0
+F15B : 26 06		"& "		bne	LF163
+F15D : 8D 3F		" ?"		bsr	LF19E
+F15F : 27 F6		"' "		beq	LF157
+F161 : 20 EB		"  "		bra	LF14E
+				;
+F163				LF163:
+F163 : D6 12		"  "		ldab	_register_SCI_RxData
+F165 : 37		"7"		pshb
+F166 : 49		"I"		rola
+F167 : 49		"I"		rola
+F168 : 25 0E		"% "		bcs	LF178
+F16A : CC 00 7F		"   "		ldd	#$007F
+F16D : DD AA		"  "		std	X00AA
+F16F : 97 AC		"  "		staa	X00AC
+F171 : 86 01		"  "		ldaa	#$01
+F173 : 97 9E		"  "		staa	X009E
+F175 : 33		"3"		pulb
+F176 : 20 D6		"  "		bra	LF14E
+				;
+F178				LF178:
+F178 : 33		"3"		pulb
+F179 : 86 E2		"  "		ldaa	#$E2
+F17B : 97 8D		"  "		staa	X008D
+F17D : 20 CF		"  "		bra	LF14E
+				;
+F17F				LF17F:
+F17F : D7 B4		"  "		stab	X00B4
+F181				LF181:
+F181 : 4F		"O"		clra
+F182 : 97 9E		"  "		staa	X009E
+F184 : 7B 20 11		"{  "		tim	#$20_register_SCI_TxRxControlAndStatus
+F187 : 26 05		"& "		bne	LF18E
+F189 : 8D 13		"  "		bsr	LF19E
+F18B : 27 F4		"' "		beq	LF181
+F18D : 39		"9"		rts
+				;
+F18E				LF18E:
+F18E : D6 B4		"  "		ldab	X00B4
+F190 : D7 13		"  "		stab	_register_SCI_TxData
+F192				LF192:
+F192 : 7B 20 11		"{  "		tim	#$20_register_SCI_TxRxControlAndStatus
+F195 : 27 02		"' "		beq	LF199
+F197 : 4F		"O"		clra
+F198 : 39		"9"		rts
+				;
+F199				LF199:
+F199 : 8D 03		"  "		bsr	LF19E
+F19B : 27 F5		"' "		beq	LF192
+F19D : 39		"9"		rts
+				;
+F19E				LF19E:
+F19E : DC 8B		"  "		ldd	X008B
+F1A0 : 27 32		"'2"		beq	LF1D4
+F1A2				LF1A2:
+F1A2 : 83 00 01		"   "		subd	#$0001
+F1A5 : DD 8B		"  "		std	X008B
+F1A7 : 24 03		"$ "		bcc	LF1AC
+F1A9 : 7A 00 8A		"z  "		dec	X008A
+F1AC				LF1AC:
+F1AC : BD F9 C6		"   "		jsr	LF9C6
+F1AF : 7B 02 02		"{  "		tim	#$02_register_PORT1Data
+F1B2 : 26 30		"&0"		bne	LF1E4
+F1B4 : 96 9E		"  "		ldaa	X009E
+F1B6 : 46		"F"		rora
+F1B7 : 24 0E		"$ "		bcc	LF1C7
+F1B9 : DC AB		"  "		ldd	X00AB
+F1BB : 27 0C		"' "		beq	LF1C9
+F1BD				LF1BD:
+F1BD : 83 00 01		"   "		subd	#$0001
+F1C0 : DD AB		"  "		std	X00AB
+F1C2 : 24 03		"$ "		bcc	LF1C7
+F1C4 : 7A 00 AA		"z  "		dec	X00AA
+F1C7				LF1C7:
+F1C7 : 4F		"O"		clra
+F1C8 : 39		"9"		rts
+				;
+F1C9				LF1C9:
+F1C9 : 36		"6"		psha
+F1CA : 96 AA		"  "		ldaa	X00AA
+F1CC : 32		"2"		pula
+F1CD : 26 EE		"& "		bne	LF1BD
+F1CF : 86 E0		"  "		ldaa	#$E0
+F1D1				LF1D1:
+F1D1 : 97 8D		"  "		staa	X008D
+F1D3 : 39		"9"		rts
+				;
+F1D4				LF1D4:
+F1D4 : 36		"6"		psha
+F1D5 : 96 8A		"  "		ldaa	X008A
+F1D7 : 32		"2"		pula
+F1D8 : 26 C8		"& "		bne	LF1A2
+F1DA : 71 FB 80		"q  "		aim	#$FBX0080
+F1DD : 96 80		"  "		ldaa	X0080
+F1DF : B7 40 01		" @ "		staa	_CPLD_4001
+F1E2 : 20 C8		"  "		bra	LF1AC
+				;
+F1E4				LF1E4:
+F1E4 : 86 E0		"  "		ldaa	#$E0
+F1E6 : 20 E9		"  "		bra	LF1D1
+				;
+F1E8				_jsrAdr(F0F0)_Default_code:
+F1E8 : 96 84		"  "		ldaa	X0084
+F1EA : 26 0C		"& "		bne	_jsrAdr(F0F0)_Default_code(onlyLocal_1)
+F1EC : 7F 00 A0		"   "		clr	X00A0
+F1EF : 96 8D		"  "		ldaa	X008D
+F1F1 : 84 F0		"  "		anda	#$F0
+F1F3 : 81 E0		"  "		cmpa	#$E0
+F1F5 : 26 03		"& "		bne	_jsrAdr(F0F0)_Default_code(onlyLocal_2)
+F1F7 : 39		"9"		rts
+				;
+F1F8				_jsrAdr(F0F0)_Default_code(onlyLocal_1):
+F1F8 : 97 8D		"  "		staa	X008D
+F1FA				_jsrAdr(F0F0)_Default_code(onlyLocal_2):
+F1FA : 7E F4 2C		"~ ,"		jmp	LF42C
+				;
+F1FD				_jsrAdr(F0F0)_3_code:
+F1FD : BD F4 F5		"   "		jsr	LF4F5
+F200 : 26 15		"& "		bne	LF217
+F202 : BD F6 5A		"  Z"		jsr	LF65A
+F205 : 26 10		"& "		bne	LF217
+F207 : BD F4 95		"   "		jsr	LF495
+F20A : 26 0B		"& "		bne	LF217
+F20C : BD F8 69		"  i"		jsr	LF869
+F20F : 20 54		" T"		bra	LF265
+				;
+F211				_jsrAdr(F0F0)_5_code:
+F211 : 72 FF A9		"r  "		oim	#$FFX00A9
+F214				_jsrAdr(F0F0)_4_code:
+F214 : BD F4 F5		"   "		jsr	LF4F5
+F217				LF217:
+F217 : 26 36		"&6"		bne	LF24F
+F219 : BD F6 5A		"  Z"		jsr	LF65A
+F21C : 26 31		"&1"		bne	LF24F
+F21E : BD F4 E5		"   "		jsr	LF4E5
+F221 : 26 2C		"&,"		bne	LF24F
+F223 : BD F4 95		"   "		jsr	LF495
+F226 : 26 27		"&'"		bne	LF24F
+F228 : BD F8 69		"  i"		jsr	LF869
+F22B : BD F4 36		"  6"		jsr	LF436
+F22E : BD F5 9D		"   "		jsr	LF59D
+F231 : 27 04		"' "		beq	LF237
+F233				LF233:
+F233 : 7F 00 A0		"   "		clr	X00A0
+F236 : 39		"9"		rts
+				;
+F237				LF237:
+F237 : BD F5 CB		"   "		jsr	LF5CB
+F23A : 81 E0		"  "		cmpa	#$E0
+F23C : 27 F5		"' "		beq	LF233
+F23E : 16		" "		tab
+F23F : 26 0E		"& "		bne	LF24F
+F241 : BD F7 7A		"  z"		jsr	LF77A
+F244 : 96 8D		"  "		ldaa	X008D
+F246 : 26 07		"& "		bne	LF24F
+F248 : 96 A9		"  "		ldaa	X00A9
+F24A : 26 03		"& "		bne	LF24F
+F24C : BD F6 5A		"  Z"		jsr	LF65A
+F24F				LF24F:
+F24F : 20 57		" W"		bra	LF2A8
+				;
+F251				_jsrAdr(F0F0)_6_code:
+F251 : BD F5 22		"  ""		jsr	LF522
+F254 : 26 F9		"& "		bne	LF24F
+F256 : BD F6 86		"   "		jsr	LF686
+F259 : 26 F4		"& "		bne	LF24F
+F25B : CC 80 05		"   "		ldd	#$8005
+F25E : DD A5		"  "		std	X00A5
+F260 : CC 00 0C		"   "		ldd	#$000C
+F263 : DD A7		"  "		std	X00A7
+F265				LF265:
+F265 : 7E F4 40		"~ @"		jmp	LF440
+				;
+F268				_jsrAdr(F0F0)_8_code:
+F268 : 72 FF A9		"r  "		oim	#$FFX00A9
+F26B				_jsrAdr(F0F0)_7_code:
+F26B : BD F5 22		"  ""		jsr	LF522
+F26E : 26 38		"&8"		bne	LF2A8
+F270 : BD F6 5A		"  Z"		jsr	LF65A
+F273 : 26 33		"&3"		bne	LF2A8
+F275 : BD F4 E5		"   "		jsr	LF4E5
+F278 : 26 2E		"&."		bne	LF2A8
+F27A : BD F4 36		"  6"		jsr	LF436
+F27D : BD F5 9D		"   "		jsr	LF59D
+F280 : 27 03		"' "		beq	LF285
+F282				LF282:
+F282 : 7E F2 33		"~ 3"		jmp	LF233
+				;
+F285				LF285:
+F285 : CE 80 05		"   "		ldx	#$8005
+F288 : DF A5		"  "		stx	X00A5
+F28A : CC 00 0C		"   "		ldd	#$000C
+F28D : DD A7		"  "		std	X00A7
+F28F : BD F5 CB		"   "		jsr	LF5CB
+F292 : 27 06		"' "		beq	LF29A
+F294 : 81 E0		"  "		cmpa	#$E0
+F296 : 27 EA		"' "		beq	LF282
+F298 : 20 0E		"  "		bra	LF2A8
+				;
+F29A				LF29A:
+F29A : BD F7 7A		"  z"		jsr	LF77A
+F29D : 96 8D		"  "		ldaa	X008D
+F29F : 26 07		"& "		bne	LF2A8
+F2A1 : 96 A9		"  "		ldaa	X00A9
+F2A3 : 26 03		"& "		bne	LF2A8
+F2A5 : BD F6 5A		"  Z"		jsr	LF65A
+F2A8				LF2A8:
+F2A8 : 20 79		" y"		bra	LF323
+				;
+F2AA				_jsrAdr(F0F0)_2_code:
+F2AA : 72 FF A9		"r  "		oim	#$FFX00A9
+F2AD				_jsrAdr(F0F0)_1_code:
+F2AD : 86 03		"  "		ldaa	#$03
+F2AF : 97 AD		"  "		staa	X00AD
+F2B1 : 96 8F		"  "		ldaa	X008F
+F2B3 : 81 0D		"  "		cmpa	#$0D
+F2B5 : 27 11		"' "		beq	LF2C8
+F2B7 : BD F8 5A		"  Z"		jsr	LF85A
+F2BA : 26 6E		"&n"		bne	LF32A
+F2BC : 97 AD		"  "		staa	X00AD
+F2BE : 96 90		"  "		ldaa	X0090
+F2C0 : 81 0D		"  "		cmpa	#$0D
+F2C2 : 27 04		"' "		beq	LF2C8
+F2C4 : 86 32		" 2"		ldaa	#$32
+F2C6 : 20 60		" `"		bra	LF328
+				;
+F2C8				LF2C8:
+F2C8 : 4F		"O"		clra
+F2C9 : 97 CA		"  "		staa	X00CA
+F2CB : 97 CB		"  "		staa	X00CB
+F2CD : 96 AD		"  "		ldaa	X00AD
+F2CF : 81 06		"  "		cmpa	#$06
+F2D1 : 22 53		""S"		bhi	LF326
+F2D3 : 97 CE		"  "		staa	X00CE
+F2D5 : 72 FF 86		"r  "		oim	#$FFX0086
+F2D8 : 81 03		"  "		cmpa	#$03
+F2DA : 22 59		""Y"		bhi	LF335
+F2DC				LF2DC:
+F2DC : CC 05 13		"   "		ldd	#$0513
+F2DF				LF2DF:
+F2DF : DD CC		"  "		std	X00CC
+F2E1 : BD F4 51		"  Q"		jsr	LF451
+F2E4 : 26 44		"&D"		bne	LF32A
+F2E6 : 7F 00 AD		"   "		clr	X00AD
+F2E9				LF2E9:
+F2E9 : DC CC		"  "		ldd	X00CC
+F2EB : FD 80 00		"   "		std	X8000
+F2EE : CE 80 02		"   "		ldx	#$8002
+F2F1 : BD F9 AD		"   "		jsr	_sub_ClearMemory(X=StartAddress_D=Length)
+F2F4 : 96 CE		"  "		ldaa	X00CE
+F2F6 : B7 80 04		"   "		staa	X8004
+F2F9				LF2F9:
+F2F9 : 96 AD		"  "		ldaa	X00AD
+F2FB : B7 80 02		"   "		staa	X8002
+F2FE : BD F9 18		"   "		jsr	LF918
+F301 : BD F7 7A		"  z"		jsr	LF77A
+F304 : 96 8D		"  "		ldaa	X008D
+F306 : 26 22		"&""		bne	LF32A
+F308 : 96 A9		"  "		ldaa	X00A9
+F30A : 26 0A		"& "		bne	LF316
+F30C : 7F 00 AF		"   "		clr	X00AF
+F30F : BD F6 A2		"   "		jsr	LF6A2
+F312 : 96 8D		"  "		ldaa	X008D
+F314 : 26 28		"&("		bne	LF33E
+F316				LF316:
+F316 : 96 AD		"  "		ldaa	X00AD
+F318 : 4C		"L"		inca
+F319 : 97 AD		"  "		staa	X00AD
+F31B : 81 50		" P"		cmpa	#$50
+F31D : 26 0D		"& "		bne	LF32C
+F31F : 96 CA		"  "		ldaa	X00CA
+F321 : 26 2E		"&."		bne	LF351
+F323				LF323:
+F323 : 7E F4 36		"~ 6"		jmp	LF436
+				;
+F326				LF326:
+F326 : 86 33		" 3"		ldaa	#$33
+F328				LF328:
+F328 : 97 8D		"  "		staa	X008D
+F32A				LF32A:
+F32A : 20 44		" D"		bra	LF370
+				;
+F32C				LF32C:
+F32C : 96 8D		"  "		ldaa	X008D
+F32E : 27 C9		"' "		beq	LF2F9
+F330 : 7F 00 8D		"   "		clr	X008D
+F333 : 20 B4		"  "		bra	LF2E9
+				;
+F335				LF335:
+F335 : 81 06		"  "		cmpa	#$06
+F337 : 27 A3		"' "		beq	LF2DC
+F339 : CC 04 13		"   "		ldd	#$0413
+F33C : 20 A1		"  "		bra	LF2DF
+				;
+F33E				LF33E:
+F33E : 16		" "		tab
+F33F : 84 F0		"  "		anda	#$F0
+F341 : 81 A0		"  "		cmpa	#$A0
+F343 : 26 E5		"& "		bne	LF32A
+F345 : 96 CA		"  "		ldaa	X00CA
+F347 : 26 CD		"& "		bne	LF316
+F349 : D7 CA		"  "		stab	X00CA
+F34B : 96 AD		"  "		ldaa	X00AD
+F34D : 97 CB		"  "		staa	X00CB
+F34F : 20 C5		"  "		bra	LF316
+				;
+F351				LF351:
+F351 : 97 8D		"  "		staa	X008D
+F353 : BD F4 2C		"  ,"		jsr	LF42C
+F356 : 96 CB		"  "		ldaa	X00CB
+F358 : 97 A2		"  "		staa	X00A2
+F35A : 39		"9"		rts
+				;
+F35B				_jsrAdr(F0F0)_9_code:
+F35B : 96 8F		"  "		ldaa	X008F
+F35D : 81 0D		"  "		cmpa	#$0D
+F35F : 26 0B		"& "		bne	LF36C
+F361 : BD F4 2C		"  ,"		jsr	LF42C
+F364 : BD F5 9D		"   "		jsr	LF59D
+F367 : 27 09		"' "		beq	LF372
+F369				LF369:
+F369 : 7E F2 33		"~ 3"		jmp	LF233
+				;
+F36C				LF36C:
+F36C : 86 3D		" ="		ldaa	#$3D
+F36E : 97 8D		"  "		staa	X008D
+F370				LF370:
+F370 : 20 60		" `"		bra	LF3D2
+				;
+F372				LF372:
+F372 : CE 00 8E		"   "		ldx	#$008E
+F375 : DF A5		"  "		stx	X00A5
+F377 : CE 00 0C		"   "		ldx	#$000C
+F37A : DF A7		"  "		stx	X00A7
+F37C : BD F5 CB		"   "		jsr	LF5CB
+F37F : 27 13		"' "		beq	LF394
+F381 : 81 E0		"  "		cmpa	#$E0
+F383 : 27 E4		"' "		beq	LF369
+F385				LF385:
+F385 : 97 8D		"  "		staa	X008D
+F387 : 20 9A		"  "		bra	LF323
+				;
+F389				LF389:
+F389 : 97 8D		"  "		staa	X008D
+F38B : BD F4 36		"  6"		jsr	LF436
+F38E : B6 80 02		"   "		ldaa	X8002
+F391 : 97 A2		"  "		staa	X00A2
+F393 : 39		"9"		rts
+				;
+F394				LF394:
+F394 : 4F		"O"		clra
+F395 : 97 AD		"  "		staa	X00AD
+F397				LF397:
+F397 : BD F6 86		"   "		jsr	LF686
+F39A : 26 E9		"& "		bne	LF385
+F39C : CE 80 05		"   "		ldx	#$8005
+F39F : CC 00 8E		"   "		ldd	#$008E
+F3A2 : DD A5		"  "		std	X00A5
+F3A4				LF3A4:
+F3A4 : A6 00		"  "		ldaa	$00,x
+F3A6 : 3C		"<"		pshx
+F3A7 : DE A5		"  "		ldx	X00A5
+F3A9 : A1 00		"  "		cmpa	$00,x
+F3AB : 27 0E		"' "		beq	LF3BB
+F3AD : 38		"8"		pulx
+F3AE : 7C 00 AD		"|  "		inc	X00AD
+F3B1 : 86 50		" P"		ldaa	#$50
+F3B3 : 91 AD		"  "		cmpa	X00AD
+F3B5 : 26 E0		"& "		bne	LF397
+F3B7 : 86 3C		" <"		ldaa	#$3C
+F3B9 : 20 CA		"  "		bra	LF385
+				;
+F3BB				LF3BB:
+F3BB : 08		" "		inx
+F3BC : DF A5		"  "		stx	X00A5
+F3BE : 38		"8"		pulx
+F3BF : 08		" "		inx
+F3C0 : 8C 80 11		"   "		cpx	#$8011
+F3C3 : 26 DF		"& "		bne	LF3A4
+F3C5 : 4F		"O"		clra
+F3C6 : 20 C1		"  "		bra	LF389
+				;
+F3C8				_jsrAdr(F0F0)_A_code:
+F3C8 : 96 8F		"  "		ldaa	X008F
+F3CA : 81 0D		"  "		cmpa	#$0D
+F3CC : 27 06		"' "		beq	LF3D4
+F3CE : 86 38		" 8"		ldaa	#$38
+F3D0 : 97 8D		"  "		staa	X008D
+F3D2				LF3D2:
+F3D2 : 20 4B		" K"		bra	LF41F
+				;
+F3D4				LF3D4:
+F3D4 : BD F4 25		"  %"		jsr	LF425
+F3D7 : BD F4 E5		"   "		jsr	LF4E5
+F3DA : 27 06		"' "		beq	LF3E2
+F3DC : 4F		"O"		clra
+F3DD : 97 8D		"  "		staa	X008D
+F3DF : 75 20 A2		"u  "		eim	#$20X00A2
+F3E2				LF3E2:
+F3E2 : 4C		"L"		inca
+F3E3 : 97 D8		"  "		staa	X00D8
+F3E5 : BD F4 AF		"   "		jsr	LF4AF
+F3E8 : 7F 00 D8		"   "		clr	X00D8
+F3EB : 96 8D		"  "		ldaa	X008D
+F3ED : 27 0D		"' "		beq	LF3FC
+F3EF : 81 D1		"  "		cmpa	#$D1
+F3F1 : 26 03		"& "		bne	LF3F6
+F3F3 : 75 80 A2		"u  "		eim	#$80X00A2
+F3F6				LF3F6:
+F3F6 : 75 40 A2		"u@ "		eim	#$40X00A2
+F3F9 : 4F		"O"		clra
+F3FA : 97 8D		"  "		staa	X008D
+F3FC				LF3FC:
+F3FC : 4C		"L"		inca
+F3FD : 97 A0		"  "		staa	X00A0
+F3FF : 39		"9"		rts
+				;
+F400				_jsrAdr(F0F0)_B_code:
+F400 : 96 8F		"  "		ldaa	X008F
+F402 : 81 0D		"  "		cmpa	#$0D
+F404 : 27 0D		"' "		beq	LF413
+F406 : BD F8 5A		"  Z"		jsr	LF85A
+F409 : 26 14		"& "		bne	LF41F
+F40B : 97 AD		"  "		staa	X00AD
+F40D : 96 90		"  "		ldaa	X0090
+F40F : 81 0D		"  "		cmpa	#$0D
+F411 : 26 08		"& "		bne	LF41B
+F413				LF413:
+F413 : 96 AD		"  "		ldaa	X00AD
+F415 : 27 08		"' "		beq	LF41F
+F417 : 81 01		"  "		cmpa	#$01
+F419 : 27 06		"' "		beq	LF421
+F41B				LF41B:
+F41B : 86 37		" 7"		ldaa	#$37
+F41D : 97 8D		"  "		staa	X008D
+F41F				LF41F:
+F41F : 20 0B		"  "		bra	LF42C
+				;
+F421				LF421:
+F421 : 38		"8"		pulx
+F422 : 7E FA E2		"~  "		jmp	LFAE2
+				;
+F425				LF425:
+F425 : 4F		"O"		clra
+F426 : 5F		"_"		clrb
+F427 : DD A2		"  "		std	X00A2
+F429 : 97 A4		"  "		staa	X00A4
+F42B : 39		"9"		rts
+				;
+F42C				LF42C:
+F42C : 8D F7		"  "		bsr	LF425
+F42E				LF42E:
+F42E : 96 8D		"  "		ldaa	X008D
+F430 : 97 A1		"  "		staa	X00A1
+F432 : 72 01 A0		"r  "		oim	#$01X00A0
+F435 : 39		"9"		rts
+				;
+F436				LF436:
+F436 : 96 86		"  "		ldaa	X0086
+F438 : 97 A2		"  "		staa	X00A2
+F43A : DC 87		"  "		ldd	X0087
+F43C : DD A3		"  "		std	X00A3
+F43E : 20 EE		"  "		bra	LF42E
+				;
+F440				LF440:
+F440 : 8D F4		"  "		bsr	LF436
+F442 : 72 81 A0		"r  "		oim	#$81X00A0
+F445 : 39		"9"		rts
+				;
+F446				LF446:
+F446 : 71 7F 02		"q  "		aim	#$7F_register_PORT1Data
+F449				LF449:
+F449 : 7E F9 BA		"~  "		jmp	_sub_Delay_Units=1
+				;
+F44C				LF44C:
+F44C : 72 80 02		"r  "		oim	#$80_register_PORT1Data
+F44F : 20 F8		"  "		bra	LF449
+				;
+F451				LF451:
+F451 : 8D F9		"  "		bsr	LF44C
+F453 : 86 3E		" >"		ldaa	#$3E
+F455 : 97 B9		"  "		staa	X00B9
+F457 : 71 FC 80		"q  "		aim	#$FCX0080
+F45A : 72 03 80		"r  "		oim	#$03X0080
+F45D : B6 40 01		" @ "		ldaa	_CPLD_4001
+F460 : 84 08		"  "		anda	#$08
+F462 : 27 1E		"' "		beq	LF482
+F464				LF464:
+F464 : C6 04		"  "		ldab	#$04
+F466 : BD F9 3D		"  ="		jsr	LF93D
+F469 : 7A 00 B9		"z  "		dec	X00B9
+F46C : 27 0D		"' "		beq	LF47B
+F46E : B6 40 01		" @ "		ldaa	_CPLD_4001
+F471 : 84 08		"  "		anda	#$08
+F473 : 26 EF		"& "		bne	LF464
+F475 : 8D CF		"  "		bsr	LF446
+F477 : 7F 00 85		"   "		clr	X0085
+F47A : 39		"9"		rts
+				;
+F47B				LF47B:
+F47B : 8D C9		"  "		bsr	LF446
+F47D : 86 F1		"  "		ldaa	#$F1
+F47F : 7E F6 09		"~  "		jmp	LF609
+				;
+F482				LF482:
+F482 : C6 04		"  "		ldab	#$04
+F484 : BD F9 39		"  9"		jsr	LF939
+F487 : 7A 00 B9		"z  "		dec	X00B9
+F48A : 27 EF		"' "		beq	LF47B
+F48C : B6 40 01		" @ "		ldaa	_CPLD_4001
+F48F : 84 08		"  "		anda	#$08
+F491 : 27 EF		"' "		beq	LF482
+F493 : 20 CF		"  "		bra	LF464
+				;
+F495				LF495:
+F495 : F6 80 04		"   "		ldab	X8004
+F498 : CE F4 A8		"   "		ldx	#$F4A8
+F49B : 3A		":"		abx
+F49C : A6 00		"  "		ldaa	$00,x
+F49E : 91 AE		"  "		cmpa	X00AE
+F4A0 : 25 02		"% "		bcs	LF4A4
+F4A2 : 4F		"O"		clra
+F4A3 : 39		"9"		rts
+				;
+F4A4				LF4A4:
+F4A4 : 86 12		"  "		ldaa	#$12
+F4A6 : 20 4B		" K"		bra	LF4F3
+				;
+F4A8				_lookupTable_For_0xF498:
+F4A8 : 14		" "		db	$14
+F4A9 : 10		" "		db	$10
+F4AA : 0A		" "		db	$0A
+F4AB : 05		" "		db	$05
+F4AC : 02		" "		db	$02
+F4AD : 01		" "		db	$01
+F4AE : 01		" "		db	$01
+				;
+F4AF				LF4AF:
+F4AF : C6 01		"  "		ldab	#$01
+F4B1 : 20 01		"  "		bra	LF4B4
+				;
+F4B3				LF4B3:
+F4B3 : 5F		"_"		clrb
+F4B4				LF4B4:
+F4B4 : 37		"7"		pshb
+F4B5 : B6 40 02		" @ "		ldaa	_CPLD_4002
+F4B8 : 16		" "		tab
+F4B9 : 84 04		"  "		anda	#$04
+F4BB : 26 0D		"& "		bne	LF4CA
+F4BD : C4 08		"  "		andb	#$08
+F4BF : 33		"3"		pulb
+F4C0 : 27 22		"'""		beq	LF4E4
+F4C2 : 96 D8		"  "		ldaa	X00D8
+F4C4 : 27 09		"' "		beq	LF4CF
+F4C6 : 86 D3		"  "		ldaa	#$D3
+F4C8 : 20 03		"  "		bra	LF4CD
+				;
+F4CA				LF4CA:
+F4CA : 33		"3"		pulb
+F4CB : 86 D1		"  "		ldaa	#$D1
+F4CD				LF4CD:
+F4CD : 97 8D		"  "		staa	X008D
+F4CF				LF4CF:
+F4CF : 72 FF 86		"r  "		oim	#$FFX0086
+F4D2 : 17		" "		tba
+F4D3 : 26 0D		"& "		bne	LF4E2
+F4D5 : B6 40 00		" @ "		ldaa	_CPLD_4000
+F4D8 : 84 FD		"  "		anda	#$FD
+F4DA : B7 40 00		" @ "		staa	_CPLD_4000
+F4DD : 8A 02		"  "		oraa	#$02
+F4DF : B7 40 00		" @ "		staa	_CPLD_4000
+F4E2				LF4E2:
+F4E2 : 96 8D		"  "		ldaa	X008D
+F4E4				LF4E4:
+F4E4 : 39		"9"		rts
+				;
+F4E5				LF4E5:
+F4E5 : BD F4 4C		"  L"		jsr	LF44C
+F4E8 : B6 40 02		" @ "		ldaa	_CPLD_4002
+F4EB : 84 02		"  "		anda	#$02
+F4ED : 26 02		"& "		bne	LF4F1
+F4EF : 4F		"O"		clra
+F4F0 : 39		"9"		rts
+				;
+F4F1				LF4F1:
+F4F1 : 86 B0		"  "		ldaa	#$B0
+F4F3				LF4F3:
+F4F3 : 20 1D		"  "		bra	LF512
+				;
+F4F5				LF4F5:
+F4F5 : 4F		"O"		clra
+F4F6 : 4C		"L"		inca
+F4F7 : 97 AE		"  "		staa	X00AE
+F4F9 : 8D 33		" 3"		bsr	LF52E
+F4FB : 27 17		"' "		beq	LF514
+F4FD : 4A		"J"		deca
+F4FE : 26 14		"& "		bne	LF514
+F500 : 97 8D		"  "		staa	X008D
+F502 : A6 00		"  "		ldaa	$00,x
+F504 : 81 0D		"  "		cmpa	#$0D
+F506 : 27 0C		"' "		beq	LF514
+F508 : BD F5 5D		"  ]"		jsr	LF55D
+F50B : 27 08		"' "		beq	LF515
+F50D : 4A		"J"		deca
+F50E : 26 04		"& "		bne	LF514
+F510 : 86 10		"  "		ldaa	#$10
+F512				LF512:
+F512 : 97 8D		"  "		staa	X008D
+F514				LF514:
+F514 : 39		"9"		rts
+				;
+F515				LF515:
+F515 : DC B7		"  "		ldd	X00B7
+F517 : 27 05		"' "		beq	LF51E
+F519 : D7 AE		"  "		stab	X00AE
+F51B : 4D		"M"		tsta
+F51C : 27 F6		"' "		beq	LF514
+F51E				LF51E:
+F51E : 86 11		"  "		ldaa	#$11
+F520 : 20 F0		"  "		bra	LF512
+				;
+F522				LF522:
+F522 : 8D 0A		"  "		bsr	LF52E
+F524 : 27 EE		"' "		beq	LF514
+F526 : 81 01		"  "		cmpa	#$01
+F528 : 26 EA		"& "		bne	LF514
+F52A : 86 14		"  "		ldaa	#$14
+F52C : 20 E4		"  "		bra	LF512
+				;
+F52E				LF52E:
+F52E : CE 00 8F		"   "		ldx	#$008F
+F531 : A6 00		"  "		ldaa	$00,x
+F533 : 81 0D		"  "		cmpa	#$0D
+F535 : 27 1A		"' "		beq	LF551
+F537 : 81 2C		" ,"		cmpa	#$2C
+F539 : 27 18		"' "		beq	LF553
+F53B : BD F5 5D		"  ]"		jsr	LF55D
+F53E : 81 02		"  "		cmpa	#$02
+F540 : 24 10		"$ "		bcc	LF552
+F542 : 36		"6"		psha
+F543 : DC B7		"  "		ldd	X00B7
+F545 : 83 00 50		"  P"		subd	#$0050
+F548 : 24 0E		"$ "		bcc	LF558
+F54A : DC B7		"  "		ldd	X00B7
+F54C : D7 AD		"  "		stab	X00AD
+F54E : 32		"2"		pula
+F54F : 16		" "		tab
+F550 : 39		"9"		rts
+				;
+F551				LF551:
+F551 : 4F		"O"		clra
+F552				LF552:
+F552 : 39		"9"		rts
+				;
+F553				LF553:
+F553 : 08		" "		inx
+F554 : 86 01		"  "		ldaa	#$01
+F556				LF556:
+F556 : 20 BA		"  "		bra	LF512
+				;
+F558				LF558:
+F558 : 32		"2"		pula
+F559 : 86 13		"  "		ldaa	#$13
+F55B : 20 F9		"  "		bra	LF556
+				;
+F55D				LF55D:
+F55D : 4F		"O"		clra
+F55E : 5F		"_"		clrb
+F55F : DD B7		"  "		std	X00B7
+F561				LF561:
+F561 : A6 00		"  "		ldaa	$00,x
+F563 : 08		" "		inx
+F564 : 81 0D		"  "		cmpa	#$0D
+F566 : 27 E9		"' "		beq	LF551
+F568 : 81 2C		" ,"		cmpa	#$2C
+F56A : 27 2D		"'-"		beq	LF599
+F56C : BD F8 5A		"  Z"		jsr	LF85A
+F56F : 26 E1		"& "		bne	LF552
+F571 : 3C		"<"		pshx
+F572 : 36		"6"		psha
+F573 : C6 0A		"  "		ldab	#$0A
+F575 : 96 B8		"  "		ldaa	X00B8
+F577 : 3D		"="		mul
+F578 : 37		"7"		pshb
+F579 : 36		"6"		psha
+F57A : 96 B7		"  "		ldaa	X00B7
+F57C : C6 0A		"  "		ldab	#$0A
+F57E : 3D		"="		mul
+F57F : 18		" "		xgdx
+F580 : 33		"3"		pulb
+F581 : 3A		":"		abx
+F582 : 18		" "		xgdx
+F583 : 4D		"M"		tsta
+F584 : 26 0C		"& "		bne	LF592
+F586 : 17		" "		tba
+F587 : 33		"3"		pulb
+F588 : 18		" "		xgdx
+F589 : 33		"3"		pulb
+F58A : 3A		":"		abx
+F58B : 25 07		"% "		bcs	LF594
+F58D : DF B7		"  "		stx	X00B7
+F58F : 38		"8"		pulx
+F590 : 20 CF		"  "		bra	LF561
+				;
+F592				LF592:
+F592 : 32		"2"		pula
+F593 : 33		"3"		pulb
+F594				LF594:
+F594 : 38		"8"		pulx
+F595 : 86 20		"  "		ldaa	#$20
+F597				LF597:
+F597 : 20 BD		"  "		bra	LF556
+				;
+F599				LF599:
+F599 : 86 01		"  "		ldaa	#$01
+F59B : 20 FA		"  "		bra	LF597
+				;
+F59D				LF59D:
+F59D : 96 A0		"  "		ldaa	X00A0
+F59F : 46		"F"		rora
+F5A0 : 24 AF		"$ "		bcc	LF551
+F5A2 : 7F 00 8D		"   "		clr	X008D
+F5A5 : CE 00 A1		"   "		ldx	#$00A1
+F5A8				LF5A8:
+F5A8 : A6 00		"  "		ldaa	$00,x
+F5AA : 08		" "		inx
+F5AB : DF C2		"  "		stx	X00C2
+F5AD : 8D 0A		"  "		bsr	LF5B9
+F5AF : 26 A1		"& "		bne	LF552
+F5B1 : DE C2		"  "		ldx	X00C2
+F5B3 : 8C 00 A5		"   "		cpx	#$00A5
+F5B6 : 26 F0		"& "		bne	LF5A8
+F5B8 : 39		"9"		rts
+				;
+F5B9				LF5B9:
+F5B9 : BD F8 3D		"  ="		jsr	LF83D
+F5BC : 37		"7"		pshb
+F5BD : 16		" "		tab
+F5BE : BD F1 7F		"   "		jsr	LF17F
+F5C1 : 26 04		"& "		bne	LF5C7
+F5C3 : 33		"3"		pulb
+F5C4 : 7E F1 7F		"~  "		jmp	LF17F
+				;
+F5C7				LF5C7:
+F5C7 : 33		"3"		pulb
+F5C8 : 96 8D		"  "		ldaa	X008D
+F5CA : 39		"9"		rts
+				;
+F5CB				LF5CB:
+F5CB : 72 FF 86		"r  "		oim	#$FFX0086
+F5CE : 7F 00 9E		"   "		clr	X009E
+F5D1				LF5D1:
+F5D1 : BD F1 45		"  E"		jsr	LF145
+F5D4 : 27 04		"' "		beq	LF5DA
+F5D6 : 81 E2		"  "		cmpa	#$E2
+F5D8 : 26 12		"& "		bne	LF5EC
+F5DA				LF5DA:
+F5DA : DE A5		"  "		ldx	X00A5
+F5DC : E7 00		"  "		stab	$00,x
+F5DE : 08		" "		inx
+F5DF : DF A5		"  "		stx	X00A5
+F5E1 : DC A7		"  "		ldd	X00A7
+F5E3 : 83 00 01		"   "		subd	#$0001
+F5E6 : DD A7		"  "		std	X00A7
+F5E8 : 26 E7		"& "		bne	LF5D1
+F5EA : 96 8D		"  "		ldaa	X008D
+F5EC				LF5EC:
+F5EC : 16		" "		tab
+F5ED : 39		"9"		rts
+				;
+F5EE				LF5EE:
+F5EE : 86 0A		"  "		ldaa	#$0A
+F5F0 : 97 C7		"  "		staa	X00C7
+F5F2				LF5F2:
+F5F2 : 8D 21		" !"		bsr	LF615
+F5F4 : 26 17		"& "		bne	LF60D
+F5F6 : DC C0		"  "		ldd	X00C0
+F5F8 : 83 00 BD		"   "		subd	#$00BD
+F5FB : 24 11		"$ "		bcc	LF60E
+F5FD : 96 AD		"  "		ldaa	X00AD
+F5FF : 46		"F"		rora
+F600 : 25 11		"% "		bcs	LF613
+F602				LF602:
+F602 : 7A 00 C7		"z  "		dec	X00C7
+F605 : 26 EB		"& "		bne	LF5F2
+F607 : 86 F2		"  "		ldaa	#$F2
+F609				LF609:
+F609 : 97 84		"  "		staa	X0084
+F60B : 97 8D		"  "		staa	X008D
+F60D				LF60D:
+F60D : 39		"9"		rts
+				;
+F60E				LF60E:
+F60E : 96 AD		"  "		ldaa	X00AD
+F610 : 46		"F"		rora
+F611 : 25 EF		"% "		bcs	LF602
+F613				LF613:
+F613 : 4F		"O"		clra
+F614 : 39		"9"		rts
+				;
+F615				LF615:
+F615 : 8D 06		"  "		bsr	LF61D
+F617 : 26 3C		"&<"		bne	LF655
+F619 : 8D 24		" $"		bsr	LF63F
+F61B : 26 38		"&8"		bne	LF655
+F61D				LF61D:
+F61D : CC FF FF		"   "		ldd	#$FFFF
+F620 : DD BC		"  "		std	X00BC
+F622 : 4F		"O"		clra
+F623 : 5F		"_"		clrb
+F624 : DD C0		"  "		std	X00C0
+F626				LF626:
+F626 : DC BC		"  "		ldd	X00BC
+F628 : 83 00 01		"   "		subd	#$0001
+F62B : DD BC		"  "		std	X00BC
+F62D : 27 27		"''"		beq	LF656
+F62F : DC C0		"  "		ldd	X00C0
+F631 : C3 00 01		"   "		addd	#$0001
+F634 : DD C0		"  "		std	X00C0
+F636 : B6 40 01		" @ "		ldaa	_CPLD_4001
+F639 : 84 04		"  "		anda	#$04
+F63B : 26 E9		"& "		bne	LF626
+F63D : 4F		"O"		clra
+F63E : 39		"9"		rts
+				;
+F63F				LF63F:
+F63F : CC FF FF		"   "		ldd	#$FFFF
+F642 : DD BC		"  "		std	X00BC
+F644				LF644:
+F644 : DC BC		"  "		ldd	X00BC
+F646 : 83 00 01		"   "		subd	#$0001
+F649 : DD BC		"  "		std	X00BC
+F64B : 27 09		"' "		beq	LF656
+F64D : B6 40 01		" @ "		ldaa	_CPLD_4001
+F650 : 84 04		"  "		anda	#$04
+F652 : 27 F0		"' "		beq	LF644
+F654 : 4F		"O"		clra
+F655				LF655:
+F655 : 39		"9"		rts
+				;
+F656				LF656:
+F656 : 86 F0		"  "		ldaa	#$F0
+F658 : 20 AF		"  "		bra	LF609
+				;
+F65A				LF65A:
+F65A : 7F 00 AF		"   "		clr	X00AF
+F65D				LF65D:
+F65D : 71 DF 02		"q  "		aim	#$DF_register_PORT1Data
+F660 : 86 03		"  "		ldaa	#$03
+F662 : 97 BA		"  "		staa	X00BA
+F664				LF664:
+F664 : 86 03		"  "		ldaa	#$03
+F666 : 97 BB		"  "		staa	X00BB
+F668 : BD F9 18		"   "		jsr	LF918
+F66B				LF66B:
+F66B : BD F6 A2		"   "		jsr	LF6A2
+F66E : 96 8D		"  "		ldaa	X008D
+F670 : 27 2A		"'*"		beq	LF69C
+F672 : 81 D1		"  "		cmpa	#$D1
+F674 : 27 25		"'%"		beq	LF69B
+F676 : 84 F0		"  "		anda	#$F0
+F678 : 81 F0		"  "		cmpa	#$F0
+F67A : 27 1F		"' "		beq	LF69B
+F67C : 7A 00 BB		"z  "		dec	X00BB
+F67F : 27 0B		"' "		beq	LF68C
+F681 : 7F 00 8D		"   "		clr	X008D
+F684 : 20 E5		"  "		bra	LF66B
+				;
+F686				LF686:
+F686 : 86 01		"  "		ldaa	#$01
+F688 : 97 AF		"  "		staa	X00AF
+F68A : 20 D1		"  "		bra	LF65D
+				;
+F68C				LF68C:
+F68C : 7A 00 BA		"z  "		dec	X00BA
+F68F : 27 0A		"' "		beq	LF69B
+F691 : 7F 00 8D		"   "		clr	X008D
+F694 : BD F4 51		"  Q"		jsr	LF451
+F697 : 26 03		"& "		bne	LF69C
+F699 : 20 C9		"  "		bra	LF664
+				;
+F69B				LF69B:
+F69B : 16		" "		tab
+F69C				LF69C:
+F69C : 07		" "		tpa
+F69D : 72 20 02		"r  "		oim	#$20_register_PORT1Data
+F6A0 : 06		" "		tap
+F6A1 : 39		"9"		rts
+				;
+F6A2				LF6A2:
+F6A2 : BD F4 B3		"   "		jsr	LF4B3
+F6A5 : 27 2A		"'*"		beq	LF6D1
+F6A7				LF6A7:
+F6A7 : 39		"9"		rts
+				;
+F6A8				LF6A8:
+F6A8 : CC FF FF		"   "		ldd	#$FFFF
+F6AB : DD C0		"  "		std	X00C0
+F6AD				LF6AD:
+F6AD : F6 40 02		" @ "		ldab	_CPLD_4002
+F6B0 : 56		"V"		rorb
+F6B1 : 25 0C		"% "		bcs	LF6BF
+F6B3 : DC C0		"  "		ldd	X00C0
+F6B5 : 83 00 01		"   "		subd	#$0001
+F6B8 : DD C0		"  "		std	X00C0
+F6BA : 26 F1		"& "		bne	LF6AD
+F6BC				LF6BC:
+F6BC : 86 A4		"  "		ldaa	#$A4
+F6BE : 39		"9"		rts
+				;
+F6BF				LF6BF:
+F6BF : F6 40 03		" @ "		ldab	_CPLD_4003
+F6C2 : 4F		"O"		clra
+F6C3 : 39		"9"		rts
+				;
+F6C4				LF6C4:
+F6C4 : 86 FF		"  "		ldaa	#$FF
+F6C6				LF6C6:
+F6C6 : F6 40 02		" @ "		ldab	_CPLD_4002
+F6C9 : 56		"V"		rorb
+F6CA : 25 F3		"% "		bcs	LF6BF
+F6CC : 4A		"J"		deca
+F6CD : 26 F7		"& "		bne	LF6C6
+F6CF : 20 EB		"  "		bra	LF6BC
+				;
+F6D1				LF6D1:
+F6D1 : 96 AD		"  "		ldaa	X00AD
+F6D3 : 91 86		"  "		cmpa	X0086
+F6D5 : 27 D0		"' "		beq	LF6A7
+F6D7 : BD F8 F3		"   "		jsr	LF8F3
+F6DA : 86 F2		"  "		ldaa	#$F2
+F6DC : B7 40 00		" @ "		staa	_CPLD_4000
+F6DF : 72 40 02		"r@ "		oim	#$40_register_PORT1Data
+F6E2 : BD F9 BA		"   "		jsr	_sub_Delay_Units=1
+F6E5 : BD F5 EE		"   "		jsr	LF5EE
+F6E8 : 26 57		"&W"		bne	LF741
+F6EA : B6 40 03		" @ "		ldaa	_CPLD_4003
+F6ED : CE 80 00		"   "		ldx	#$8000
+F6F0 : C6 02		"  "		ldab	#$02
+F6F2 : BD F9 BC		"   "		jsr	_sub_Delay_Units=ACCB
+F6F5 : 86 FA		"  "		ldaa	#$FA
+F6F7 : B7 40 00		" @ "		staa	_CPLD_4000
+F6FA : 8D AC		"  "		bsr	LF6A8
+F6FC : 26 3D		"&="		bne	LF73B
+F6FE : 8D C4		"  "		bsr	LF6C4
+F700 : 26 39		"&9"		bne	LF73B
+F702 : E7 00		"  "		stab	$00,x
+F704 : D7 BC		"  "		stab	X00BC
+F706 : 08		" "		inx
+F707 : 8D BB		"  "		bsr	LF6C4
+F709 : 26 30		"&0"		bne	LF73B
+F70B : E7 00		"  "		stab	$00,x
+F70D : D7 BD		"  "		stab	X00BD
+F70F : 7D 00 AF		"}  "		tst	X00AF
+F712 : 27 05		"' "		beq	LF719
+F714 : CC 00 11		"   "		ldd	#$0011
+F717 : DD BC		"  "		std	X00BC
+F719				LF719:
+F719 : DC BC		"  "		ldd	X00BC
+F71B : 27 2D		"'-"		beq	LF74A
+F71D : 83 05 14		"   "		subd	#$0514
+F720 : 24 28		"$("		bcc	LF74A
+F722 : 08		" "		inx
+F723				LF723:
+F723 : 8D 9F		"  "		bsr	LF6C4
+F725 : E7 00		"  "		stab	$00,x
+F727 : 08		" "		inx
+F728 : DC BC		"  "		ldd	X00BC
+F72A : 83 00 01		"   "		subd	#$0001
+F72D : DD BC		"  "		std	X00BC
+F72F : 26 F2		"& "		bne	LF723
+F731 : BD F8 BA		"   "		jsr	LF8BA
+F734 : B3 80 11		"   "		subd	X8011
+F737 : 27 19		"' "		beq	LF752
+F739 : 86 A0		"  "		ldaa	#$A0
+F73B				LF73B:
+F73B : 97 8D		"  "		staa	X008D
+F73D				LF73D:
+F73D : 86 FF		"  "		ldaa	#$FF
+F73F				LF73F:
+F73F : 97 86		"  "		staa	X0086
+F741				LF741:
+F741 : C6 B2		"  "		ldab	#$B2
+F743 : F7 40 00		" @ "		stab	_CPLD_4000
+F746 : 71 BF 02		"q  "		aim	#$BF_register_PORT1Data
+F749 : 39		"9"		rts
+				;
+F74A				LF74A:
+F74A : 86 A5		"  "		ldaa	#$A5
+F74C : 20 ED		"  "		bra	LF73B
+				;
+F74E				LF74E:
+F74E : 86 A1		"  "		ldaa	#$A1
+F750 : 20 E9		"  "		bra	LF73B
+				;
+F752				LF752:
+F752 : 96 AD		"  "		ldaa	X00AD
+F754 : B1 80 02		"   "		cmpa	X8002
+F757 : 27 04		"' "		beq	LF75D
+F759 : 86 A2		"  "		ldaa	#$A2
+F75B : 20 DE		"  "		bra	LF73B
+				;
+F75D				LF75D:
+F75D : CE F8 AC		"   "		ldx	#$F8AC
+F760 : F6 80 04		"   "		ldab	X8004
+F763 : 58		"X"		aslb
+F764 : 3A		":"		abx
+F765 : EC 00		"  "		ldd	$00,x
+F767 : DD 87		"  "		std	X0087
+F769 : 7D 00 AF		"}  "		tst	X00AF
+F76C : 26 CF		"& "		bne	LF73D
+F76E : BD F8 7E		"  ~"		jsr	LF87E
+F771 : A3 00		"  "		subd	$00,x
+F773 : 26 D9		"& "		bne	LF74E
+F775 : B6 80 02		"   "		ldaa	X8002
+F778 : 20 C5		"  "		bra	LF73F
+				;
+F77A				LF77A:
+F77A : 71 DF 02		"q  "		aim	#$DF_register_PORT1Data
+F77D : BD F4 B3		"   "		jsr	LF4B3
+F780 : 26 05		"& "		bne	LF787
+F782 : BD F4 E5		"   "		jsr	LF4E5
+F785 : 27 06		"' "		beq	LF78D
+F787				LF787:
+F787 : 07		" "		tpa
+F788 : 72 20 02		"r  "		oim	#$20_register_PORT1Data
+F78B : 06		" "		tap
+F78C : 39		"9"		rts
+				;
+F78D				LF78D:
+F78D : BD F8 F3		"   "		jsr	LF8F3
+F790 : 86 A2		"  "		ldaa	#$A2
+F792 : B7 40 00		" @ "		staa	_CPLD_4000
+F795 : BD F8 06		"   "		jsr	LF806
+F798 : 26 ED		"& "		bne	LF787
+F79A : 86 E2		"  "		ldaa	#$E2
+F79C : B7 40 00		" @ "		staa	_CPLD_4000
+F79F : BD F8 BA		"   "		jsr	LF8BA
+F7A2 : FD 80 11		"   "		std	X8011
+F7A5 : BD F8 7E		"  ~"		jsr	LF87E
+F7A8 : ED 00		"  "		std	$00,x
+F7AA : 72 FF 86		"r  "		oim	#$FFX0086
+F7AD : FC 80 00		"   "		ldd	X8000
+F7B0 : C3 00 02		"   "		addd	#$0002
+F7B3 : DD BE		"  "		std	X00BE
+F7B5 : BD F5 EE		"   "		jsr	LF5EE
+F7B8 : 26 CD		"& "		bne	LF787
+F7BA : 7F 40 03		" @ "		clr	_CPLD_4003
+F7BD : 86 E6		"  "		ldaa	#$E6
+F7BF : B7 40 00		" @ "		staa	_CPLD_4000
+F7C2 : 86 40		" @"		ldaa	#$40
+F7C4 : 97 BC		"  "		staa	X00BC
+F7C6				LF7C6:
+F7C6 : 8D 33		" 3"		bsr	LF7FB
+F7C8 : 7A 00 BC		"z  "		dec	X00BC
+F7CB : 26 F9		"& "		bne	LF7C6
+F7CD : 86 10		"  "		ldaa	#$10
+F7CF : 8D 2B		" +"		bsr	LF7FC
+F7D1 : CE 80 00		"   "		ldx	#$8000
+F7D4				LF7D4:
+F7D4 : A6 00		"  "		ldaa	$00,x
+F7D6 : 08		" "		inx
+F7D7 : 8D 23		" #"		bsr	LF7FC
+F7D9 : DC BE		"  "		ldd	X00BE
+F7DB : 83 00 01		"   "		subd	#$0001
+F7DE : DD BE		"  "		std	X00BE
+F7E0 : 26 F2		"& "		bne	LF7D4
+F7E2				LF7E2:
+F7E2 : 8D 17		"  "		bsr	LF7FB
+F7E4 : B6 40 01		" @ "		ldaa	_CPLD_4001
+F7E7 : 84 04		"  "		anda	#$04
+F7E9 : 27 F7		"' "		beq	LF7E2
+F7EB				LF7EB:
+F7EB : 8D 0E		"  "		bsr	LF7FB
+F7ED : B6 40 01		" @ "		ldaa	_CPLD_4001
+F7F0 : 84 04		"  "		anda	#$04
+F7F2 : 26 F7		"& "		bne	LF7EB
+F7F4 : 86 B2		"  "		ldaa	#$B2
+F7F6 : B7 40 00		" @ "		staa	_CPLD_4000
+F7F9 : 20 8C		"  "		bra	LF787
+				;
+F7FB				LF7FB:
+F7FB : 4F		"O"		clra
+F7FC				LF7FC:
+F7FC : F6 40 02		" @ "		ldab	_CPLD_4002
+F7FF : 59		"Y"		rolb
+F800 : 24 FA		"$ "		bcc	LF7FC
+F802 : B7 40 03		" @ "		staa	_CPLD_4003
+F805 : 39		"9"		rts
+				;
+F806				LF806:
+F806 : BD F9 37		"  7"		jsr	LF937
+F809 : 8D 1D		"  "		bsr	LF828
+F80B : 26 0E		"& "		bne	LF81B
+F80D : C6 04		"  "		ldab	#$04
+F80F : BD F9 3D		"  ="		jsr	LF93D
+F812 : 8D 14		"  "		bsr	LF828
+F814 : 26 0D		"& "		bne	LF823
+F816 : BD F9 37		"  7"		jsr	LF937
+F819 : 4F		"O"		clra
+F81A : 39		"9"		rts
+				;
+F81B				LF81B:
+F81B : C6 02		"  "		ldab	#$02
+F81D : BD F9 3D		"  ="		jsr	LF93D
+F820				LF820:
+F820 : 96 8D		"  "		ldaa	X008D
+F822 : 39		"9"		rts
+				;
+F823				LF823:
+F823 : BD F9 37		"  7"		jsr	LF937
+F826 : 20 F8		"  "		bra	LF820
+				;
+F828				LF828:
+F828 : BD F5 EE		"   "		jsr	LF5EE
+F82B : 26 08		"& "		bne	LF835
+F82D : 86 A6		"  "		ldaa	#$A6
+F82F : B7 40 00		" @ "		staa	_CPLD_4000
+F832 : BD F6 15		"   "		jsr	LF615
+F835				LF835:
+F835 : 07		" "		tpa
+F836 : C6 A2		"  "		ldab	#$A2
+F838 : F7 40 00		" @ "		stab	_CPLD_4000
+F83B : 06		" "		tap
+F83C : 39		"9"		rts
+				;
+F83D				LF83D:
+F83D : 16		" "		tab
+F83E : 84 F0		"  "		anda	#$F0
+F840 : 44		"D"		lsra
+F841 : 44		"D"		lsra
+F842 : 44		"D"		lsra
+F843 : 44		"D"		lsra
+F844 : 81 0A		"  "		cmpa	#$0A
+F846 : 2C 0B		", "		bge	LF853
+F848 : 8B 30		" 0"		adda	#$30
+F84A				LF84A:
+F84A : C4 0F		"  "		andb	#$0F
+F84C : C1 0A		"  "		cmpb	#$0A
+F84E : 2C 07		", "		bge	LF857
+F850 : CB 30		" 0"		addb	#$30
+F852 : 39		"9"		rts
+				;
+F853				LF853:
+F853 : 8B 37		" 7"		adda	#$37
+F855 : 20 F3		"  "		bra	LF84A
+				;
+F857				LF857:
+F857 : CB 37		" 7"		addb	#$37
+F859 : 39		"9"		rts
+				;
+F85A				LF85A:
+F85A : 81 3A		" :"		cmpa	#$3A
+F85C : 25 05		"% "		bcs	LF863
+F85E				LF85E:
+F85E : C6 21		" !"		ldab	#$21
+F860 : D7 8D		"  "		stab	X008D
+F862 : 39		"9"		rts
+				;
+F863				LF863:
+F863 : 80 30		" 0"		suba	#$30
+F865 : 25 F7		"% "		bcs	LF85E
+F867 : 5F		"_"		clrb
+F868 : 39		"9"		rts
+				;
+F869				LF869:
+F869 : DC 87		"  "		ldd	X0087
+F86B : DD A7		"  "		std	X00A7
+F86D : D6 AE		"  "		ldab	X00AE
+F86F : 4F		"O"		clra
+F870 : 18		" "		xgdx
+F871 : CC 80 13		"   "		ldd	#$8013
+F874				LF874:
+F874 : 09		" "		dex
+F875 : 27 04		"' "		beq	LF87B
+F877 : D3 A7		"  "		addd	X00A7
+F879 : 20 F9		"  "		bra	LF874
+				;
+F87B				LF87B:
+F87B : DD A5		"  "		std	X00A5
+F87D : 39		"9"		rts
+				;
+F87E				LF87E:
+F87E : CE 80 13		"   "		ldx	#$8013
+F881 : B6 80 04		"   "		ldaa	X8004
+F884 : 81 04		"  "		cmpa	#$04
+F886 : 27 1F		"' "		beq	LF8A7
+F888 : 81 05		"  "		cmpa	#$05
+F88A : 27 1B		"' "		beq	LF8A7
+F88C : CC 05 00		"   "		ldd	#$0500
+F88F				LF88F:
+F88F : DD BC		"  "		std	X00BC
+F891 : 4F		"O"		clra
+F892 : 97 B0		"  "		staa	X00B0
+F894 : 97 B1		"  "		staa	X00B1
+F896				LF896:
+F896 : A6 00		"  "		ldaa	$00,x
+F898 : 08		" "		inx
+F899 : 8D 34		" 4"		bsr	LF8CF
+F89B : DC BC		"  "		ldd	X00BC
+F89D : 83 00 01		"   "		subd	#$0001
+F8A0 : DD BC		"  "		std	X00BC
+F8A2 : 26 F2		"& "		bne	LF896
+F8A4 : DC B0		"  "		ldd	X00B0
+F8A6 : 39		"9"		rts
+				;
+F8A7				LF8A7:
+F8A7 : CC 04 00		"   "		ldd	#$0400
+F8AA : 20 E3		"  "		bra	LF88F
+				;
+F8AC				_lookupTable_For_0xF75D:
+F8AC : 00		" "		db	$00
+F8AD : 40		"@"		db	$40
+F8AE : 00		" "		db	$00
+F8AF : 50		"P"		db	$50
+F8B0 : 00		" "		db	$00
+F8B1 : 80		" "		db	$80
+F8B2 : 01		" "		db	$01
+F8B3 : 00		" "		db	$00
+F8B4 : 02		" "		db	$02
+F8B5 : 00		" "		db	$00
+F8B6 : 04		" "		db	$04
+F8B7 : 00		" "		db	$00
+F8B8 : 05		" "		db	$05
+F8B9 : 00		" "		db	$00
+				;
+F8BA				LF8BA:
+F8BA : 4F		"O"		clra
+F8BB : 97 B0		"  "		staa	X00B0
+F8BD : 97 B1		"  "		staa	X00B1
+F8BF : CE 80 00		"   "		ldx	#$8000
+F8C2				LF8C2:
+F8C2 : A6 00		"  "		ldaa	$00,x
+F8C4 : 08		" "		inx
+F8C5 : 8D 08		"  "		bsr	LF8CF
+F8C7 : 8C 80 11		"   "		cpx	#$8011
+F8CA : 26 F6		"& "		bne	LF8C2
+F8CC : DC B0		"  "		ldd	X00B0
+F8CE : 39		"9"		rts
+				;
+F8CF				LF8CF:
+F8CF : 98 B0		"  "		eora	X00B0
+F8D1 : 97 CF		"  "		staa	X00CF
+F8D3 : 48		"H"		asla
+F8D4 : 48		"H"		asla
+F8D5 : 48		"H"		asla
+F8D6 : 48		"H"		asla
+F8D7 : 98 CF		"  "		eora	X00CF
+F8D9 : 97 CF		"  "		staa	X00CF
+F8DB : 49		"I"		rola
+F8DC : 49		"I"		rola
+F8DD : 49		"I"		rola
+F8DE : 16		" "		tab
+F8DF : 84 F8		"  "		anda	#$F8
+F8E1 : 98 B1		"  "		eora	X00B1
+F8E3 : 97 B0		"  "		staa	X00B0
+F8E5 : 59		"Y"		rolb
+F8E6 : 59		"Y"		rolb
+F8E7 : C4 0F		"  "		andb	#$0F
+F8E9 : D8 B0		"  "		eorb	X00B0
+F8EB : D7 B0		"  "		stab	X00B0
+F8ED : 59		"Y"		rolb
+F8EE : D8 CF		"  "		eorb	X00CF
+F8F0 : D7 B1		"  "		stab	X00B1
+F8F2 : 39		"9"		rts
+				;
+F8F3				LF8F3:
+F8F3 : 72 04 80		"r  "		oim	#$04X0080
+F8F6 : 96 80		"  "		ldaa	X0080
+F8F8 : B7 40 01		" @ "		staa	_CPLD_4001
+F8FB : 96 8A		"  "		ldaa	X008A
+F8FD : 9A 8B		"  "		oraa	X008B
+F8FF : 9A 8C		"  "		oraa	X008C
+F901 : 26 0D		"& "		bne	LF910
+F903 : 86 32		" 2"		ldaa	#$32
+F905				LF905:
+F905 : 36		"6"		psha
+F906 : BD F9 B6		"   "		jsr	_sub_Delay_Units=14
+F909 : BD F9 E3		"   "		jsr	LF9E3
+F90C : 32		"2"		pula
+F90D : 4A		"J"		deca
+F90E : 26 F5		"& "		bne	LF905
+F910				LF910:
+F910 : CC 02 FF		"   "		ldd	#$02FF
+F913 : DD 8A		"  "		std	X008A
+F915 : 97 8C		"  "		staa	X008C
+F917 : 39		"9"		rts
+				;
+F918				LF918:
+F918 : 4F		"O"		clra
+F919 : D6 AD		"  "		ldab	X00AD
+F91B : 54		"T"		lsrb
+F91C : 37		"7"		pshb
+F91D : D0 85		"  "		subb	X0085
+F91F : 27 12		"' "		beq	LF933
+F921 : 24 0C		"$ "		bcc	LF92F
+F923 : 36		"6"		psha
+F924 : 50		"P"		negb
+F925				LF925:
+F925 : 86 06		"  "		ldaa	#$06
+F927 : 3D		"="		mul
+F928 : 32		"2"		pula
+F929				LF929:
+F929 : 8D 13		"  "		bsr	LF93E
+F92B : 32		"2"		pula
+F92C : 97 85		"  "		staa	X0085
+F92E : 39		"9"		rts
+				;
+F92F				LF92F:
+F92F : 4C		"L"		inca
+F930 : 36		"6"		psha
+F931 : 20 F2		"  "		bra	LF925
+				;
+F933				LF933:
+F933 : 5F		"_"		clrb
+F934 : 4C		"L"		inca
+F935 : 20 F2		"  "		bra	LF929
+				;
+F937				LF937:
+F937 : C6 02		"  "		ldab	#$02
+F939				LF939:
+F939 : 86 01		"  "		ldaa	#$01
+F93B : 20 01		"  "		bra	LF93E
+				;
+F93D				LF93D:
+F93D : 4F		"O"		clra
+F93E				LF93E:
+F93E : 97 C8		"  "		staa	X00C8
+F940 : D7 C9		"  "		stab	X00C9
+F942 : B6 40 00		" @ "		ldaa	_CPLD_4000
+F945 : 8A 01		"  "		oraa	#$01
+F947 : B7 40 00		" @ "		staa	_CPLD_4000
+F94A : 7D 00 C8		"}  "		tst	X00C8
+F94D : 27 41		"'A"		beq	LF990
+F94F : 7C 00 C9		"|  "		inc	X00C9
+F952				LF952:
+F952 : CE F9 A9		"   "		ldx	#$F9A9
+F955				LF955:
+F955 : D6 80		"  "		ldab	X0080
+F957 : 17		" "		tba
+F958 : C4 03		"  "		andb	#$03
+F95A : 3A		":"		abx
+F95B : 84 FC		"  "		anda	#$FC
+F95D : AA 00		"  "		oraa	$00,x
+F95F : 97 80		"  "		staa	X0080
+F961 : 16		" "		tab
+F962 : B6 40 00		" @ "		ldaa	_CPLD_4000
+F965 : 84 FE		"  "		anda	#$FE
+F967 : B7 40 00		" @ "		staa	_CPLD_4000
+F96A : F7 40 01		" @ "		stab	_CPLD_4001
+F96D : 8A 01		"  "		oraa	#$01
+F96F : B7 40 00		" @ "		staa	_CPLD_4000
+F972 : C6 0A		"  "		ldab	#$0A
+F974 : 8D 46		" F"		bsr	_sub_Delay_Units=ACCB
+F976 : BD F9 E3		"   "		jsr	LF9E3
+F979 : 7A 00 C9		"z  "		dec	X00C9
+F97C : 26 17		"& "		bne	LF995
+F97E : C6 0A		"  "		ldab	#$0A
+F980 : 8D 3A		" :"		bsr	_sub_Delay_Units=ACCB
+F982 : BD F9 E3		"   "		jsr	LF9E3
+F985 : 7D 00 C8		"}  "		tst	X00C8
+F988 : 27 12		"' "		beq	LF99C
+F98A : 7F 00 C8		"   "		clr	X00C8
+F98D : 7C 00 C9		"|  "		inc	X00C9
+F990				LF990:
+F990 : CE F9 A5		"   "		ldx	#$F9A5
+F993 : 20 C0		"  "		bra	LF955
+				;
+F995				LF995:
+F995 : 7D 00 C8		"}  "		tst	X00C8
+F998 : 27 F6		"' "		beq	LF990
+F99A : 20 B6		"  "		bra	LF952
+				;
+F99C				LF99C:
+F99C : B6 40 00		" @ "		ldaa	_CPLD_4000
+F99F : 84 FE		"  "		anda	#$FE
+F9A1 : B7 40 00		" @ "		staa	_CPLD_4000
+F9A4 : 39		"9"		rts
+				;
+F9A5				_lookupTable_For_0xF952:
+F9A5 : 01		" "		db	$01
+F9A6 : 03		" "		db	$03
+F9A7 : 00		" "		db	$00
+F9A8 : 02		" "		db	$02
+F9A9				_lookupTable_For_0xF990:
+F9A9 : 02		" "		db	$02
+F9AA : 00		" "		db	$00
+F9AB : 03		" "		db	$03
+F9AC : 01		" "		db	$01
+				;
+F9AD				_sub_ClearMemory(X=StartAddress_D=Length):
+F9AD : 6F 00		"o "		clr	$00,x
+F9AF : 08		" "		inx
+F9B0 : 83 00 01		"   "		subd	#$0001
+F9B3 : 26 F8		"& "		bne	_sub_ClearMemory(X=StartAddress_D=Length)
+F9B5 : 39		"9"		rts
+				;
+F9B6				_sub_Delay_Units=14:
+F9B6 : C6 14		"  "		ldab	#$14
+F9B8 : 20 02		"  "		bra	_sub_Delay_Units=ACCB
+				;
+F9BA				_sub_Delay_Units=1:
+F9BA : C6 01		"  "		ldab	#$01
+F9BC				_sub_Delay_Units=ACCB:
+F9BC : 86 F5		"  "		ldaa	#$F5
+F9BE				_sub_Delay_Loop(onlyLocal):
+F9BE : 4A		"J"		deca
+F9BF : 01		" "		nop
+F9C0 : 26 FC		"& "		bne	_sub_Delay_Loop(onlyLocal)
+F9C2 : 5A		"Z"		decb
+F9C3 : 26 F7		"& "		bne	_sub_Delay_Units=ACCB
+F9C5 : 39		"9"		rts
+				;
+F9C6				LF9C6:
+F9C6 : 96 81		"  "		ldaa	X0081
+F9C8 : 26 19		"& "		bne	LF9E3
+F9CA : F6 40 01		" @ "		ldab	_CPLD_4001
+F9CD : C4 02		"  "		andb	#$02
+F9CF : 26 08		"& "		bne	LF9D9
+F9D1 : 96 82		"  "		ldaa	X0082
+F9D3 : 26 08		"& "		bne	LF9DD
+F9D5 : 72 01 82		"r  "		oim	#$01X0082
+F9D8 : 39		"9"		rts
+				;
+F9D9				LF9D9:
+F9D9 : 7F 00 82		"   "		clr	X0082
+F9DC : 39		"9"		rts
+				;
+F9DD				LF9DD:
+F9DD : 71 EF 02		"q  "		aim	#$EF_register_PORT1Data
+F9E0 : 72 01 81		"r  "		oim	#$01X0081
+F9E3				LF9E3:
+F9E3 : F6 40 01		" @ "		ldab	_CPLD_4001
+F9E6 : 56		"V"		rorb
+F9E7 : 25 08		"% "		bcs	_sub_Clear_0083(onlyLocal)
+F9E9 : 96 83		"  "		ldaa	X0083
+F9EB : 26 08		"& "		bne	LF9F5
+F9ED : 72 01 83		"r  "		oim	#$01X0083
+F9F0 : 39		"9"		rts
+				;
+F9F1				_sub_Clear_0083(onlyLocal):
+F9F1 : 7F 00 83		"   "		clr	X0083
+F9F4 : 39		"9"		rts
+				;
+F9F5				LF9F5:
+F9F5 : 96 80		"  "		ldaa	X0080
+F9F7 : 8A 08		"  "		oraa	#$08
+F9F9 : B7 40 01		" @ "		staa	_CPLD_4001
+F9FC : 20 F7		"  "		bra	LF9F5
+				;
+F9FE				LF9FE:
+F9FE : 4F		"O"		clra
+F9FF : 97 8D		"  "		staa	X008D
+FA01 : 97 9E		"  "		staa	X009E
+FA03 : BD F1 9E		"   "		jsr	LF19E
+FA06 : 26 F6		"& "		bne	LF9FE
+FA08 : 39		"9"		rts
+				;
+FA09				LFA09:
+FA09 : 8D 70		" p"		bsr	LFA7B
+FA0B : D7 BC		"  "		stab	X00BC
+FA0D				LFA0D:
+FA0D : 8D 6C		" l"		bsr	LFA7B
+FA0F : 7A 00 BC		"z  "		dec	X00BC
+FA12 : 26 F9		"& "		bne	LFA0D
+FA14 : BD 85 15		"   "		jsr	_EntryPoint_CodeExecutionAddress(8515)
+FA17				LFA17:
+FA17 : 8D E5		"  "		bsr	LF9FE
+FA19 : 96 11		"  "		ldaa	_register_SCI_TxRxControlAndStatus
+FA1B : 96 12		"  "		ldaa	_register_SCI_RxData
+FA1D : 8D 9B		"  "		bsr	_sub_Delay_Units=1
+FA1F : 4F		"O"		clra
+FA20 : 97 9E		"  "		staa	X009E
+FA22 : 97 B0		"  "		staa	X00B0
+FA24 : BD F1 45		"  E"		jsr	LF145
+FA27 : 26 48		"&H"		bne	LFA71
+FA29 : C1 53		" S"		cmpb	#$53
+FA2B : 26 EA		"& "		bne	LFA17
+FA2D : 7F 00 9E		"   "		clr	X009E
+FA30 : BD F1 45		"  E"		jsr	LF145
+FA33 : 26 3C		"&<"		bne	LFA71
+FA35 : C1 39		" 9"		cmpb	#$39
+FA37 : 27 D0		"' "		beq	LFA09
+FA39 : C1 31		" 1"		cmpb	#$31
+FA3B : 27 11		"' "		beq	LFA4E
+FA3D : C1 30		" 0"		cmpb	#$30
+FA3F : 26 D6		"& "		bne	LFA17
+FA41 : 8D 38		" 8"		bsr	LFA7B
+FA43 : D7 BC		"  "		stab	X00BC
+FA45				LFA45:
+FA45 : 8D 34		" 4"		bsr	LFA7B
+FA47 : 7A 00 BC		"z  "		dec	X00BC
+FA4A : 26 F9		"& "		bne	LFA45
+FA4C : 20 C9		"  "		bra	LFA17
+				;
+FA4E				LFA4E:
+FA4E : 8D 2B		" +"		bsr	LFA7B
+FA50 : DB B0		"  "		addb	X00B0
+FA52 : D7 B0		"  "		stab	X00B0
+FA54 : D7 BC		"  "		stab	X00BC
+FA56 : BD FA A4		"   "		jsr	LFAA4
+FA59 : 26 16		"& "		bne	LFA71
+FA5B				LFA5B:
+FA5B : 8D 1E		"  "		bsr	LFA7B
+FA5D : 7A 00 BC		"z  "		dec	X00BC
+FA60 : 27 09		"' "		beq	LFA6B
+FA62 : E7 00		"  "		stab	$00,x
+FA64 : 08		" "		inx
+FA65 : DB B0		"  "		addb	X00B0
+FA67 : D7 B0		"  "		stab	X00B0
+FA69 : 20 F0		"  "		bra	LFA5B
+				;
+FA6B				LFA6B:
+FA6B : DB B0		"  "		addb	X00B0
+FA6D : C8 FF		"  "		eorb	#$FF
+FA6F : 27 A6		"' "		beq	LFA17
+FA71				LFA71:
+FA71 : 75 10 02		"u  "		eim	#$10_register_PORT1Data
+FA74 : C6 32		" 2"		ldab	#$32
+FA76 : BD F9 BC		"   "		jsr	_sub_Delay_Units=ACCB
+FA79 : 20 F6		"  "		bra	LFA71
+				;
+FA7B				LFA7B:
+FA7B : 8D 03		"  "		bsr	LFA80
+FA7D : 26 F2		"& "		bne	LFA71
+FA7F : 39		"9"		rts
+				;
+FA80				LFA80:
+FA80 : 7F 00 9E		"   "		clr	X009E
+FA83 : BD F1 45		"  E"		jsr	LF145
+FA86 : 26 1B		"& "		bne	LFAA3
+FA88 : 8D 3B		" ;"		bsr	LFAC5
+FA8A : 26 17		"& "		bne	LFAA3
+FA8C : 58		"X"		aslb
+FA8D : 58		"X"		aslb
+FA8E : 58		"X"		aslb
+FA8F : 58		"X"		aslb
+FA90 : D7 C8		"  "		stab	X00C8
+FA92 : 7F 00 9E		"   "		clr	X009E
+FA95 : BD F1 45		"  E"		jsr	LF145
+FA98 : 26 09		"& "		bne	LFAA3
+FA9A : 8D 29		" )"		bsr	LFAC5
+FA9C : 27 02		"' "		beq	LFAA0
+FA9E : 20 03		"  "		bra	LFAA3
+				;
+FAA0				LFAA0:
+FAA0 : DA C8		"  "		orab	X00C8
+FAA2 : 4F		"O"		clra
+FAA3				LFAA3:
+FAA3 : 39		"9"		rts
+				;
+FAA4				LFAA4:
+FAA4 : 8D DA		"  "		bsr	LFA80
+FAA6 : 26 1A		"& "		bne	LFAC2
+FAA8 : 37		"7"		pshb
+FAA9 : DB B0		"  "		addb	X00B0
+FAAB : D7 B0		"  "		stab	X00B0
+FAAD : 8D D1		"  "		bsr	LFA80
+FAAF : 26 10		"& "		bne	LFAC1
+FAB1 : 32		"2"		pula
+FAB2 : 37		"7"		pshb
+FAB3 : 18		" "		xgdx
+FAB4 : 33		"3"		pulb
+FAB5 : DB B0		"  "		addb	X00B0
+FAB7 : D7 B0		"  "		stab	X00B0
+FAB9 : 7A 00 BC		"z  "		dec	X00BC
+FABC : 7A 00 BC		"z  "		dec	X00BC
+FABF : 4F		"O"		clra
+FAC0 : 39		"9"		rts
+				;
+FAC1				LFAC1:
+FAC1 : 32		"2"		pula
+FAC2				LFAC2:
+FAC2 : 96 8D		"  "		ldaa	X008D
+FAC4 : 39		"9"		rts
+				;
+FAC5				LFAC5:
+FAC5 : C1 30		" 0"		cmpb	#$30
+FAC7 : 25 14		"% "		bcs	LFADD
+FAC9 : C1 3A		" :"		cmpb	#$3A
+FACB : 24 04		"$ "		bcc	LFAD1
+FACD : C0 30		" 0"		subb	#$30
+FACF				LFACF:
+FACF : 4F		"O"		clra
+FAD0 : 39		"9"		rts
+				;
+FAD1				LFAD1:
+FAD1 : C1 41		" A"		cmpb	#$41
+FAD3 : 25 08		"% "		bcs	LFADD
+FAD5 : C1 47		" G"		cmpb	#$47
+FAD7 : 24 04		"$ "		bcc	LFADD
+FAD9 : C0 37		" 7"		subb	#$37
+FADB : 20 F2		"  "		bra	LFACF
+				;
+FADD				LFADD:
+FADD : 86 22		" ""		ldaa	#$22
+FADF : 97 8D		"  "		staa	X008D
+FAE1 : 39		"9"		rts
+				;
+FAE2				LFAE2:
+FAE2 : 8D 7C		" |"		bsr	_sub_Clear_00D8_00D9
+FAE4 : 9F E5		"  "		sts	_INT_RAM_StackPointerStorage
+FAE6 : 96 8D		"  "		ldaa	X008D
+FAE8 : 27 19		"' "		beq	LFB03
+FAEA : 7E FF 7C		"~ |"		jmp	LFF7C
+				;
+FAED				LFAED:
+FAED : BD FF 22		"  ""		jsr	LFF22
+FAF0 : 75 FF D7		"u  "		eim	#$FFX00D7
+FAF3 : 26 3D		"&="		bne	LFB32
+FAF5 : D6 E1		"  "		ldab	X00E1
+FAF7 : 58		"X"		aslb
+FAF8 : CE FB 4E		"  N"		ldx	#$FB4E
+FAFB : 3A		":"		abx
+FAFC : EE 00		"  "		ldx	$00,x
+FAFE : AD 00		"  "		jsr	$00,x						;INFO: index jump
+FB00 : BD F9 BA		"   "		jsr	_sub_Delay_Units=1
+FB03				LFB03:
+FB03 : C6 05		"  "		ldab	#$05
+FB05				LFB05:
+FB05 : 5A		"Z"		decb
+FB06 : 26 FD		"& "		bne	LFB05
+FB08 : BD F1 9E		"   "		jsr	LF19E
+FB0B : 26 F6		"& "		bne	LFB03
+FB0D				LFB0D:
+FB0D : 4F		"O"		clra
+FB0E : 97 8D		"  "		staa	X008D
+FB10 : 97 D6		"  "		staa	X00D6
+FB12 : 97 9E		"  "		staa	X009E
+FB14 : 97 D7		"  "		staa	X00D7
+FB16 : BD F1 45		"  E"		jsr	LF145
+FB19 : C1 5A		" Z"		cmpb	#$5A
+FB1B : 26 E6		"& "		bne	LFB03
+FB1D : BD FF 22		"  ""		jsr	LFF22
+FB20 : C1 08		"  "		cmpb	#$08
+FB22 : 23 11		"# "		bls	LFB35
+FB24 : C1 5A		" Z"		cmpb	#$5A
+FB26 : 26 E5		"& "		bne	LFB0D
+FB28 : 7F 00 D7		"   "		clr	X00D7
+FB2B : BD FF 22		"  ""		jsr	LFF22
+FB2E : C1 08		"  "		cmpb	#$08
+FB30 : 23 03		"# "		bls	LFB35
+FB32				LFB32:
+FB32 : 7E FF 69		"~ i"		jmp	LFF69
+				;
+FB35				LFB35:
+FB35 : D7 E1		"  "		stab	X00E1
+FB37 : BD FF 22		"  ""		jsr	LFF22
+FB3A : D7 E2		"  "		stab	X00E2
+FB3C : 17		" "		tba
+FB3D : CE 85 15		"   "		ldx	#$8515
+FB40 : DF DC		"  "		stx	X00DC
+FB42 : 4C		"L"		inca
+FB43				LFB43:
+FB43 : 4A		"J"		deca
+FB44 : 27 A7		"' "		beq	LFAED
+FB46 : BD FF 22		"  ""		jsr	LFF22
+FB49 : E7 00		"  "		stab	$00,x
+FB4B : 08		" "		inx
+FB4C : 20 F5		"  "		bra	LFB43
+				;
+FB4E				_jsrAdr(FAF8)_1:
+FB4E : FB 93		"  "		dw	_jsrAdr(FAF8)_1_code
+FB50				_jsrAdr(FAF8)_2:
+FB50 : FD 02		"  "		dw	_jsrAdr(FAF8)_2_code
+FB52				_jsrAdr(FAF8)_3:
+FB52 : FC D4		"  "		dw	_jsrAdr(FAF8)_3_code
+FB54				_jsrAdr(FAF8)_4:
+FB54 : FE 70		" p"		dw	_jsrAdr(FAF8)_4_code
+FB56				_jsrAdr(FAF8)_5:
+FB56 : FE C0		"  "		dw	_jsrAdr(FAF8)_5_code
+FB58				_jsrAdr(FAF8)_6:
+FB58 : FC 73		" s"		dw	_jsrAdr(FAF8)_6_code
+FB5A				_jsrAdr(FAF8)_7:
+FB5A : FB 7A		" z"		dw	_jsrAdr(FAF8)_7_code
+FB5C				_jsrAdr(FAF8)_8:
+FB5C : FB 72		" r"		dw	_jsrAdr(FAF8)_8_code
+FB5E				_jsrAdr(FAF8)_9:
+FB5E : FB 66		" f"		dw	_jsrAdr(FAF8)_9_code
+				;
+FB60				_sub_Clear_00D8_00D9:
+FB60 : 4F		"O"		clra
+FB61 : 97 D8		"  "		staa	X00D8
+FB63 : 97 D9		"  "		staa	X00D9
+FB65 : 39		"9"		rts
+				;
+FB66				_jsrAdr(FAF8)_9_code:
+FB66 : 96 D8		"  "		ldaa	X00D8
+FB68 : 27 03		"' "		beq	LFB6D
+FB6A : 7E FF 65		"~ e"		jmp	LFF65
+				;
+FB6D				LFB6D:
+FB6D : 9E E5		"  "		lds	_INT_RAM_StackPointerStorage
+FB6F : 7E F0 55		"~ U"		jmp	LF055
+				;
+FB72				_jsrAdr(FAF8)_8_code:
+FB72 : BD F4 B3		"   "		jsr	LF4B3
+FB75 : 26 0B		"& "		bne	LFB82
+FB77 : 7E FF 3A		"~ :"		jmp	LFF3A
+				;
+FB7A				_jsrAdr(FAF8)_7_code:
+FB7A : 4F		"O"		clra
+FB7B : BD F2 C8		"   "		jsr	LF2C8
+FB7E : 96 8D		"  "		ldaa	X008D
+FB80 : 27 03		"' "		beq	LFB85
+FB82				LFB82:
+FB82 : 7E FF 7C		"~ |"		jmp	LFF7C
+				;
+FB85				LFB85:
+FB85 : BD FE 2F		"  /"		jsr	LFE2F
+FB88 : 86 80		"  "		ldaa	#$80
+FB8A : B7 84 EB		"   "		staa	X84EB
+FB8D : BD FE 4B		"  K"		jsr	LFE4B
+FB90 : 7E FC FC		"~  "		jmp	LFCFC
+				;
+FB93				_jsrAdr(FAF8)_1_code:
+FB93 : 7F 00 D8		"   "		clr	X00D8
+FB96 : C6 1B		"  "		ldab	#$1B
+FB98 : CE 86 2A		"  *"		ldx	#$862A
+FB9B : DF E8		"  "		stx	X00E8
+FB9D : CE 85 15		"   "		ldx	#$8515
+FBA0 : BD FF 53		"  S"		jsr	LFF53
+FBA3 : B6 86 43		"  C"		ldaa	X8643
+FBA6 : 81 02		"  "		cmpa	#$02
+FBA8 : 27 03		"' "		beq	LFBAD
+FBAA : BD FE 2F		"  /"		jsr	LFE2F
+FBAD				LFBAD:
+FBAD : 7F 00 EA		"   "		clr	X00EA
+FBB0 : B6 86 43		"  C"		ldaa	X8643
+FBB3 : 26 05		"& "		bne	LFBBA
+FBB5 : BD FC 35		"  5"		jsr	LFC35
+FBB8 : 20 06		"  "		bra	LFBC0
+				;
+FBBA				LFBBA:
+FBBA : 81 02		"  "		cmpa	#$02
+FBBC : 22 3B		"";"		bhi	LFBF9
+FBBE : 8D 24		" $"		bsr	LFBE4
+FBC0				LFBC0:
+FBC0 : CC 1C 11		"   "		ldd	#$1C11
+FBC3 : BD FF 1A		"   "		jsr	LFF1A
+FBC6 : DE DA		"  "		ldx	X00DA
+FBC8 : 86 1B		"  "		ldaa	#$1B
+FBCA				LFBCA:
+FBCA : 5F		"_"		clrb
+FBCB : 7D 00 EA		"}  "		tst	X00EA
+FBCE : 27 02		"' "		beq	LFBD2
+FBD0 : E6 00		"  "		ldab	$00,x
+FBD2				LFBD2:
+FBD2 : BD FF 46		"  F"		jsr	LFF46
+FBD5 : 08		" "		inx
+FBD6 : 4A		"J"		deca
+FBD7 : 26 F1		"& "		bne	LFBCA
+FBD9 : C6 4F		" O"		ldab	#$4F
+FBDB : F0 84 FF		"   "		subb	X84FF
+FBDE : BD FF 46		"  F"		jsr	LFF46
+FBE1 : 7E FF 43		"~ C"		jmp	LFF43
+				;
+FBE4				LFBE4:
+FBE4 : 81 01		"  "		cmpa	#$01
+FBE6 : 26 0C		"& "		bne	LFBF4
+FBE8 : CE 80 13		"   "		ldx	#$8013
+FBEB : 7F 00 EB		"   "		clr	X00EB
+FBEE : 86 04		"  "		ldaa	#$04
+FBF0 : 97 D9		"  "		staa	X00D9
+FBF2 : 20 0C		"  "		bra	LFC00
+				;
+FBF4				LFBF4:
+FBF4 : 7B 04 D9		"{  "		tim	#$04X00D9
+FBF7 : 26 02		"& "		bne	LFBFB
+FBF9				LFBF9:
+FBF9 : 20 7D		" }"		bra	LFC78
+				;
+FBFB				LFBFB:
+FBFB : C6 1F		"  "		ldab	#$1F
+FBFD : DE DA		"  "		ldx	X00DA
+FBFF : 3A		":"		abx
+FC00				LFC00:
+FC00 : DF DA		"  "		stx	X00DA
+FC02				LFC02:
+FC02 : 8C 84 CC		"   "		cpx	#$84CC
+FC05 : 22 04		"" "		bhi	LFC0B
+FC07 : 6D 00		"m "		tst	$00,x
+FC09 : 26 0F		"& "		bne	LFC1A
+FC0B				LFC0B:
+FC0B : 7D 00 EB		"}  "		tst	X00EB
+FC0E : 26 24		"&$"		bne	LFC34
+FC10 : 7C 00 EB		"|  "		inc	X00EB
+FC13 : CE 80 13		"   "		ldx	#$8013
+FC16 : DF DA		"  "		stx	X00DA
+FC18 : 20 E8		"  "		bra	LFC02
+				;
+FC1A				LFC1A:
+FC1A : B6 86 42		"  B"		ldaa	X8642
+FC1D : 7D 00 EB		"}  "		tst	X00EB
+FC20 : 26 0B		"& "		bne	LFC2D
+FC22 : A1 18		"  "		cmpa	$18,x
+FC24 : 27 0B		"' "		beq	LFC31
+FC26				LFC26:
+FC26 : C6 1F		"  "		ldab	#$1F
+FC28 : 3A		":"		abx
+FC29 : DF DA		"  "		stx	X00DA
+FC2B : 20 D5		"  "		bra	LFC02
+				;
+FC2D				LFC2D:
+FC2D : A1 18		"  "		cmpa	$18,x
+FC2F : 27 F5		"' "		beq	LFC26
+FC31				LFC31:
+FC31 : 7C 00 EA		"|  "		inc	X00EA
+FC34				LFC34:
+FC34 : 39		"9"		rts
+				;
+FC35				LFC35:
+FC35 : 86 01		"  "		ldaa	#$01
+FC37 : 97 D9		"  "		staa	X00D9
+FC39 : CE 80 13		"   "		ldx	#$8013
+FC3C : DF DA		"  "		stx	X00DA
+FC3E				LFC3E:
+FC3E : DF DE		"  "		stx	X00DE
+FC40 : 6D 00		"m "		tst	$00,x
+FC42 : 27 F0		"' "		beq	LFC34
+FC44 : CE 86 2A		"  *"		ldx	#$862A
+FC47 : 3C		"<"		pshx
+FC48				LFC48:
+FC48 : DE DE		"  "		ldx	X00DE
+FC4A : A6 00		"  "		ldaa	$00,x
+FC4C : 08		" "		inx
+FC4D : DF DE		"  "		stx	X00DE
+FC4F : 38		"8"		pulx
+FC50 : A1 00		"  "		cmpa	$00,x
+FC52 : 25 12		"% "		bcs	LFC66
+FC54 : 26 DE		"& "		bne	LFC34
+FC56 : 08		" "		inx
+FC57 : 8C 86 42		"  B"		cpx	#$8642
+FC5A : 22 03		"" "		bhi	LFC5F
+FC5C : 3C		"<"		pshx
+FC5D : 20 E9		"  "		bra	LFC48
+				;
+FC5F				LFC5F:
+FC5F : 7C 00 EA		"|  "		inc	X00EA
+FC62 : 72 02 D9		"r  "		oim	#$02X00D9
+FC65 : 39		"9"		rts
+				;
+FC66				LFC66:
+FC66 : DE DA		"  "		ldx	X00DA
+FC68 : C6 1F		"  "		ldab	#$1F
+FC6A : 3A		":"		abx
+FC6B : DF DA		"  "		stx	X00DA
+FC6D : 8C 84 CC		"   "		cpx	#$84CC
+FC70 : 23 CC		"# "		bls	LFC3E
+FC72 : 39		"9"		rts
+				;
+FC73				_jsrAdr(FAF8)_6_code:
+FC73 : 7B 02 D9		"{  "		tim	#$02X00D9
+FC76 : 26 03		"& "		bne	LFC7B
+FC78				LFC78:
+FC78 : 7E FF 65		"~ e"		jmp	LFF65
+				;
+FC7B				LFC7B:
+FC7B : BD FD 88		"   "		jsr	LFD88
+FC7E : DE DA		"  "		ldx	X00DA
+FC80 : A6 1D		"  "		ldaa	$1D,x
+FC82 : 97 E0		"  "		staa	X00E0
+FC84				LFC84:
+FC84 : 7A 86 29		"z )"		dec	X8629
+FC87 : 96 E0		"  "		ldaa	X00E0
+FC89 : 16		" "		tab
+FC8A : 54		"T"		lsrb
+FC8B : 54		"T"		lsrb
+FC8C : 84 03		"  "		anda	#$03
+FC8E : CE 86 15		"   "		ldx	#$8615
+FC91 : 3A		":"		abx
+FC92 : C6 7F		"  "		ldab	#$7F
+FC94				LFC94:
+FC94 : 4A		"J"		deca
+FC95 : 2B 05		"+ "		bmi	LFC9C
+FC97 : 0D		" "		sec
+FC98 : 56		"V"		rorb
+FC99 : 56		"V"		rorb
+FC9A : 20 F8		"  "		bra	LFC94
+				;
+FC9C				LFC9C:
+FC9C : E4 00		"  "		andb	$00,x
+FC9E : E7 00		"  "		stab	$00,x
+FCA0 : BD FE 32		"  2"		jsr	LFE32
+FCA3 : B6 80 05		"   "		ldaa	X8005
+FCA6 : 97 E0		"  "		staa	X00E0
+FCA8 : 81 FF		"  "		cmpa	#$FF
+FCAA : 26 D8		"& "		bne	LFC84
+FCAC : BD FE 2F		"  /"		jsr	LFE2F
+FCAF : BD FD 95		"   "		jsr	LFD95
+FCB2 : DE DA		"  "		ldx	X00DA
+FCB4 : 8C 84 CC		"   "		cpx	#$84CC
+FCB7 : 24 10		"$ "		bcc	LFCC9
+FCB9 : 6D 1F		"m "		tst	$1F,x
+FCBB : 27 0C		"' "		beq	LFCC9
+FCBD				LFCBD:
+FCBD : 8C 84 CC		"   "		cpx	#$84CC
+FCC0 : 24 07		"$ "		bcc	LFCC9
+FCC2 : A6 1F		"  "		ldaa	$1F,x
+FCC4 : A7 00		"  "		staa	$00,x
+FCC6 : 08		" "		inx
+FCC7 : 20 F4		"  "		bra	LFCBD
+				;
+FCC9				LFCC9:
+FCC9 : CC 00 1F		"   "		ldd	#$001F
+FCCC : BD F9 AD		"   "		jsr	_sub_ClearMemory(X=StartAddress_D=Length)
+FCCF : BD FE 48		"  H"		jsr	LFE48
+FCD2 : 20 28		" ("		bra	LFCFC
+				;
+FCD4				_jsrAdr(FAF8)_3_code:
+FCD4 : 96 D8		"  "		ldaa	X00D8
+FCD6 : 27 24		"'$"		beq	LFCFC
+FCD8 : 7D 00 F3		"}  "		tst	X00F3
+FCDB : 27 1F		"' "		beq	LFCFC
+FCDD : 81 03		"  "		cmpa	#$03
+FCDF : 27 1B		"' "		beq	LFCFC
+FCE1 : 24 30		"$0"		bcc	LFD13
+FCE3 : DE DE		"  "		ldx	X00DE
+FCE5 : 8C 80 13		"   "		cpx	#$8013
+FCE8 : 27 12		"' "		beq	LFCFC
+FCEA : 86 FF		"  "		ldaa	#$FF
+FCEC : 91 EF		"  "		cmpa	X00EF
+FCEE : 27 03		"' "		beq	LFCF3
+FCF0 : 7C 86 29		"| )"		inc	X8629
+FCF3				LFCF3:
+FCF3 : B7 80 05		"   "		staa	X8005
+FCF6 : BD FE 4B		"  K"		jsr	LFE4B
+FCF9 : BD FD A1		"   "		jsr	LFDA1
+FCFC				LFCFC:
+FCFC : BD FB 60		"  `"		jsr	_sub_Clear_00D8_00D9
+FCFF : 7E FF 3A		"~ :"		jmp	LFF3A
+				;
+FD02				_jsrAdr(FAF8)_2_code:
+FD02 : 7B 01 D9		"{  "		tim	#$01X00D9
+FD05 : 27 0C		"' "		beq	LFD13
+FD07 : 4F		"O"		clra
+FD08 : B6 85 15		"   "		ldaa	_EXT_RAM_CodeExecutionAddress(8515)
+FD0B : 97 D8		"  "		staa	X00D8
+FD0D : 27 04		"' "		beq	LFD13
+FD0F : 81 03		"  "		cmpa	#$03
+FD11 : 23 03		"# "		bls	LFD16
+FD13				LFD13:
+FD13 : 7E FF 65		"~ e"		jmp	LFF65
+				;
+FD16				LFD16:
+FD16 : 81 01		"  "		cmpa	#$01
+FD18 : 27 06		"' "		beq	LFD20
+FD1A : 81 03		"  "		cmpa	#$03
+FD1C : 23 25		"#%"		bls	LFD43
+FD1E : 20 F3		"  "		bra	LFD13
+				;
+FD20				LFD20:
+FD20 : 7B 02 D9		"{  "		tim	#$02X00D9
+FD23 : 26 EE		"& "		bne	LFD13
+FD25 : B6 84 CC		"   "		ldaa	X84CC
+FD28 : 27 03		"' "		beq	LFD2D
+FD2A : 7E FF 78		"~ x"		jmp	LFF78
+				;
+FD2D				LFD2D:
+FD2D : 8D 59		" Y"		bsr	LFD88
+FD2F : BD FD F2		"   "		jsr	LFDF2
+FD32 : 96 EE		"  "		ldaa	X00EE
+FD34 : 97 E0		"  "		staa	X00E0
+FD36 : 97 EF		"  "		staa	X00EF
+FD38 : CE 80 13		"   "		ldx	#$8013
+FD3B : DF DE		"  "		stx	X00DE
+FD3D : 4F		"O"		clra
+FD3E : 5F		"_"		clrb
+FD3F : DD E3		"  "		std	X00E3
+FD41 : 20 42		" B"		bra	LFD85
+				;
+FD43				LFD43:
+FD43 : 7B 02 D9		"{  "		tim	#$02X00D9
+FD46 : 27 CB		"' "		beq	LFD13
+FD48 : DE DA		"  "		ldx	X00DA
+FD4A : 3C		"<"		pshx
+FD4B : EC 19		"  "		ldd	$19,x
+FD4D : DD E3		"  "		std	X00E3
+FD4F : CE 80 13		"   "		ldx	#$8013
+FD52 : DF DE		"  "		stx	X00DE
+FD54 : 96 D8		"  "		ldaa	X00D8
+FD56 : 81 02		"  "		cmpa	#$02
+FD58 : 26 25		"&%"		bne	LFD7F
+FD5A : 8D 2C		" ,"		bsr	LFD88
+FD5C : 86 FF		"  "		ldaa	#$FF
+FD5E : 97 EF		"  "		staa	X00EF
+FD60 : 38		"8"		pulx
+FD61 : A6 1E		"  "		ldaa	$1E,x
+FD63 : BD FE 30		"  0"		jsr	LFE30
+FD66 : DC E3		"  "		ldd	X00E3
+FD68				LFD68:
+FD68 : 83 05 00		"   "		subd	#$0500
+FD6B : 27 0B		"' "		beq	LFD78
+FD6D : 24 F9		"$ "		bcc	LFD68
+FD6F : C3 05 00		"   "		addd	#$0500
+FD72 : D3 DE		"  "		addd	X00DE
+FD74 : DD DE		"  "		std	X00DE
+FD76 : 20 0D		"  "		bra	LFD85
+				;
+FD78				LFD78:
+FD78 : CE 85 13		"   "		ldx	#$8513
+FD7B : DF DE		"  "		stx	X00DE
+FD7D : 20 06		"  "		bra	LFD85
+				;
+FD7F				LFD7F:
+FD7F : 38		"8"		pulx
+FD80 : A6 1D		"  "		ldaa	$1D,x
+FD82 : BD FE 30		"  0"		jsr	LFE30
+FD85				LFD85:
+FD85 : 7E FF 3A		"~ :"		jmp	LFF3A
+				;
+FD88				LFD88:
+FD88 : C6 16		"  "		ldab	#$16
+FD8A : CE 86 15		"   "		ldx	#$8615
+FD8D : DF E8		"  "		stx	X00E8
+FD8F : CE 84 EB		"   "		ldx	#$84EB
+FD92				LFD92:
+FD92 : 7E FF 53		"~ S"		jmp	LFF53
+				;
+FD95				LFD95:
+FD95 : C6 16		"  "		ldab	#$16
+FD97 : CE 84 EB		"   "		ldx	#$84EB
+FD9A : DF E8		"  "		stx	X00E8
+FD9C : CE 86 15		"   "		ldx	#$8615
+FD9F : 20 F1		"  "		bra	LFD92
+				;
+FDA1				LFDA1:
+FDA1 : 96 E0		"  "		ldaa	X00E0
+FDA3 : 97 F4		"  "		staa	X00F4
+FDA5 : BD FE 2F		"  /"		jsr	LFE2F
+FDA8 : 8D EB		"  "		bsr	LFD95
+FDAA : 96 D8		"  "		ldaa	X00D8
+FDAC : 81 01		"  "		cmpa	#$01
+FDAE : 26 20		"& "		bne	LFDD0
+FDB0 : CE 84 CB		"   "		ldx	#$84CB
+FDB3				LFDB3:
+FDB3 : A6 00		"  "		ldaa	$00,x
+FDB5 : A7 1F		"  "		staa	$1F,x
+FDB7 : 9C DA		"  "		cpx	X00DA
+FDB9 : 23 03		"# "		bls	LFDBE
+FDBB : 09		" "		dex
+FDBC : 20 F5		"  "		bra	LFDB3
+				;
+FDBE				LFDBE:
+FDBE : C6 1A		"  "		ldab	#$1A
+FDC0 : DE DA		"  "		ldx	X00DA
+FDC2 : DF E8		"  "		stx	X00E8
+FDC4 : CE 86 2A		"  *"		ldx	#$862A
+FDC7 : BD FF 53		"  S"		jsr	LFF53
+FDCA : 96 EF		"  "		ldaa	X00EF
+FDCC : DE DA		"  "		ldx	X00DA
+FDCE : A7 1D		"  "		staa	$1D,x
+FDD0				LFDD0:
+FDD0 : DE DA		"  "		ldx	X00DA
+FDD2 : DC E3		"  "		ldd	X00E3
+FDD4 : ED 19		"  "		std	$19,x
+FDD6 : 96 F4		"  "		ldaa	X00F4
+FDD8 : E6 1E		"  "		ldab	$1E,x
+FDDA : D7 F4		"  "		stab	X00F4
+FDDC : A7 1E		"  "		staa	$1E,x
+FDDE : 8D 68		" h"		bsr	LFE48
+FDE0 : 96 D8		"  "		ldaa	X00D8
+FDE2 : 81 02		"  "		cmpa	#$02
+FDE4 : 26 0B		"& "		bne	LFDF1
+FDE6 : 96 F4		"  "		ldaa	X00F4
+FDE8 : 8D 46		" F"		bsr	LFE30
+FDEA : 96 EF		"  "		ldaa	X00EF
+FDEC : B7 80 05		"   "		staa	X8005
+FDEF : 8D 5A		" Z"		bsr	LFE4B
+FDF1				LFDF1:
+FDF1 : 39		"9"		rts
+				;
+FDF2				LFDF2:
+FDF2 : CE 86 15		"   "		ldx	#$8615
+FDF5 : DF F0		"  "		stx	X00F0
+FDF7 : 7F 00 F2		"   "		clr	X00F2
+FDFA				LFDFA:
+FDFA : 5F		"_"		clrb
+FDFB : 86 80		"  "		ldaa	#$80
+FDFD : 97 ED		"  "		staa	X00ED
+FDFF : A6 00		"  "		ldaa	$00,x
+FE01				LFE01:
+FE01 : 95 ED		"  "		bita	X00ED
+FE03 : 27 1C		"' "		beq	LFE21
+FE05 : 5C		"\"		incb
+FE06 : 74 00 ED		"t  "		lsr	X00ED
+FE09 : 74 00 ED		"t  "		lsr	X00ED
+FE0C : 26 F3		"& "		bne	LFE01
+FE0E : 96 F2		"  "		ldaa	X00F2
+FE10 : 81 13		"  "		cmpa	#$13
+FE12 : 25 03		"% "		bcs	LFE17
+FE14 : 7E FF 78		"~ x"		jmp	LFF78
+				;
+FE17				LFE17:
+FE17 : 7C 00 F2		"|  "		inc	X00F2
+FE1A : DE F0		"  "		ldx	X00F0
+FE1C : 08		" "		inx
+FE1D : DF F0		"  "		stx	X00F0
+FE1F : 20 D9		"  "		bra	LFDFA
+				;
+FE21				LFE21:
+FE21 : 96 F2		"  "		ldaa	X00F2
+FE23 : 48		"H"		asla
+FE24 : 48		"H"		asla
+FE25 : 1B		" "		aba
+FE26 : 97 EE		"  "		staa	X00EE
+FE28 : 96 ED		"  "		ldaa	X00ED
+FE2A : AA 00		"  "		oraa	$00,x
+FE2C : A7 00		"  "		staa	$00,x
+FE2E				LFE2E:
+FE2E : 39		"9"		rts
+				;
+FE2F				LFE2F:
+FE2F : 4F		"O"		clra
+FE30				LFE30:
+FE30 : 97 E0		"  "		staa	X00E0
+FE32				LFE32:
+FE32 : 72 FF 86		"r  "		oim	#$FFX0086
+FE35 : 96 E0		"  "		ldaa	X00E0
+FE37 : 81 50		" P"		cmpa	#$50
+FE39 : 25 03		"% "		bcs	LFE3E
+FE3B : 7E FF 69		"~ i"		jmp	LFF69
+				;
+FE3E				LFE3E:
+FE3E : 97 AD		"  "		staa	X00AD
+FE40 : BD F6 5A		"  Z"		jsr	LF65A
+FE43 : 27 E9		"' "		beq	LFE2E
+FE45				LFE45:
+FE45 : 7E FF 7C		"~ |"		jmp	LFF7C
+				;
+FE48				LFE48:
+FE48 : 4F		"O"		clra
+FE49 : 97 E0		"  "		staa	X00E0
+FE4B				LFE4B:
+FE4B : 96 E0		"  "		ldaa	X00E0
+FE4D : 81 50		" P"		cmpa	#$50
+FE4F : 25 02		"% "		bcs	LFE53
+FE51 : 20 F2		"  "		bra	LFE45
+				;
+FE53				LFE53:
+FE53 : 97 AD		"  "		staa	X00AD
+FE55 : BD F9 18		"   "		jsr	LF918
+FE58 : CE 05 13		"   "		ldx	#$0513
+FE5B : FF 80 00		"   "		stx	X8000
+FE5E : 5F		"_"		clrb
+FE5F : 96 E0		"  "		ldaa	X00E0
+FE61 : FD 80 02		"   "		std	X8002
+FE64 : 7F 80 04		"   "		clr	X8004
+FE67 : BD F7 7A		"  z"		jsr	LF77A
+FE6A : 96 8D		"  "		ldaa	X008D
+FE6C : 27 C4		"' "		beq	LFE32
+FE6E : 20 D5		"  "		bra	LFE45
+				;
+FE70				_jsrAdr(FAF8)_4_code:
+FE70 : 7F 00 D9		"   "		clr	X00D9
+FE73 : 96 D8		"  "		ldaa	X00D8
+FE75 : 81 03		"  "		cmpa	#$03
+FE77 : 27 03		"' "		beq	LFE7C
+FE79				LFE79:
+FE79 : 7E FF 65		"~ e"		jmp	LFF65
+				;
+FE7C				LFE7C:
+FE7C : DE E3		"  "		ldx	X00E3
+FE7E : 27 F9		"' "		beq	LFE79
+FE80 : 8C 00 80		"   "		cpx	#$0080
+FE83 : 23 04		"# "		bls	LFE89
+FE85 : 86 80		"  "		ldaa	#$80
+FE87 : 20 02		"  "		bra	LFE8B
+				;
+FE89				LFE89:
+FE89 : 18		" "		xgdx
+FE8A : 17		" "		tba
+FE8B				LFE8B:
+FE8B : 97 E7		"  "		staa	X00E7
+FE8D : DE DE		"  "		ldx	X00DE
+FE8F : 8C 85 13		"   "		cpx	#$8513
+FE92 : 25 0E		"% "		bcs	LFEA2
+FE94 : 96 E0		"  "		ldaa	X00E0
+FE96 : 97 F4		"  "		staa	X00F4
+FE98 : B6 80 05		"   "		ldaa	X8005
+FE9B : 8D 93		"  "		bsr	LFE30
+FE9D : CE 80 13		"   "		ldx	#$8013
+FEA0 : DF DE		"  "		stx	X00DE
+FEA2				LFEA2:
+FEA2 : 96 E7		"  "		ldaa	X00E7
+FEA4 : C6 10		"  "		ldab	#$10
+FEA6 : BD FF 1A		"   "		jsr	LFF1A
+FEA9				LFEA9:
+FEA9 : E6 00		"  "		ldab	$00,x
+FEAB : BD FF 46		"  F"		jsr	LFF46
+FEAE : DE E3		"  "		ldx	X00E3
+FEB0 : 09		" "		dex
+FEB1 : DF E3		"  "		stx	X00E3
+FEB3 : DE DE		"  "		ldx	X00DE
+FEB5 : 08		" "		inx
+FEB6 : DF DE		"  "		stx	X00DE
+FEB8 : 7A 00 E7		"z  "		dec	X00E7
+FEBB : 26 EC		"& "		bne	LFEA9
+FEBD : 7E FF 43		"~ C"		jmp	LFF43
+				;
+FEC0				_jsrAdr(FAF8)_5_code:
+FEC0 : 7F 00 D9		"   "		clr	X00D9
+FEC3 : 96 D8		"  "		ldaa	X00D8
+FEC5 : 27 B2		"' "		beq	LFE79
+FEC7 : 81 03		"  "		cmpa	#$03
+FEC9 : 24 AE		"$ "		bcc	LFE79
+FECB : CE 85 15		"   "		ldx	#$8515
+FECE : DF DC		"  "		stx	X00DC
+FED0				LFED0:
+FED0 : DE DE		"  "		ldx	X00DE
+FED2 : 8C 85 13		"   "		cpx	#$8513
+FED5 : 25 21		"%!"		bcs	LFEF8
+FED7 : BD FD F2		"   "		jsr	LFDF2
+FEDA : 96 EE		"  "		ldaa	X00EE
+FEDC : D6 EF		"  "		ldab	X00EF
+FEDE : C1 FF		"  "		cmpb	#$FF
+FEE0 : 26 04		"& "		bne	LFEE6
+FEE2 : 97 EF		"  "		staa	X00EF
+FEE4 : 20 06		"  "		bra	LFEEC
+				;
+FEE6				LFEE6:
+FEE6 : 7C 86 29		"| )"		inc	X8629
+FEE9 : B7 80 05		"   "		staa	X8005
+FEEC				LFEEC:
+FEEC : BD FE 4B		"  K"		jsr	LFE4B
+FEEF : 96 EE		"  "		ldaa	X00EE
+FEF1 : 97 E0		"  "		staa	X00E0
+FEF3 : CE 80 13		"   "		ldx	#$8013
+FEF6 : DF DE		"  "		stx	X00DE
+FEF8				LFEF8:
+FEF8 : 72 01 F3		"r  "		oim	#$01X00F3
+FEFB : DE DC		"  "		ldx	X00DC
+FEFD : A6 00		"  "		ldaa	$00,x
+FEFF : 08		" "		inx
+FF00 : DF DC		"  "		stx	X00DC
+FF02 : DE DE		"  "		ldx	X00DE
+FF04 : A7 00		"  "		staa	$00,x
+FF06 : 08		" "		inx
+FF07 : DF DE		"  "		stx	X00DE
+FF09 : DE E3		"  "		ldx	X00E3
+FF0B : 08		" "		inx
+FF0C : 8C FF FF		"   "		cpx	#$FFFF
+FF0F : 27 67		"'g"		beq	LFF78
+FF11 : DF E3		"  "		stx	X00E3
+FF13 : 7A 00 E2		"z  "		dec	X00E2
+FF16 : 26 B8		"& "		bne	LFED0
+FF18 : 20 20		"  "		bra	LFF3A
+				;
+FF1A				LFF1A:
+FF1A : 7F 00 D7		"   "		clr	X00D7
+FF1D : 8D 27		" '"		bsr	LFF46
+FF1F : 16		" "		tab
+FF20 : 20 24		" $"		bra	LFF46
+				;
+FF22				LFF22:
+FF22 : 36		"6"		psha
+FF23 : 96 9E		"  "		ldaa	X009E
+FF25				LFF25:
+FF25 : 36		"6"		psha
+FF26 : BD F1 45		"  E"		jsr	LF145
+FF29 : 32		"2"		pula
+FF2A : 27 07		"' "		beq	LFF33
+FF2C : 4D		"M"		tsta
+FF2D : 26 3A		"&:"		bne	LFF69
+FF2F : 97 8D		"  "		staa	X008D
+FF31 : 20 F2		"  "		bra	LFF25
+				;
+FF33				LFF33:
+FF33 : 96 D7		"  "		ldaa	X00D7
+FF35 : 1B		" "		aba
+FF36 : 97 D7		"  "		staa	X00D7
+FF38 : 32		"2"		pula
+FF39 : 39		"9"		rts
+				;
+FF3A				LFF3A:
+FF3A : CC 01 12		"   "		ldd	#$0112
+FF3D : 8D DB		"  "		bsr	LFF1A
+FF3F : D6 D6		"  "		ldab	X00D6
+FF41 : 8D 03		"  "		bsr	LFF46
+FF43				LFF43:
+FF43 : D6 D7		"  "		ldab	X00D7
+FF45 : 53		"S"		comb
+FF46				LFF46:
+FF46 : 36		"6"		psha
+FF47 : 96 D7		"  "		ldaa	X00D7
+FF49 : 1B		" "		aba
+FF4A : 97 D7		"  "		staa	X00D7
+FF4C : BD F1 7F		"   "		jsr	LF17F
+FF4F : 26 18		"& "		bne	LFF69
+FF51 : 32		"2"		pula
+FF52				LFF52:
+FF52 : 39		"9"		rts
+				;
+FF53				LFF53:
+FF53 : 3C		"<"		pshx
+FF54				LFF54:
+FF54 : 38		"8"		pulx
+FF55 : 5A		"Z"		decb
+FF56 : 27 FA		"' "		beq	LFF52
+FF58 : A6 00		"  "		ldaa	$00,x
+FF5A : 08		" "		inx
+FF5B : 3C		"<"		pshx
+FF5C : DE E8		"  "		ldx	X00E8
+FF5E : A7 00		"  "		staa	$00,x
+FF60 : 08		" "		inx
+FF61 : DF E8		"  "		stx	X00E8
+FF63 : 20 EF		"  "		bra	LFF54
+				;
+FF65				LFF65:
+FF65 : 86 30		" 0"		ldaa	#$30
+FF67 : 20 3C		" <"		bra	LFFA5
+				;
+FF69				LFF69:
+FF69 : 72 08 02		"r  "		oim	#$08_register_PORT1Data
+FF6C : BD F9 B6		"   "		jsr	_sub_Delay_Units=14
+FF6F : 71 F7 02		"q  "		aim	#$F7_register_PORT1Data
+FF72 : 20 36		" 6"		bra	LFFAA
+				;
+FF74 : 86 10		"  "		ldaa	#$10
+FF76 : 20 2D		" -"		bra	LFFA5
+				;
+FF78				LFF78:
+FF78 : 86 60		" `"		ldaa	#$60
+FF7A : 20 29		" )"		bra	LFFA5
+				;
+FF7C				LFF7C:
+FF7C : 96 8D		"  "		ldaa	X008D
+FF7E : 84 F0		"  "		anda	#$F0
+FF80 : 81 A0		"  "		cmpa	#$A0
+FF82 : 26 04		"& "		bne	LFF88
+FF84 : C6 40		" @"		ldab	#$40
+FF86 : 20 18		"  "		bra	LFFA0
+				;
+FF88				LFF88:
+FF88 : 81 B0		"  "		cmpa	#$B0
+FF8A : 26 04		"& "		bne	LFF90
+FF8C : C6 50		" P"		ldab	#$50
+FF8E : 20 10		"  "		bra	LFFA0
+				;
+FF90				LFF90:
+FF90 : 81 D0		"  "		cmpa	#$D0
+FF92 : 26 04		"& "		bne	LFF98
+FF94 : C6 70		" p"		ldab	#$70
+FF96 : 20 08		"  "		bra	LFFA0
+				;
+FF98				LFF98:
+FF98 : 81 E0		"  "		cmpa	#$E0
+FF9A : 27 CD		"' "		beq	LFF69
+FF9C : C6 80		"  "		ldab	#$80
+FF9E : 20 00		"  "		bra	LFFA0
+				;
+FFA0				LFFA0:
+FFA0 : 96 8D		"  "		ldaa	X008D
+FFA2 : 84 0F		"  "		anda	#$0F
+FFA4 : 1B		" "		aba
+FFA5				LFFA5:
+FFA5 : 97 D6		"  "		staa	X00D6
+FFA7 : BD FF 3A		"  :"		jsr	LFF3A
+FFAA				LFFAA:
+FFAA : 4F		"O"		clra
+FFAB : 97 8D		"  "		staa	X008D
+FFAD : 97 D8		"  "		staa	X00D8
+FFAF : BD F9 BA		"   "		jsr	_sub_Delay_Units=1
+FFB2 : 9E E5		"  "		lds	_INT_RAM_StackPointerStorage
+FFB4 : 7E FB 03		"~  "		jmp	LFB03
+				;
+FFB7				_lookupTable_For_0xF021:
+FFB7 : C0		" "		db	$C0
+FFB8 : 40		"@"		db	$40
+FFB9 : 40		"@"		db	$40
+FFBA : D0		" "		db	$D0
+FFBB : 70		"p"		db	$70
+FFBC : F0		" "		db	$F0
+FFBD : 30		"0"		db	$30
+FFBE : B0		" "		db	$B0
+FFBF : 20		" "		db	$20
+FFC0 : C0		" "		db	$C0
+FFC1 : 40		"@"		db	$40
+FFC2 : 80		" "		db	$80
+FFC3 : 00		" "		db	$00
+FFC4 : 20		" "		db	$20
+FFC5 : C0		" "		db	$C0
+FFC6 : 40		"@"		db	$40
+FFC7				_jsrAdr(F0F0)_1_cmp(46='F'):
+FFC7 : 46		"F"		db	$46
+FFC8				_jsrAdr(F0F0)_1:
+FFC8 : F2 AD		"  "		dw	_jsrAdr(F0F0)_1_code
+FFCA				_jsrAdr(F0F0)_2_cmp(47='G'):
+FFCA : 47		"G"		db	$47
+FFCB				_jsrAdr(F0F0)_2:
+FFCB : F2 AA		"  "		dw	_jsrAdr(F0F0)_2_code
+FFCD				_jsrAdr(F0F0)_3_cmp(52='R'):
+FFCD : 52		"R"		db	$52
+FFCE				_jsrAdr(F0F0)_3:
+FFCE : F1 FD		"  "		dw	_jsrAdr(F0F0)_3_code
+FFD0				_jsrAdr(F0F0)_4_cmp(57='W'):
+FFD0 : 57		"W"		db	$57
+FFD1				_jsrAdr(F0F0)_4:
+FFD1 : F2 14		"  "		dw	_jsrAdr(F0F0)_4_code
+FFD3				_jsrAdr(F0F0)_5_cmp(58='X'):
+FFD3 : 58		"X"		db	$58
+FFD4				_jsrAdr(F0F0)_5:
+FFD4 : F2 11		"  "		dw	_jsrAdr(F0F0)_5_code
+FFD6				_jsrAdr(F0F0)_6_cmp(41='A'):
+FFD6 : 41		"A"		db	$41
+FFD7				_jsrAdr(F0F0)_6:
+FFD7 : F2 51		" Q"		dw	_jsrAdr(F0F0)_6_code
+FFD9				_jsrAdr(F0F0)_7_cmp(42='B'):
+FFD9 : 42		"B"		db	$42
+FFDA				_jsrAdr(F0F0)_7:
+FFDA : F2 6B		" k"		dw	_jsrAdr(F0F0)_7_code
+FFDC				_jsrAdr(F0F0)_8_cmp(43='C'):
+FFDC : 43		"C"		db	$43
+FFDD				_jsrAdr(F0F0)_8:
+FFDD : F2 68		" h"		dw	_jsrAdr(F0F0)_8_code
+FFDF				_jsrAdr(F0F0)_9_cmp(53='S'):
+FFDF : 53		"S"		db	$53
+FFE0				_jsrAdr(F0F0)_9:
+FFE0 : F3 5B		" ["		dw	_jsrAdr(F0F0)_9_code
+FFE2				_jsrAdr(F0F0)_A_cmp(44='D'):
+FFE2 : 44		"D"		db	$44
+FFE3				_jsrAdr(F0F0)_A:
+FFE3 : F3 C8		"  "		dw	_jsrAdr(F0F0)_A_code
+FFE5				_jsrAdr(F0F0)_B_cmp(4D='M'):
+FFE5 : 4D		"M"		db	$4D
+FFE6				_jsrAdr(F0F0)_B:
+FFE6 : F4 00		"  "		dw	_jsrAdr(F0F0)_B_code
+FFE8				dummyData:
+FFE8 : 00		" "		db	$00
+FFE9 : FF		" "		db	$FF
+FFEA : 00		" "		db	$00
+FFEB : FF		" "		db	$FF
+FFEC : 00		" "		db	$00
+FFED : FF		" "		db	$FF
+FFEE				_Vector_TRAP:
+FFEE : F0 00		"  "		dw	ProgramStart
+FFF0				_Vector_IRQ2SIO:
+FFF0 : F0 00		"  "		dw	ProgramStart
+FFF2				_Vector_IRQ2TOI:
+FFF2 : F0 00		"  "		dw	ProgramStart
+FFF4				_Vector_IRQ2OCI:
+FFF4 : F0 00		"  "		dw	ProgramStart
+FFF6				_Vector_IRQ2ICI:
+FFF6 : F0 00		"  "		dw	ProgramStart
+FFF8				_Vector_IRQ1:
+FFF8 : F0 00		"  "		dw	ProgramStart
+FFFA				_Vector_SWI:
+FFFA : F0 00		"  "		dw	ProgramStart
+FFFC				_Vector_NMI:
+FFFC : F0 00		"  "		dw	ProgramStart
+FFFE				_Vector_RESET:
+FFFE : F0 00		"  "		dw	ProgramStart
+
+;--------------------------------------------------------------
+Symbol table
+============
+
+Value		Type	Name
+-----		----	----
+0000		Data	_register_PORT1Direction
+0001		Data	_register_PORT2Direction
+0002		Data	_register_PORT1Data
+0003		Data	_register_PORT2Data
+0004		Data	_register_PORT3Direction
+0005		Data	_register_PORT4Direction
+0006		Data	_register_PORT3Data
+0007		Data	_register_PORT4Data
+0008		Data	_register_TimerControlAndStatus
+0009		Data	_register_TimerCounterHi
+000A		Data	_register_TimerCounterLow
+000B		Data	_register_TimerOutputCompareHi
+000C		Data	_register_TimerOutputCompareLow
+000D		Data	_register_TimerInputCaptureHi
+000E		Data	_register_TimerInputCaptureLow
+000F		Data	_register_Port3ControlAndStatus
+0010		Data	_register_SCI_RateAndModeControl
+0011		Data	_register_SCI_TxRxControlAndStatus
+0012		Data	_register_SCI_RxData
+0013		Data	_register_SCI_TxData
+0014		Data	_register_RAMControl
+0015		Data	_register_Reserved(15)
+0016		Data	_register_Reserved(16)
+0017		Data	_register_Reserved(17)
+0018		Data	_register_Reserved(18)
+0019		Data	_register_Reserved(19)
+001A		Data	_register_Reserved(1A)
+001B		Data	_register_Reserved(1B)
+001C		Data	_register_Reserved(1C)
+001D		Data	_register_Reserved(1D)
+001E		Data	_register_Reserved(1E)
+001F		Data	_register_Reserved(1F)
+0080		Data	X0080
+0081		Data	X0081
+0082		Data	X0082
+0083		Data	X0083
+0084		Data	X0084
+0085		Data	X0085
+0086		Data	X0086
+0087		Data	X0087
+008A		Data	X008A
+008B		Data	X008B
+008C		Data	X008C
+008D		Data	X008D
+008E		Data	X008E
+008F		Data	X008F
+0090		Data	X0090
+009C		Data	X009C
+009E		Data	X009E
+009F		Data	X009F
+00A0		Data	X00A0
+00A1		Data	X00A1
+00A2		Data	X00A2
+00A3		Data	X00A3
+00A4		Data	X00A4
+00A5		Data	X00A5
+00A7		Data	X00A7
+00A9		Data	X00A9
+00AA		Data	X00AA
+00AB		Data	X00AB
+00AC		Data	X00AC
+00AD		Data	X00AD
+00AE		Data	X00AE
+00AF		Data	X00AF
+00B0		Data	X00B0
+00B1		Data	X00B1
+00B4		Data	X00B4
+00B7		Data	X00B7
+00B8		Data	X00B8
+00B9		Data	X00B9
+00BA		Data	X00BA
+00BB		Data	X00BB
+00BC		Data	X00BC
+00BD		Data	X00BD
+00BE		Data	X00BE
+00C0		Data	X00C0
+00C2		Data	X00C2
+00C7		Data	X00C7
+00C8		Data	X00C8
+00C9		Data	X00C9
+00CA		Data	X00CA
+00CB		Data	X00CB
+00CC		Data	X00CC
+00CE		Data	X00CE
+00CF		Data	X00CF
+00D6		Data	X00D6
+00D7		Data	X00D7
+00D8		Data	X00D8
+00D9		Data	X00D9
+00DA		Data	X00DA
+00DC		Data	X00DC
+00DE		Data	X00DE
+00E0		Data	X00E0
+00E1		Data	X00E1
+00E2		Data	X00E2
+00E3		Data	X00E3
+00E5		Data	_INT_RAM_StackPointerStorage
+00E7		Data	X00E7
+00E8		Data	X00E8
+00EA		Data	X00EA
+00EB		Data	X00EB
+00ED		Data	X00ED
+00EE		Data	X00EE
+00EF		Data	X00EF
+00F0		Data	X00F0
+00F2		Data	X00F2
+00F3		Data	X00F3
+00F4		Data	X00F4
+4000		Data	_CPLD_4000
+4001		Data	_CPLD_4001
+4002		Data	_CPLD_4002
+4003		Data	_CPLD_4003
+8000		Data	X8000
+8002		Data	X8002
+8004		Data	X8004
+8005		Data	X8005
+8011		Data	X8011
+842B		Data	_EXT_RAM_ArrayStorage1??
+84CC		Data	X84CC
+84EB		Data	X84EB
+84FF		Data	X84FF
+8515		Code	_EntryPoint_CodeExecutionAddress(8515)
+8615		Data	_EXT_RAM_ArrayStorage2??
+8629		Data	X8629
+862A		Data	_EXT_RAM_ArrayStorage3??
+8642		Data	X8642
+8643		Data	X8643
+F000		Code	ProgramStart
+F055		Code	LF055
+F05B		Code	LF05B
+F070		Code	LF070
+F081		Code	LF081
+F084		Code	LF084
+F08B		Code	_EntryPoint_SpecialRomJumpBootLoader
+F098		Code	LF098
+F0AC		Code	LF0AC
+F0AF		Code	LF0AF
+F0BB		Code	LF0BB
+F0C0		Code	LF0C0
+F0CF		Code	LF0CF
+F0D3		Code	LF0D3
+F0D7		Code	LF0D7
+F0DB		Code	LF0DB
+F0E2		Code	LF0E2
+F0E8		Code	LF0E8
+F0F3		Code	LF0F3
+F105		Code	LF105
+F10A		Code	LF10A
+F10C		Code	LF10C
+F118		Code	LF118
+F123		Code	LF123
+F126		Code	LF126
+F130		Code	LF130
+F142		Code	LF142
+F145		Code	LF145
+F14E		Code	LF14E
+F154		Code	LF154
+F157		Code	LF157
+F163		Code	LF163
+F178		Code	LF178
+F17F		Code	LF17F
+F181		Code	LF181
+F18E		Code	LF18E
+F192		Code	LF192
+F199		Code	LF199
+F19E		Code	LF19E
+F1A2		Code	LF1A2
+F1AC		Code	LF1AC
+F1BD		Code	LF1BD
+F1C7		Code	LF1C7
+F1C9		Code	LF1C9
+F1D1		Code	LF1D1
+F1D4		Code	LF1D4
+F1E4		Code	LF1E4
+F1E8		Code	_jsrAdr(F0F0)_Default_code
+F1F8		Code	_jsrAdr(F0F0)_Default_code(onlyLocal_1)
+F1FA		Code	_jsrAdr(F0F0)_Default_code(onlyLocal_2)
+F1FD		Code	_jsrAdr(F0F0)_3_code
+F211		Code	_jsrAdr(F0F0)_5_code
+F214		Code	_jsrAdr(F0F0)_4_code
+F217		Code	LF217
+F233		Code	LF233
+F237		Code	LF237
+F24F		Code	LF24F
+F251		Code	_jsrAdr(F0F0)_6_code
+F265		Code	LF265
+F268		Code	_jsrAdr(F0F0)_8_code
+F26B		Code	_jsrAdr(F0F0)_7_code
+F282		Code	LF282
+F285		Code	LF285
+F29A		Code	LF29A
+F2A8		Code	LF2A8
+F2AA		Code	_jsrAdr(F0F0)_2_code
+F2AD		Code	_jsrAdr(F0F0)_1_code
+F2C8		Code	LF2C8
+F2DC		Code	LF2DC
+F2DF		Code	LF2DF
+F2E9		Code	LF2E9
+F2F9		Code	LF2F9
+F316		Code	LF316
+F323		Code	LF323
+F326		Code	LF326
+F328		Code	LF328
+F32A		Code	LF32A
+F32C		Code	LF32C
+F335		Code	LF335
+F33E		Code	LF33E
+F351		Code	LF351
+F35B		Code	_jsrAdr(F0F0)_9_code
+F369		Code	LF369
+F36C		Code	LF36C
+F370		Code	LF370
+F372		Code	LF372
+F385		Code	LF385
+F389		Code	LF389
+F394		Code	LF394
+F397		Code	LF397
+F3A4		Code	LF3A4
+F3BB		Code	LF3BB
+F3C8		Code	_jsrAdr(F0F0)_A_code
+F3D2		Code	LF3D2
+F3D4		Code	LF3D4
+F3E2		Code	LF3E2
+F3F6		Code	LF3F6
+F3FC		Code	LF3FC
+F400		Code	_jsrAdr(F0F0)_B_code
+F413		Code	LF413
+F41B		Code	LF41B
+F41F		Code	LF41F
+F421		Code	LF421
+F425		Code	LF425
+F42C		Code	LF42C
+F42E		Code	LF42E
+F436		Code	LF436
+F440		Code	LF440
+F446		Code	LF446
+F449		Code	LF449
+F44C		Code	LF44C
+F451		Code	LF451
+F464		Code	LF464
+F47B		Code	LF47B
+F482		Code	LF482
+F495		Code	LF495
+F4A4		Code	LF4A4
+F4A8		Data	_lookupTable_For_0xF498
+F4AF		Code	LF4AF
+F4B3		Code	LF4B3
+F4B4		Code	LF4B4
+F4CA		Code	LF4CA
+F4CD		Code	LF4CD
+F4CF		Code	LF4CF
+F4E2		Code	LF4E2
+F4E4		Code	LF4E4
+F4E5		Code	LF4E5
+F4F1		Code	LF4F1
+F4F3		Code	LF4F3
+F4F5		Code	LF4F5
+F512		Code	LF512
+F514		Code	LF514
+F515		Code	LF515
+F51E		Code	LF51E
+F522		Code	LF522
+F52E		Code	LF52E
+F551		Code	LF551
+F552		Code	LF552
+F553		Code	LF553
+F556		Code	LF556
+F558		Code	LF558
+F55D		Code	LF55D
+F561		Code	LF561
+F592		Code	LF592
+F594		Code	LF594
+F597		Code	LF597
+F599		Code	LF599
+F59D		Code	LF59D
+F5A8		Code	LF5A8
+F5B9		Code	LF5B9
+F5C7		Code	LF5C7
+F5CB		Code	LF5CB
+F5D1		Code	LF5D1
+F5DA		Code	LF5DA
+F5EC		Code	LF5EC
+F5EE		Code	LF5EE
+F5F2		Code	LF5F2
+F602		Code	LF602
+F609		Code	LF609
+F60D		Code	LF60D
+F60E		Code	LF60E
+F613		Code	LF613
+F615		Code	LF615
+F61D		Code	LF61D
+F626		Code	LF626
+F63F		Code	LF63F
+F644		Code	LF644
+F655		Code	LF655
+F656		Code	LF656
+F65A		Code	LF65A
+F65D		Code	LF65D
+F664		Code	LF664
+F66B		Code	LF66B
+F686		Code	LF686
+F68C		Code	LF68C
+F69B		Code	LF69B
+F69C		Code	LF69C
+F6A2		Code	LF6A2
+F6A7		Code	LF6A7
+F6A8		Code	LF6A8
+F6AD		Code	LF6AD
+F6BC		Code	LF6BC
+F6BF		Code	LF6BF
+F6C4		Code	LF6C4
+F6C6		Code	LF6C6
+F6D1		Code	LF6D1
+F719		Code	LF719
+F723		Code	LF723
+F73B		Code	LF73B
+F73D		Code	LF73D
+F73F		Code	LF73F
+F741		Code	LF741
+F74A		Code	LF74A
+F74E		Code	LF74E
+F752		Code	LF752
+F75D		Code	LF75D
+F77A		Code	LF77A
+F787		Code	LF787
+F78D		Code	LF78D
+F7C6		Code	LF7C6
+F7D4		Code	LF7D4
+F7E2		Code	LF7E2
+F7EB		Code	LF7EB
+F7FB		Code	LF7FB
+F7FC		Code	LF7FC
+F806		Code	LF806
+F81B		Code	LF81B
+F820		Code	LF820
+F823		Code	LF823
+F828		Code	LF828
+F835		Code	LF835
+F83D		Code	LF83D
+F84A		Code	LF84A
+F853		Code	LF853
+F857		Code	LF857
+F85A		Code	LF85A
+F85E		Code	LF85E
+F863		Code	LF863
+F869		Code	LF869
+F874		Code	LF874
+F87B		Code	LF87B
+F87E		Code	LF87E
+F88F		Code	LF88F
+F896		Code	LF896
+F8A7		Code	LF8A7
+F8AC		Data	_lookupTable_For_0xF75D
+F8BA		Code	LF8BA
+F8C2		Code	LF8C2
+F8CF		Code	LF8CF
+F8F3		Code	LF8F3
+F905		Code	LF905
+F910		Code	LF910
+F918		Code	LF918
+F925		Code	LF925
+F929		Code	LF929
+F92F		Code	LF92F
+F933		Code	LF933
+F937		Code	LF937
+F939		Code	LF939
+F93D		Code	LF93D
+F93E		Code	LF93E
+F952		Code	LF952
+F955		Code	LF955
+F990		Code	LF990
+F995		Code	LF995
+F99C		Code	LF99C
+F9A5		Data	_lookupTable_For_0xF952
+F9A9		Data	_lookupTable_For_0xF990
+F9AD		Code	_sub_ClearMemory(X=StartAddress_D=Length)
+F9B6		Code	_sub_Delay_Units=14
+F9BA		Code	_sub_Delay_Units=1
+F9BC		Code	_sub_Delay_Units=ACCB
+F9BE		Code	_sub_Delay_Loop(onlyLocal)
+F9C6		Code	LF9C6
+F9D9		Code	LF9D9
+F9DD		Code	LF9DD
+F9E3		Code	LF9E3
+F9F1		Code	_sub_Clear_0083(onlyLocal)
+F9F5		Code	LF9F5
+F9FE		Code	LF9FE
+FA09		Code	LFA09
+FA0D		Code	LFA0D
+FA17		Code	LFA17
+FA45		Code	LFA45
+FA4E		Code	LFA4E
+FA5B		Code	LFA5B
+FA6B		Code	LFA6B
+FA71		Code	LFA71
+FA7B		Code	LFA7B
+FA80		Code	LFA80
+FAA0		Code	LFAA0
+FAA3		Code	LFAA3
+FAA4		Code	LFAA4
+FAC1		Code	LFAC1
+FAC2		Code	LFAC2
+FAC5		Code	LFAC5
+FACF		Code	LFACF
+FAD1		Code	LFAD1
+FADD		Code	LFADD
+FAE2		Code	LFAE2
+FAED		Code	LFAED
+FB03		Code	LFB03
+FB05		Code	LFB05
+FB0D		Code	LFB0D
+FB32		Code	LFB32
+FB35		Code	LFB35
+FB43		Code	LFB43
+FB4E		Data	_jsrAdr(FAF8)_1
+FB50		Data	_jsrAdr(FAF8)_2
+FB52		Data	_jsrAdr(FAF8)_3
+FB54		Data	_jsrAdr(FAF8)_4
+FB56		Data	_jsrAdr(FAF8)_5
+FB58		Data	_jsrAdr(FAF8)_6
+FB5A		Data	_jsrAdr(FAF8)_7
+FB5C		Data	_jsrAdr(FAF8)_8
+FB5E		Data	_jsrAdr(FAF8)_9
+FB60		Code	_sub_Clear_00D8_00D9
+FB66		Code	_jsrAdr(FAF8)_9_code
+FB6D		Code	LFB6D
+FB72		Code	_jsrAdr(FAF8)_8_code
+FB7A		Code	_jsrAdr(FAF8)_7_code
+FB82		Code	LFB82
+FB85		Code	LFB85
+FB93		Code	_jsrAdr(FAF8)_1_code
+FBAD		Code	LFBAD
+FBBA		Code	LFBBA
+FBC0		Code	LFBC0
+FBCA		Code	LFBCA
+FBD2		Code	LFBD2
+FBE4		Code	LFBE4
+FBF4		Code	LFBF4
+FBF9		Code	LFBF9
+FBFB		Code	LFBFB
+FC00		Code	LFC00
+FC02		Code	LFC02
+FC0B		Code	LFC0B
+FC1A		Code	LFC1A
+FC26		Code	LFC26
+FC2D		Code	LFC2D
+FC31		Code	LFC31
+FC34		Code	LFC34
+FC35		Code	LFC35
+FC3E		Code	LFC3E
+FC48		Code	LFC48
+FC5F		Code	LFC5F
+FC66		Code	LFC66
+FC73		Code	_jsrAdr(FAF8)_6_code
+FC78		Code	LFC78
+FC7B		Code	LFC7B
+FC84		Code	LFC84
+FC94		Code	LFC94
+FC9C		Code	LFC9C
+FCBD		Code	LFCBD
+FCC9		Code	LFCC9
+FCD4		Code	_jsrAdr(FAF8)_3_code
+FCF3		Code	LFCF3
+FCFC		Code	LFCFC
+FD02		Code	_jsrAdr(FAF8)_2_code
+FD13		Code	LFD13
+FD16		Code	LFD16
+FD20		Code	LFD20
+FD2D		Code	LFD2D
+FD43		Code	LFD43
+FD68		Code	LFD68
+FD78		Code	LFD78
+FD7F		Code	LFD7F
+FD85		Code	LFD85
+FD88		Code	LFD88
+FD92		Code	LFD92
+FD95		Code	LFD95
+FDA1		Code	LFDA1
+FDB3		Code	LFDB3
+FDBE		Code	LFDBE
+FDD0		Code	LFDD0
+FDF1		Code	LFDF1
+FDF2		Code	LFDF2
+FDFA		Code	LFDFA
+FE01		Code	LFE01
+FE17		Code	LFE17
+FE21		Code	LFE21
+FE2E		Code	LFE2E
+FE2F		Code	LFE2F
+FE30		Code	LFE30
+FE32		Code	LFE32
+FE3E		Code	LFE3E
+FE45		Code	LFE45
+FE48		Code	LFE48
+FE4B		Code	LFE4B
+FE53		Code	LFE53
+FE70		Code	_jsrAdr(FAF8)_4_code
+FE79		Code	LFE79
+FE7C		Code	LFE7C
+FE89		Code	LFE89
+FE8B		Code	LFE8B
+FEA2		Code	LFEA2
+FEA9		Code	LFEA9
+FEC0		Code	_jsrAdr(FAF8)_5_code
+FED0		Code	LFED0
+FEE6		Code	LFEE6
+FEEC		Code	LFEEC
+FEF8		Code	LFEF8
+FF1A		Code	LFF1A
+FF22		Code	LFF22
+FF25		Code	LFF25
+FF33		Code	LFF33
+FF3A		Code	LFF3A
+FF43		Code	LFF43
+FF46		Code	LFF46
+FF52		Code	LFF52
+FF53		Code	LFF53
+FF54		Code	LFF54
+FF65		Code	LFF65
+FF69		Code	LFF69
+FF78		Code	LFF78
+FF7C		Code	LFF7C
+FF88		Code	LFF88
+FF90		Code	LFF90
+FF98		Code	LFF98
+FFA0		Code	LFFA0
+FFA5		Code	LFFA5
+FFAA		Code	LFFAA
+FFB7		Data	_lookupTable_For_0xF021
+FFC7		Data	_jsrAdr(F0F0)_1_cmp(46='F')
+FFC8		Data	_jsrAdr(F0F0)_1
+FFCA		Data	_jsrAdr(F0F0)_2_cmp(47='G')
+FFCB		Data	_jsrAdr(F0F0)_2
+FFCD		Data	_jsrAdr(F0F0)_3_cmp(52='R')
+FFCE		Data	_jsrAdr(F0F0)_3
+FFD0		Data	_jsrAdr(F0F0)_4_cmp(57='W')
+FFD1		Data	_jsrAdr(F0F0)_4
+FFD3		Data	_jsrAdr(F0F0)_5_cmp(58='X')
+FFD4		Data	_jsrAdr(F0F0)_5
+FFD6		Data	_jsrAdr(F0F0)_6_cmp(41='A')
+FFD7		Data	_jsrAdr(F0F0)_6
+FFD9		Data	_jsrAdr(F0F0)_7_cmp(42='B')
+FFDA		Data	_jsrAdr(F0F0)_7
+FFDC		Data	_jsrAdr(F0F0)_8_cmp(43='C')
+FFDD		Data	_jsrAdr(F0F0)_8
+FFDF		Data	_jsrAdr(F0F0)_9_cmp(53='S')
+FFE0		Data	_jsrAdr(F0F0)_9
+FFE2		Data	_jsrAdr(F0F0)_A_cmp(44='D')
+FFE3		Data	_jsrAdr(F0F0)_A
+FFE5		Data	_jsrAdr(F0F0)_B_cmp(4D='M')
+FFE6		Data	_jsrAdr(F0F0)_B
+FFE8		Data	dummyData
+FFEE		Data	_Vector_TRAP
+FFF0		Data	_Vector_IRQ2SIO
+FFF2		Data	_Vector_IRQ2TOI
+FFF4		Data	_Vector_IRQ2OCI
+FFF6		Data	_Vector_IRQ2ICI
+FFF8		Data	_Vector_IRQ1
+FFFA		Data	_Vector_SWI
+FFFC		Data	_Vector_NMI
+FFFE		Data	_Vector_RESET
+
+Number of symbols:			562
+
+;--------------------------------------------------------------
