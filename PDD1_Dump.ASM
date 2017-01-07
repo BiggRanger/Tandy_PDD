@@ -1,3 +1,7 @@
+;This is the source code for the program that dumps the ROM contents to the SCI port
+;Written in Hitachi 6301 ASM.
+
+
 		.org $8515
 		LDX #$F000	;set start to copy at F000
 address	LDAB #$08	;address label counter "F000: "
