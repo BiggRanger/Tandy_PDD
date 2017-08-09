@@ -101,7 +101,9 @@ data	0x001F	byte	hex	_register_Reserved(1F)
 ;symbols for CPLD
 ;----------------------------------------------------------
 data	0x4000	byte	hex	_CPLD_4000
-data	0x4001	byte	hex	_CPLD_4001
+data	0x4001	byte	hex	_CPLD_4001	;get=switch positions set=BAUD clock
+;										;1111_0000 dip switches
+;										;1111_0000 BAUD clock
 data	0x4002	byte	hex	_CPLD_4002
 data	0x4003	byte	hex	_CPLD_4003
 ;----------------------------------------------------------
@@ -123,6 +125,7 @@ data	0xFFFE	word	hex	_Vector_RESET
 ;----------------------------------------------------------
 ;symbols for Internal RAM
 ;----------------------------------------------------------
+data	0x0080	byte	hex	_INT_RAM_BAUD_Rate				;BAUD Rate from switch positions
 data	0x00E5	word	hex	_INT_RAM_StackPointerStorage	;2 byte stack storage
 ;----------------------------------------------------------
 
@@ -144,19 +147,35 @@ comment	0xF001	;set stack to 87FF (top of EXT RAM)
 view	0xF004	bin	;port 1 settings
 view	0xF008	bin	;port 1 settings
 view	0xF00C	bin	;port 3+4 settings
-comment	0xF017	;get status from CPLD, put in ACCB
-view	0xF01A	bin	;Mask 1111_0000
+
+;----------------------------------------------------------
+box		0xF017	0xF036	;Read dip switches and setup BAUD Rate
+comment	0xF017	;get switch positions from CPLD, put in ACCB
+view	0xF01A	bin	;Mask 1111_0000, look at only dip switch
 comment	0xF01C	;push to stack
 comment	0xF01D	;bit shift down 4x
 comment	0xF021	;set X to address of lookup table FFB7
-comment	0xF024	;add ACCB to X
-comment	0xF025	;load into ACCA value from lookup table
-comment	0xF027	;store ACCA value into address 0080
-comment	0xF029	;sent this value to the CPLD
+comment	0xF024	;add ACCB to X (a + address of lookup table)
+comment	0xF025	;load into ACCA BAUD rate value from lookup table
+comment	0xF027	;store ACCA value (BAUD Rate) into address 0080
+comment	0xF029	;send this value to the CPLD, this is the clock divider for the SIO clock
 view	0xF02C	bin	;BIT 5 = SCI TX_DATA
 view	0xF030	bin	;Value -> SCI clock is from Port 2.2
-view	0xF034	bin
+view	0xF034	bin	;set TxRx control and status
+;----------------------------------------------------------
+
 comment	0xF038	;clear INT RAM 0081-00FF
+
+;----------------------------------------------------------
+box		0xF04C	0xF053	;Read dip switches and set operation mode
+comment	0xF04C	;get the masked dip switch values from the stack
+view	0xF04D	bin	;C is clear for 0xD0 and up
+view	0xF04F	hex	;Mode=operation jump to code
+view	0xF051	bin	;C is set for 0x30 and down
+view	0xF053	hex	;Mode=init jump to code - Fall over to FDC mode
+;----------------------------------------------------------
+
+code	0xF055	START_FDC_MODE
 
 
 comment	0xF05B	;clear INT RAM 008D -> 0x23 bytes
@@ -225,9 +244,9 @@ box		0xF9AD	0xF9B5	;SUB CLEAR MEMORY (X=addressStart D=Length)
 code	0xF9AD	_sub_ClearMemoryRange
 
 box		0xF9B6	0xF9C5	;DELAY LOOP
-code	0xF9B6	_sub_Delay_Units=14
-code	0xF9BA	_sub_Delay_Units=1
-code	0xF9BC	_sub_Delay_Units=ACCB
+code	0xF9B6	_sub_Delay_14_units
+code	0xF9BA	_sub_Delay_1_unit
+code	0xF9BC	_sub_Delay=ACCB
 code	0xF9BE	_sub_Delay_Private_Loop
 
 
@@ -242,20 +261,45 @@ code	0xF9BE	_sub_Delay_Private_Loop
 ;----------------------------------------------------------
 ;variable tables
 ;----------------------------------------------------------
-table	0xFFB7	0x10	byte	hex	_lookupTable_For_0xF021	;variable lookup table
 table	0xF4A8	0x07	byte	hex	_lookupTable_For_0xF498	;variable lookup table
 table	0xF8AC	0x0E	byte	hex	_lookupTable_For_0xF75D	;variable lookup table
 table	0xF9A5	0x04	byte	hex	_lookupTable_For_0xF952	;variable lookup table (stepper motor stuff?)
 table	0xF9A9	0x04	byte	hex	_lookupTable_For_0xF990	;variable lookup table (stepper motor stuff?)
-table	0xFFE8	0x06	byte	hex	_dummyData
+table	0xFFE8	0x06	byte	hex	_dummyData	;blank space
+;----------------------------------------------------------
+
+
+
+;----------------------------------------------------------
+;Table BAUD Rate
+;----------------------------------------------------------
+box		0xFFB7	0xFFC6	;BAUD Rate lookup table (for switch settings)
+table	0xFFB7	0x10	byte	bin	_table_BAUD_Rates
+comment	0xFFB7	;BAUD 9600
+comment	0xFFB8	;BAUD 19200
+comment	0xFFB9	;BAUD 19200
+comment	0xFFBA	;BAUD 150
+comment	0xFFBB	;BAUD 300
+comment	0xFFBC	;BAUD 600
+comment	0xFFBD	;BAUD 1200
+comment	0xFFBE	;BAUD 2400
+comment	0xFFBF	;BAUD 4800
+comment	0xFFC0	;BAUD 9600
+comment	0xFFC1	;BAUD 19200
+comment	0xFFC2	;BAUD 38400
+comment	0xFFC3	;BAUD 76800
+comment	0xFFC4	;BAUD 4800
+comment	0xFFC5	;BAUD 9600
+comment	0xFFC6	;BAUD 19200
 ;----------------------------------------------------------
 
 
 ;----------------------------------------------------------
-;switch table for 0xF0F0 - FDC Emulation Mode Commands - byte/address combo
+;switch table for 0xF0F0 - FDC Emulation Mode Commands - (Symbol/address)
 ;----------------------------------------------------------
-box		0xFFC7	0xFFE7	;FDC EMULATION MODE SWITCH TABLE FOR 0xF0F0
-data	0xFFC7	byte	asc
+box		0xFFC7	0xFFE7	;FDC Emulation mode - Switch Table For 0xF0F0 (Symbol/address)
+;table	0xFFC7	//will not work for this because of mixed types.
+data	0xFFC7	byte	asc	_table_FDC_Commands
 data	0xFFC8	word	hex
 data	0xFFCA	byte	asc
 data	0xFFCB	word	hex
@@ -278,68 +322,57 @@ data	0xFFE3	word	hex
 data	0xFFE5	byte	asc
 data	0xFFE6	word	hex
 
-view	0xFFC7	asc	;F = Format with verify
-view	0xFFC8	hex	;_jsrAdr(F0F0)_F_code
-view	0xFFCA	asc	;G = Format without verify
-view	0xFFCB	hex	;_jsrAdr(F0F0)_G_code
-view	0xFFCD	asc	;R = Read one logical sector
-view	0xFFCE	hex	;_jsrAdr(F0F0)_R_code
-view	0xFFD0	asc	;W = Write one logical sector with verify
-view	0xFFD1	hex	;_jsrAdr(F0F0)_W_code
-view	0xFFD3	asc	;X = Write one logical sector without verify
-view	0xFFD4	hex	;_jsrAdr(F0F0)_X_code
-view	0xFFD6	asc	;A = Read ID section
-view	0xFFD7	hex	;_jsrAdr(F0F0)_A_code
-view	0xFFD9	asc	;B = Write ID section with verify
-view	0xFFDA	hex	;_jsrAdr(F0F0)_B_code
-view	0xFFDC	asc	;C = Write ID section without verify
-view	0xFFDD	hex	;_jsrAdr(F0F0)_C_code
-view	0xFFDF	asc	;S = Search ID section
-view	0xFFE0	hex	;_jsrAdr(F0F0)_S_code
-view	0xFFE2	asc	;D = Check drive condition
-view	0xFFE3	hex	;_jsrAdr(F0F0)_D_code
-view	0xFFE5	asc	;M = Change modes
-view	0xFFE6	hex	;_jsrAdr(F0F0)_M_code
+view	0xFFC7	asc	;F = FDC Format with verify
+view	0xFFCA	asc	;G = FDC Format without verify
+view	0xFFCD	asc	;R = FDC Read one logical sector
+view	0xFFD0	asc	;W = FDC Write one logical sector with verify
+view	0xFFD3	asc	;X = FDC Write one logical sector without verify
+view	0xFFD6	asc	;A = FDC Read ID section
+view	0xFFD9	asc	;B = FDC Write ID section with verify
+view	0xFFDC	asc	;C = FDC Write ID section without verify
+view	0xFFDF	asc	;S = FDC Search ID section
+view	0xFFE2	asc	;D = FDC Check drive condition
+view	0xFFE5	asc	;M = FDC Change modes
 
-code	0xF2AD	_jsrAdr(F0F0)_F_code	;F = Format with verify
-code	0xF2AA	_jsrAdr(F0F0)_G_code	;G = Format without verify
-code	0xF1FD	_jsrAdr(F0F0)_R_code	;R = Read one logical sector
-code	0xF214	_jsrAdr(F0F0)_W_code	;W = Write one logical sector with verify
-code	0xF211	_jsrAdr(F0F0)_X_code	;X = Write one logical sector without verify
-code	0xF251	_jsrAdr(F0F0)_A_code	;A = Read ID section
-code	0xF26B	_jsrAdr(F0F0)_B_code	;B = Write ID section with verify
-code	0xF268	_jsrAdr(F0F0)_C_code	;C = Write ID section without verify
-code	0xF35B	_jsrAdr(F0F0)_S_code	;S = Search ID section
-code	0xF3C8	_jsrAdr(F0F0)_D_code	;D = Check drive condition
-code	0xF400	_jsrAdr(F0F0)_M_code	;M = Change modes
-code	0xF1E8	_jsrAdr(F0F0)_Default_code	;this is a default is entry not in table
+code	0xF2AD	_sub(F0F0)_FDC_F	;F = Format with verify
+code	0xF2AA	_sub(F0F0)_FDC_G	;G = Format without verify
+code	0xF1FD	_sub(F0F0)_FDC_R	;R = Read one logical sector
+code	0xF214	_sub(F0F0)_FDC_W	;W = Write one logical sector with verify
+code	0xF211	_sub(F0F0)_FDC_X	;X = Write one logical sector without verify
+code	0xF251	_sub(F0F0)_FDC_A	;A = Read ID section
+code	0xF26B	_sub(F0F0)_FDC_B	;B = Write ID section with verify
+code	0xF268	_sub(F0F0)_FDC_C	;C = Write ID section without verify
+code	0xF35B	_sub(F0F0)_FDC_S	;S = Search ID section
+code	0xF3C8	_sub(F0F0)_FDC_D	;D = Check drive condition
+code	0xF400	_sub(F0F0)_FDC_M	;M = Change modes
+code	0xF1E8	_sub(F0F0)_FDC_Default	;this is a default is entry not in table
 ;----------------------------------------------------------
 
 
 ;----------------------------------------------------------
 ;switch table for for FAF8 - address lookup table
 ;----------------------------------------------------------
-box		0xFB4E	0xFB5F	;SWITCH TABLE FOR FAF8
+box		0xFB4E	0xFB5F	;SWITCH TABLE FOR FAF8 (addrerss)
 table	0xFB4E	0x12	word	hex	_lookupTable_For_0xFAF8
 
-comment	0xFB4E	;_jsrAdr(FAF8)_1_code
-comment	0xFB50	;_jsrAdr(FAF8)_2_code
-comment	0xFB52	;_jsrAdr(FAF8)_3_code
-comment	0xFB54	;_jsrAdr(FAF8)_4_code
-comment	0xFB56	;_jsrAdr(FAF8)_5_code
-comment	0xFB58	;_jsrAdr(FAF8)_6_code
-comment	0xFB5A	;_jsrAdr(FAF8)_7_code
-comment	0xFB5C	;_jsrAdr(FAF8)_8_code
-comment	0xFB5E	;_jsrAdr(FAF8)_9_code
+comment	0xFB4E	;operation command 0x0 Create/Access a directory refrence
+comment	0xFB50	;operation command 0x1 Open a file
+comment	0xFB52	;operation command 0x2 Close a file
+comment	0xFB54	;operation command 0x3 Read data from a file
+comment	0xFB56	;operation command 0x4 Write data to a file
+comment	0xFB58	;operation command 0x5 Delete a file
+comment	0xFB5A	;operation command 0x6 Format a disk
+comment	0xFB5C	;operation command 0x7 Get drive status
+comment	0xFB5E	;operation command 0x8 Change to FDC mode
 
-code	0xFB93	_jsrAdr(FAF8)_1_code
-code	0xFD02	_jsrAdr(FAF8)_2_code
-code	0xFCD4	_jsrAdr(FAF8)_3_code
-code	0xFE70	_jsrAdr(FAF8)_4_code
-code	0xFEC0	_jsrAdr(FAF8)_5_code
-code	0xFC73	_jsrAdr(FAF8)_6_code
-code	0xFB7A	_jsrAdr(FAF8)_7_code
-code	0xFB72	_jsrAdr(FAF8)_8_code
-code	0xFB66	_jsrAdr(FAF8)_9_code
+code	0xFB93	_sub(FAF8)_opCode_0	;op cmd 0x0 Create/Access a directory refrence
+code	0xFD02	_sub(FAF8)_opCode_1	;op cmd 0x1 Open a file
+code	0xFCD4	_sub(FAF8)_opCode_2	;op cmd 0x2 Close a file
+code	0xFE70	_sub(FAF8)_opCode_3	;op cmd 0x3 Read data from a file
+code	0xFEC0	_sub(FAF8)_opCode_4	;op cmd 0x4 Write data to a file
+code	0xFC73	_sub(FAF8)_opCode_5	;op cmd 0x5 Delete a file
+code	0xFB7A	_sub(FAF8)_opCode_6	;op cmd 0x6 Format a disk
+code	0xFB72	_sub(FAF8)_opCode_7	;op cmd 0x7 Get drive status
+code	0xFB66	_sub(FAF8)_opCode_8	;op cmd 0x8 Change to FDC mode
 ;----------------------------------------------------------
 
