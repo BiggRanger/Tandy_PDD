@@ -1,3 +1,17 @@
 The goal of this project is to reverse engineer and document the firmware from the
 Tandy PDD, and PDD2 floppy disk drives (cira 1984). These drives were used with the 
-Tandy Model 100, 102, and 200 portable computers.
+Tandy Model 100, 102, and 200 portable computers, and also used with the Brother
+automatic knitting machines.
+
+PDD.ASM is the decompiled assembly source for the PDD1 that is slowly being documented.
+PDD.dcDisASM is the commenting and disassembler directive file that adds the documentation to the ASM file.
+
+PDD1.LST is the decompiled assembly from DASMx 1.40
+
+PDD1_Dump.INFO, the readme for getting the PDD1 firmware to dump.
+
+Usefull Information:
+http://www.k2g2.org/wiki:brother_fb-100
+http://bitchin100.com/wiki/index.php?title=TPDD_Base_Protocol
+http://bitchin100.com/wiki/index.php?title=TPDD_Design_Notes
+http://www.classiccmp.org/cini/pdf/Tandy/PDD2%20Software%20Manual.pdf
