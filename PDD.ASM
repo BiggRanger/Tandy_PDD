@@ -1,15 +1,31 @@
-F000	_ProgramStart:	SEI	;mask all interrupts
+****************************************************************
+* ;Tandy PDD1 firmware reverse engineering
+* ;By BiggRanger
+*
+* dcDisASM V1.0.0
+* Copyright 2016-2017
+*
+* File In:     c:\dcDisASM\PDD\PDD.BIN
+* File Out:    c:\dcDisasm\PDD\PDD.ASM
+* File Config: c:\dcDisasm\PDD\PDD.dcDisASM
+* CPU Type:    6301
+* Origin:      0xF000
+*
+* Date: 2017.08.10 Time: 14:20:12
+****************************************************************
+
+F000	ProgramStart:	SEI	;mask all interrupts
 F001		LDS	0x87FF	;set stack to 87FF (top of EXT RAM)
 F004		LDA A	0xFC	;port 1 settings
-F006		STA A	_register_PORT1Direction
+F006		STA A	(register)PORT1Direction
 F008		LDA A	0x34	;port 1 settings
-F00A		STA A	_register_PORT1Data
+F00A		STA A	(register)PORT1Data
 F00C		LDA A	0xFF	;port 3+4 settings
-F00E		STA A	_register_PORT3Direction
-F010		STA A	_register_PORT4Direction
+F00E		STA A	(register)PORT3Direction
+F010		STA A	(register)PORT4Direction
 F012		LDA A	0xA0
-F014		STA A	_CPLD_4000
-F017		LDA B	_CPLD_4001	;get switch positions from CPLD, put in ACCB
+F014		STA A	(CPLD)4000
+F017		LDA B	(CPLD)4001	;get switch positions from CPLD, put in ACCB
 F01A		AND B	0xF0	;Mask 1111_0000, look at only dip switch
 F01C		PSH B	;push to stack
 F01D		LSR B	;bit shift down 4x
@@ -19,20 +35,20 @@ F020		LSR B
 F021		LDX	0xFFB7	;set X to address of lookup table FFB7
 F024		ABX	;add ACCB to X (a + address of lookup table)
 F025		LDA A	0x00	;load into ACCA BAUD rate value from lookup table
-F027		STA A	_INT_RAM_BAUD_Rate	;store ACCA value (BAUD Rate) into address 0080
-F029		STA A	_CPLD_4001	;send this value to the CPLD, this is the clock divider for the SIO clock
+F027		STA A	(RAM_INT)BAUD_Rate	;store ACCA value (BAUD Rate) into address 0080
+F029		STA A	(CPLD)4001	;send this value to the CPLD, this is the clock divider for the SIO clock
 F02C		LDA A	0x10	;BIT 5 = SCI TX_DATA
-F02E		STA A	_register_PORT2Direction
+F02E		STA A	(register)PORT2Direction
 F030		LDA A	0x0C	;Value -> SCI clock is from Port 2.2
-F032		STA A	_register_SCI_RateAndModeControl
+F032		STA A	(register)SCI_RateAndModeControl
 F034		LDA A	0x0A	;set TxRx control and status
-F036		STA A	_register_SCI_TxRxControlAndStatus
+F036		STA A	(register)SCI_TxRxControlAndStatus
 F038		LDX	0x81	;clear INT RAM 0081-00FF
 F03B		LDD	0x7F
-F03E		JSR	_sub_ClearMemoryRange
+F03E		JSR	(sub)ClearMemoryRange
 F041		OIM	0xFF	0x86
 F044		LDA B	0x64
-F046		JSR	_sub_Delay=ACCB
+F046		JSR	(sub)Delay=ACCB
 F049		JSR	0xF451
 F04C		PUL B	;get the masked dip switch values from the stack
 F04D		CMP B	0xD0	;C is clear for 0xD0 and up
@@ -40,13 +56,13 @@ F04F		BCC	0xF081	;Mode=operation jump to code
 F051		CMP B	0x30	;C is set for 0x30 and down
 F053		BCS	0xF084	;Mode=init jump to code - Fall over to FDC mode
 F055	START_FDC_MODE:	JSR	0xF9FE
-F058		JSR	_sub_Delay_14_units
+F058		JSR	(sub)Delay_14_units
 F05B	A_F05B:	LDX	0x8D	;clear INT RAM 008D -> 0x23 bytes
 F05E		LDD	0x23
-F061		JSR	_sub_ClearMemoryRange
-F064		LDA A	_register_SCI_TxRxControlAndStatus
-F066		LDA A	_register_SCI_RxData
-F068		JSR	_sub_Delay_1_unit
+F061		JSR	(sub)ClearMemoryRange
+F064		LDA A	(register)SCI_TxRxControlAndStatus
+F066		LDA A	(register)SCI_RxData
+F068		JSR	(sub)Delay_1_unit
 F06B		LDX	0x8E
 F06E		STX	0x9C
 F070	A_F070:	JSR	0xF145
@@ -146,7 +162,7 @@ F136		INX
 F137		LDD	0xA7
 F139		BEQ	0xF142
 F13B		SUBD	0x01
-F13E		SDT	0xA7
+F13E		STD	0xA7
 F140		BNE	0xF130
 F142	A_F142:	JMP	0xF05B
 F145	A_F145:	TIM	0x03	0x02
@@ -157,19 +173,19 @@ F14E	A_F14E:	OIM	0x04	0x02
 F151		LDA A	0x8D
 F153		RTS
 F154	A_F154:	AIM	0xF3	0x02
-F157	A_F157:	LDA A	_register_SCI_TxRxControlAndStatus
+F157	A_F157:	LDA A	(register)SCI_TxRxControlAndStatus
 F159		AND A	0xC0
 F15B		BNE	0xF163
 F15D		BSR	0xF19E
 F15F		BEQ	0xF157
 F161		BRA	0xF14E
-F163	A_F163:	LDA B	_register_SCI_RxData
+F163	A_F163:	LDA B	(register)SCI_RxData
 F165		PSH B
 F166		ROL A
 F167		ROL A
 F168		BCS	0xF178
 F16A		LDD	0x7F
-F16D		SDT	0xAA
+F16D		STD	0xAA
 F16F		STA A	0xAC
 F171		LDA A	0x01
 F173		STA A	0x9E
@@ -188,7 +204,7 @@ F189		BSR	0xF19E
 F18B		BEQ	0xF181
 F18D		RTS
 F18E	A_F18E:	LDA B	0xB4
-F190		STA B	_register_SCI_TxData
+F190		STA B	(register)SCI_TxData
 F192	A_F192:	TIM	0x20	0x11	;test bit 5 TX_READY
 F195		BEQ	0xF199
 F197		CLR A
@@ -199,7 +215,7 @@ F19D		RTS
 F19E	A_F19E:	LDD	0x8B
 F1A0		BEQ	0xF1D4
 F1A2	A_F1A2:	SUBD	0x01
-F1A5		SDT	0x8B
+F1A5		STD	0x8B
 F1A7		BCC	0xF1AC
 F1A9		DEC	0x8A
 F1AC	A_F1AC:	JSR	0xF9C6
@@ -211,7 +227,7 @@ F1B7		BCC	0xF1C7
 F1B9		LDD	0xAB
 F1BB		BEQ	0xF1C9
 F1BD	A_F1BD:	SUBD	0x01
-F1C0		SDT	0xAB
+F1C0		STD	0xAB
 F1C2		BCC	0xF1C7
 F1C4		DEC	0xAA
 F1C7	A_F1C7:	CLR A
@@ -228,12 +244,12 @@ F1D5		LDA A	0x8A
 F1D7		PUL A
 F1D8		BNE	0xF1A2
 F1DA		AIM	0xFB	0x80
-F1DD		LDA A	_INT_RAM_BAUD_Rate
-F1DF		STA A	_CPLD_4001
+F1DD		LDA A	(RAM_INT)BAUD_Rate
+F1DF		STA A	(CPLD)4001
 F1E2		BRA	0xF1AC
 F1E4	A_F1E4:	LDA A	0xE0
 F1E6		BRA	0xF1D1
-F1E8	_sub(F0F0)_FDC_Default:	LDA A	0x84	;this is a default is entry not in table
+F1E8	(sub)FDC_Default:	LDA A	0x84	;this is a default, entry not in table
 F1EA		BNE	0xF1F8
 F1EC		CLR	0xA0
 F1EF		LDA A	0x8D
@@ -243,7 +259,7 @@ F1F5		BNE	0xF1FA
 F1F7		RTS
 F1F8	A_F1F8:	STA A	0x8D
 F1FA	A_F1FA:	JMP	0xF42C
-F1FD	_sub(F0F0)_FDC_R:	JSR	0xF4F5	;R = Read one logical sector
+F1FD	(sub)FDC_R:	JSR	0xF4F5	;R = Read one logical sector
 F200		BNE	0xF217
 F202		JSR	0xF65A
 F205		BNE	0xF217
@@ -251,8 +267,8 @@ F207		JSR	0xF495
 F20A		BNE	0xF217
 F20C		JSR	0xF869
 F20F		BRA	0xF265
-F211	_sub(F0F0)_FDC_X:	OIM	0xFF	0xA9	;X = Write one logical sector without verify
-F214	_sub(F0F0)_FDC_W:	JSR	0xF4F5	;W = Write one logical sector with verify
+F211	(sub)FDC_X:	OIM	0xFF	0xA9	;X = Write one logical sector without verify
+F214	(sub)FDC_W:	JSR	0xF4F5	;W = Write one logical sector with verify
 F217	A_F217:	BNE	0xF24F
 F219		JSR	0xF65A
 F21C		BNE	0xF24F
@@ -278,17 +294,17 @@ F248		LDA A	0xA9
 F24A		BNE	0xF24F
 F24C		JSR	0xF65A
 F24F	A_F24F:	BRA	0xF2A8
-F251	_sub(F0F0)_FDC_A:	JSR	0xF522	;A = Read ID section
+F251	(sub)FDC_A:	JSR	0xF522	;A = Read ID section
 F254		BNE	0xF24F
 F256		JSR	0xF686
 F259		BNE	0xF24F
 F25B		LDD	0x8005
-F25E		SDT	0xA5
+F25E		STD	0xA5
 F260		LDD	0x0C
-F263		SDT	0xA7
+F263		STD	0xA7
 F265	A_F265:	JMP	0xF440
-F268	_sub(F0F0)_FDC_C:	OIM	0xFF	0xA9	;C = Write ID section without verify
-F26B	_sub(F0F0)_FDC_B:	JSR	0xF522	;B = Write ID section with verify
+F268	(sub)FDC_C:	OIM	0xFF	0xA9	;C = Write ID section without verify
+F26B	(sub)FDC_B:	JSR	0xF522	;B = Write ID section with verify
 F26E		BNE	0xF2A8
 F270		JSR	0xF65A
 F273		BNE	0xF2A8
@@ -301,7 +317,7 @@ F282	A_F282:	JMP	0xF233
 F285	A_F285:	LDX	0x8005
 F288		STX	0xA5
 F28A		LDD	0x0C
-F28D		SDT	0xA7
+F28D		STD	0xA7
 F28F		JSR	0xF5CB
 F292		BEQ	0xF29A
 F294		CMP A	0xE0
@@ -314,8 +330,8 @@ F2A1		LDA A	0xA9
 F2A3		BNE	0xF2A8
 F2A5		JSR	0xF65A
 F2A8	A_F2A8:	BRA	0xF323
-F2AA	_sub(F0F0)_FDC_G:	OIM	0xFF	0xA9	;G = Format without verify
-F2AD	_sub(F0F0)_FDC_F:	LDA A	0x03	;F = Format with verify
+F2AA	(sub)FDC_G:	OIM	0xFF	0xA9	;G = Format without verify
+F2AD	(sub)FDC_F:	LDA A	0x03	;F = Format with verify
 F2AF		STA A	0xAD
 F2B1		LDA A	0x8F
 F2B3		CMP A	0x0D
@@ -339,14 +355,14 @@ F2D5		OIM	0xFF	0x86
 F2D8		CMP A	0x03
 F2DA		BHI	0xF335
 F2DC	A_F2DC:	LDD	0x513
-F2DF	A_F2DF:	SDT	0xCC
+F2DF	A_F2DF:	STD	0xCC
 F2E1		JSR	0xF451
 F2E4		BNE	0xF32A
 F2E6		CLR	0xAD
 F2E9	A_F2E9:	LDD	0xCC
-F2EB		SDT	0x8000
+F2EB		STD	0x8000
 F2EE		LDX	0x8002
-F2F1		JSR	_sub_ClearMemoryRange
+F2F1		JSR	(sub)ClearMemoryRange
 F2F4		LDA A	0xCE
 F2F6		STA A	0x8004
 F2F9	A_F2F9:	LDA A	0xAD
@@ -395,7 +411,7 @@ F353		JSR	0xF42C
 F356		LDA A	0xCB
 F358		STA A	0xA2
 F35A		RTS
-F35B	_sub(F0F0)_FDC_S:	LDA A	0x8F	;S = Search ID section
+F35B	(sub)FDC_S:	LDA A	0x8F	;S = Search ID section
 F35D		CMP A	0x0D
 F35F		BNE	0xF36C
 F361		JSR	0xF42C
@@ -426,7 +442,7 @@ F397	A_F397:	JSR	0xF686
 F39A		BNE	0xF385
 F39C		LDX	0x8005
 F39F		LDD	0x8E
-F3A2		SDT	0xA5
+F3A2		STD	0xA5
 F3A4	A_F3A4:	LDA A	0x00
 F3A6		PSHX
 F3A7		LDX	0xA5
@@ -447,7 +463,7 @@ F3C0		CPX	0x8011
 F3C3		BNE	0xF3A4
 F3C5		CLR A
 F3C6		BRA	0xF389
-F3C8	_sub(F0F0)_FDC_D:	LDA A	0x8F	;D = Check drive condition
+F3C8	(sub)FDC_D:	LDA A	0x8F	;D = Check drive condition
 F3CA		CMP A	0x0D
 F3CC		BEQ	0xF3D4
 F3CE		LDA A	0x38
@@ -474,7 +490,7 @@ F3FA		STA A	0x8D
 F3FC	A_F3FC:	INC A
 F3FD		STA A	0xA0
 F3FF		RTS
-F400	_sub(F0F0)_FDC_M:	LDA A	0x8F	;M = Change modes
+F400	(sub)FDC_M:	LDA A	0x8F	;M = Change modes
 F402		CMP A	0x0D
 F404		BEQ	0xF413
 F406		JSR	0xF85A
@@ -494,7 +510,7 @@ F421	A_F421:	PULX
 F422		JMP	0xFAE2
 F425	A_F425:	CLR A
 F426		CLR B
-F427		SDT	0xA2
+F427		STD	0xA2
 F429		STA A	0xA4
 F42B		RTS
 F42C	A_F42C:	BSR	0xF425
@@ -505,13 +521,13 @@ F435		RTS
 F436	A_F436:	LDA A	0x86
 F438		STA A	0xA2
 F43A		LDD	0x87
-F43C		SDT	0xA3
+F43C		STD	0xA3
 F43E		BRA	0xF42E
 F440	A_F440:	BSR	0xF436
 F442		OIM	0x81	0xA0
 F445		RTS
 F446	A_F446:	AIM	0x7F	0x02
-F449	A_F449:	JMP	_sub_Delay_1_unit
+F449	A_F449:	JMP	(sub)Delay_1_unit
 F44C	A_F44C:	OIM	0x80	0x02
 F44F		BRA	0xF449
 F451	A_F451:	BSR	0xF44C
@@ -519,14 +535,14 @@ F453		LDA A	0x3E
 F455		STA A	0xB9
 F457		AIM	0xFC	0x80
 F45A		OIM	0x03	0x80
-F45D		LDA A	_CPLD_4001
+F45D		LDA A	(CPLD)4001
 F460		AND A	0x08
 F462		BEQ	0xF482
 F464	A_F464:	LDA B	0x04
 F466		JSR	0xF93D
 F469		DEC	0xB9
 F46C		BEQ	0xF47B
-F46E		LDA A	_CPLD_4001
+F46E		LDA A	(CPLD)4001
 F471		AND A	0x08
 F473		BNE	0xF464
 F475		BSR	0xF446
@@ -539,7 +555,7 @@ F482	A_F482:	LDA B	0x04
 F484		JSR	0xF939
 F487		DEC	0xB9
 F48A		BEQ	0xF47B
-F48C		LDA A	_CPLD_4001
+F48C		LDA A	(CPLD)4001
 F48F		AND A	0x08
 F491		BEQ	0xF482
 F493		BRA	0xF464
@@ -553,7 +569,7 @@ F4A2		CLR A
 F4A3		RTS
 F4A4	A_F4A4:	LDA A	0x12
 F4A6		BRA	0xF4F3
-F4A8	_lookupTable_For_0xF498:	DB	14H	;variable lookup table
+F4A8	(table)For_0xF498:	DB	14H	;variable lookup table
 F4A9		DB	10H
 F4AA		DB	0AH
 F4AB		DB	05H
@@ -564,7 +580,7 @@ F4AF	A_F4AF:	LDA B	0x01
 F4B1		BRA	0xF4B4
 F4B3	A_F4B3:	CLR B
 F4B4	A_F4B4:	PSH B
-F4B5		LDA A	_CPLD_4002
+F4B5		LDA A	(CPLD)4002
 F4B8		TAB
 F4B9		AND A	0x04
 F4BB		BNE	0xF4CA
@@ -581,15 +597,15 @@ F4CD	A_F4CD:	STA A	0x8D
 F4CF	A_F4CF:	OIM	0xFF	0x86
 F4D2		TBA
 F4D3		BNE	0xF4E2
-F4D5		LDA A	_CPLD_4000
+F4D5		LDA A	(CPLD)4000
 F4D8		AND A	0xFD
-F4DA		STA A	_CPLD_4000
+F4DA		STA A	(CPLD)4000
 F4DD		ORA A	0x02
-F4DF		STA A	_CPLD_4000
+F4DF		STA A	(CPLD)4000
 F4E2	A_F4E2:	LDA A	0x8D
 F4E4	A_F4E4:	RTS
 F4E5	A_F4E5:	JSR	0xF44C
-F4E8		LDA A	_CPLD_4002
+F4E8		LDA A	(CPLD)4002
 F4EB		AND A	0x02
 F4ED		BNE	0xF4F1
 F4EF		CLR A
@@ -655,7 +671,7 @@ F559		LDA A	0x13
 F55B		BRA	0xF556
 F55D	A_F55D:	CLR A
 F55E		CLR B
-F55F		SDT	0xB7
+F55F		STD	0xB7
 F561	A_F561:	LDA A	0x00
 F563		INX
 F564		CMP A	0x0D
@@ -732,7 +748,7 @@ F5DE		INX
 F5DF		STX	0xA5
 F5E1		LDD	0xA7
 F5E3		SUBD	0x01
-F5E6		SDT	0xA7
+F5E6		STD	0xA7
 F5E8		BNE	0xF5D1
 F5EA		LDA A	0x8D
 F5EC	A_F5EC:	TAB
@@ -763,29 +779,29 @@ F617		BNE	0xF655
 F619		BSR	0xF63F
 F61B		BNE	0xF655
 F61D	A_F61D:	LDD	0xFFFF
-F620		SDT	0xBC
+F620		STD	0xBC
 F622		CLR A
 F623		CLR B
-F624		SDT	0xC0
+F624		STD	0xC0
 F626	A_F626:	LDD	0xBC
 F628		SUBD	0x01
-F62B		SDT	0xBC
+F62B		STD	0xBC
 F62D		BEQ	0xF656
 F62F		LDD	0xC0
 F631		ADDD	0x01
-F634		SDT	0xC0
-F636		LDA A	_CPLD_4001
+F634		STD	0xC0
+F636		LDA A	(CPLD)4001
 F639		AND A	0x04
 F63B		BNE	0xF626
 F63D		CLR A
 F63E		RTS
 F63F	A_F63F:	LDD	0xFFFF
-F642		SDT	0xBC
+F642		STD	0xBC
 F644	A_F644:	LDD	0xBC
 F646		SUBD	0x01
-F649		SDT	0xBC
+F649		STD	0xBC
 F64B		BEQ	0xF656
-F64D		LDA A	_CPLD_4001
+F64D		LDA A	(CPLD)4001
 F650		AND A	0x04
 F652		BEQ	0xF644
 F654		CLR A
@@ -829,21 +845,21 @@ F6A2	A_F6A2:	JSR	0xF4B3
 F6A5		BEQ	0xF6D1
 F6A7	A_F6A7:	RTS
 F6A8	A_F6A8:	LDD	0xFFFF
-F6AB		SDT	0xC0
-F6AD	A_F6AD:	LDA B	_CPLD_4002
+F6AB		STD	0xC0
+F6AD	A_F6AD:	LDA B	(CPLD)4002
 F6B0		ROR B
 F6B1		BCS	0xF6BF
 F6B3		LDD	0xC0
 F6B5		SUBD	0x01
-F6B8		SDT	0xC0
+F6B8		STD	0xC0
 F6BA		BNE	0xF6AD
 F6BC	A_F6BC:	LDA A	0xA4
 F6BE		RTS
-F6BF	A_F6BF:	LDA B	_CPLD_4003
+F6BF	A_F6BF:	LDA B	(CPLD)4003
 F6C2		CLR A
 F6C3		RTS
 F6C4	A_F6C4:	LDA A	0xFF
-F6C6	A_F6C6:	LDA B	_CPLD_4002
+F6C6	A_F6C6:	LDA B	(CPLD)4002
 F6C9		ROR B
 F6CA		BCS	0xF6BF
 F6CC		DEC A
@@ -854,17 +870,17 @@ F6D3		CMP A	0x86
 F6D5		BEQ	0xF6A7
 F6D7		JSR	0xF8F3
 F6DA		LDA A	0xF2
-F6DC		STA A	_CPLD_4000
+F6DC		STA A	(CPLD)4000
 F6DF		OIM	0x40	0x02
-F6E2		JSR	_sub_Delay_1_unit
+F6E2		JSR	(sub)Delay_1_unit
 F6E5		JSR	0xF5EE
 F6E8		BNE	0xF741
-F6EA		LDA A	_CPLD_4003
+F6EA		LDA A	(CPLD)4003
 F6ED		LDX	0x8000
 F6F0		LDA B	0x02
-F6F2		JSR	_sub_Delay=ACCB
+F6F2		JSR	(sub)Delay=ACCB
 F6F5		LDA A	0xFA
-F6F7		STA A	_CPLD_4000
+F6F7		STA A	(CPLD)4000
 F6FA		BSR	0xF6A8
 F6FC		BNE	0xF73B
 F6FE		BSR	0xF6C4
@@ -879,7 +895,7 @@ F70D		STA B	0xBD
 F70F		TST	0xAF
 F712		BEQ	0xF719
 F714		LDD	0x11
-F717		SDT	0xBC
+F717		STD	0xBC
 F719	A_F719:	LDD	0xBC
 F71B		BEQ	0xF74A
 F71D		SUBD	0x514
@@ -890,7 +906,7 @@ F725		STA B	0x00
 F727		INX
 F728		LDD	0xBC
 F72A		SUBD	0x01
-F72D		SDT	0xBC
+F72D		STD	0xBC
 F72F		BNE	0xF723
 F731		JSR	0xF8BA
 F734		SUBD	0x8011
@@ -900,7 +916,7 @@ F73B	A_F73B:	STA A	0x8D
 F73D	A_F73D:	LDA A	0xFF
 F73F	A_F73F:	STA A	0x86
 F741	A_F741:	LDA B	0xB2
-F743		STA B	_CPLD_4000
+F743		STA B	(CPLD)4000
 F746		AIM	0xBF	0x02
 F749		RTS
 F74A	A_F74A:	LDA A	0xA5
@@ -917,7 +933,7 @@ F760		LDA B	0x8004
 F763		ASL B
 F764		ABX
 F765		LDD	0x00
-F767		SDT	0x87
+F767		STD	0x87
 F769		TST	0xAF
 F76C		BNE	0xF73D
 F76E		JSR	0xF87E
@@ -936,24 +952,24 @@ F78B		TAP
 F78C		RTS
 F78D	A_F78D:	JSR	0xF8F3
 F790		LDA A	0xA2
-F792		STA A	_CPLD_4000
+F792		STA A	(CPLD)4000
 F795		JSR	0xF806
 F798		BNE	0xF787
 F79A		LDA A	0xE2
-F79C		STA A	_CPLD_4000
+F79C		STA A	(CPLD)4000
 F79F		JSR	0xF8BA
-F7A2		SDT	0x8011
+F7A2		STD	0x8011
 F7A5		JSR	0xF87E
-F7A8		SDT	0x00
+F7A8		STD	0x00
 F7AA		OIM	0xFF	0x86
 F7AD		LDD	0x8000
 F7B0		ADDD	0x02
-F7B3		SDT	0xBE
+F7B3		STD	0xBE
 F7B5		JSR	0xF5EE
 F7B8		BNE	0xF787
-F7BA		CLR	_CPLD_4003
+F7BA		CLR	(CPLD)4003
 F7BD		LDA A	0xE6
-F7BF		STA A	_CPLD_4000
+F7BF		STA A	(CPLD)4000
 F7C2		LDA A	0x40
 F7C4		STA A	0xBC
 F7C6	A_F7C6:	BSR	0xF7FB
@@ -967,24 +983,24 @@ F7D6		INX
 F7D7		BSR	0xF7FC
 F7D9		LDD	0xBE
 F7DB		SUBD	0x01
-F7DE		SDT	0xBE
+F7DE		STD	0xBE
 F7E0		BNE	0xF7D4
 F7E2	A_F7E2:	BSR	0xF7FB
-F7E4		LDA A	_CPLD_4001
+F7E4		LDA A	(CPLD)4001
 F7E7		AND A	0x04
 F7E9		BEQ	0xF7E2
 F7EB	A_F7EB:	BSR	0xF7FB
-F7ED		LDA A	_CPLD_4001
+F7ED		LDA A	(CPLD)4001
 F7F0		AND A	0x04
 F7F2		BNE	0xF7EB
 F7F4		LDA A	0xB2
-F7F6		STA A	_CPLD_4000
+F7F6		STA A	(CPLD)4000
 F7F9		BRA	0xF787
 F7FB	A_F7FB:	CLR A
-F7FC	A_F7FC:	LDA B	_CPLD_4002
+F7FC	A_F7FC:	LDA B	(CPLD)4002
 F7FF		ROL B
 F800		BCC	0xF7FC
-F802		STA A	_CPLD_4003
+F802		STA A	(CPLD)4003
 F805		RTS
 F806	A_F806:	JSR	0xF937
 F809		BSR	0xF828
@@ -1005,11 +1021,11 @@ F826		BRA	0xF820
 F828	A_F828:	JSR	0xF5EE
 F82B		BNE	0xF835
 F82D		LDA A	0xA6
-F82F		STA A	_CPLD_4000
+F82F		STA A	(CPLD)4000
 F832		JSR	0xF615
 F835	A_F835:	TPA
 F836		LDA B	0xA2
-F838		STA B	_CPLD_4000
+F838		STA B	(CPLD)4000
 F83B		TAP
 F83C		RTS
 F83D	A_F83D:	TAB
@@ -1040,7 +1056,7 @@ F865		BCS	0xF85E
 F867		CLR B
 F868		RTS
 F869	A_F869:	LDD	0x87
-F86B		SDT	0xA7
+F86B		STD	0xA7
 F86D		LDA B	0xAE
 F86F		CLR A
 F870		XGDX
@@ -1049,7 +1065,7 @@ F874	A_F874:	DEX
 F875		BEQ	0xF87B
 F877		ADDD	0xA7
 F879		BRA	0xF874
-F87B	A_F87B:	SDT	0xA5
+F87B	A_F87B:	STD	0xA5
 F87D		RTS
 F87E	A_F87E:	LDX	0x8013
 F881		LDA A	0x8004
@@ -1058,7 +1074,7 @@ F886		BEQ	0xF8A7
 F888		CMP A	0x05
 F88A		BEQ	0xF8A7
 F88C		LDD	0x500
-F88F	A_F88F:	SDT	0xBC
+F88F	A_F88F:	STD	0xBC
 F891		CLR A
 F892		STA A	0xB0
 F894		STA A	0xB1
@@ -1067,13 +1083,13 @@ F898		INX
 F899		BSR	0xF8CF
 F89B		LDD	0xBC
 F89D		SUBD	0x01
-F8A0		SDT	0xBC
+F8A0		STD	0xBC
 F8A2		BNE	0xF896
 F8A4		LDD	0xB0
 F8A6		RTS
 F8A7	A_F8A7:	LDD	0x400
 F8AA		BRA	0xF88F
-F8AC	_lookupTable_For_0xF75D:	DB	00H	;variable lookup table
+F8AC	(table)For_0xF75D:	DB	00H	;variable lookup table
 F8AD		DB	40H
 F8AE		DB	00H
 F8AF		DB	50H
@@ -1123,21 +1139,21 @@ F8EE		EOR B	0xCF
 F8F0		STA B	0xB1
 F8F2		RTS
 F8F3	A_F8F3:	OIM	0x04	0x80
-F8F6		LDA A	_INT_RAM_BAUD_Rate
-F8F8		STA A	_CPLD_4001
+F8F6		LDA A	(RAM_INT)BAUD_Rate
+F8F8		STA A	(CPLD)4001
 F8FB		LDA A	0x8A
 F8FD		ORA A	0x8B
 F8FF		ORA A	0x8C
 F901		BNE	0xF910
 F903		LDA A	0x32
 F905	A_F905:	PSH A
-F906		JSR	_sub_Delay_14_units
+F906		JSR	(sub)Delay_14_units
 F909		JSR	0xF9E3
 F90C		PUL A
 F90D		DEC A
 F90E		BNE	0xF905
 F910	A_F910:	LDD	0x2FF
-F913		SDT	0x8A
+F913		STD	0x8A
 F915		STA A	0x8C
 F917		RTS
 F918	A_F918:	CLR A
@@ -1168,34 +1184,34 @@ F93B		BRA	0xF93E
 F93D	A_F93D:	CLR A
 F93E	A_F93E:	STA A	0xC8
 F940		STA B	0xC9
-F942		LDA A	_CPLD_4000
+F942		LDA A	(CPLD)4000
 F945		ORA A	0x01
-F947		STA A	_CPLD_4000
+F947		STA A	(CPLD)4000
 F94A		TST	0xC8
 F94D		BEQ	0xF990
 F94F		INC	0xC9
 F952	A_F952:	LDX	0xF9A9
-F955	A_F955:	LDA B	_INT_RAM_BAUD_Rate
+F955	A_F955:	LDA B	(RAM_INT)BAUD_Rate
 F957		TBA
 F958		AND B	0x03
 F95A		ABX
 F95B		AND A	0xFC
 F95D		ORA A	0x00
-F95F		STA A	_INT_RAM_BAUD_Rate
+F95F		STA A	(RAM_INT)BAUD_Rate
 F961		TAB
-F962		LDA A	_CPLD_4000
+F962		LDA A	(CPLD)4000
 F965		AND A	0xFE
-F967		STA A	_CPLD_4000
-F96A		STA B	_CPLD_4001
+F967		STA A	(CPLD)4000
+F96A		STA B	(CPLD)4001
 F96D		ORA A	0x01
-F96F		STA A	_CPLD_4000
+F96F		STA A	(CPLD)4000
 F972		LDA B	0x0A
-F974		BSR	_sub_Delay=ACCB
+F974		BSR	(sub)Delay=ACCB
 F976		JSR	0xF9E3
 F979		DEC	0xC9
 F97C		BNE	0xF995
 F97E		LDA B	0x0A
-F980		BSR	_sub_Delay=ACCB
+F980		BSR	(sub)Delay=ACCB
 F982		JSR	0xF9E3
 F985		TST	0xC8
 F988		BEQ	0xF99C
@@ -1206,36 +1222,36 @@ F993		BRA	0xF955
 F995	A_F995:	TST	0xC8
 F998		BEQ	0xF990
 F99A		BRA	0xF952
-F99C	A_F99C:	LDA A	_CPLD_4000
+F99C	A_F99C:	LDA A	(CPLD)4000
 F99F		AND A	0xFE
-F9A1		STA A	_CPLD_4000
+F9A1		STA A	(CPLD)4000
 F9A4		RTS
-F9A5	_lookupTable_For_0xF952:	DB	01H	;variable lookup table (stepper motor stuff?)
+F9A5	(table)For_0xF952:	DB	01H	;variable lookup table (stepper motor stuff?)
 F9A6		DB	03H
 F9A7		DB	00H
 F9A8		DB	02H
-F9A9	_lookupTable_For_0xF990:	DB	02H	;variable lookup table (stepper motor stuff?)
+F9A9	(table)For_0xF990:	DB	02H	;variable lookup table (stepper motor stuff?)
 F9AA		DB	00H
 F9AB		DB	03H
 F9AC		DB	01H
-F9AD	_sub_ClearMemoryRange:	CLR	0x00
+F9AD	(sub)ClearMemoryRange:	CLR	0x00
 F9AF		INX
 F9B0		SUBD	0x01
-F9B3		BNE	_sub_ClearMemoryRange
+F9B3		BNE	(sub)ClearMemoryRange
 F9B5		RTS
-F9B6	_sub_Delay_14_units:	LDA B	0x14
-F9B8		BRA	_sub_Delay=ACCB
-F9BA	_sub_Delay_1_unit:	LDA B	0x01
-F9BC	_sub_Delay=ACCB:	LDA A	0xF5
-F9BE	_sub_Delay_Private_Loop:	DEC A
+F9B6	(sub)Delay_14_units:	LDA B	0x14
+F9B8		BRA	(sub)Delay=ACCB
+F9BA	(sub)Delay_1_unit:	LDA B	0x01
+F9BC	(sub)Delay=ACCB:	LDA A	0xF5
+F9BE	(subI)Delay:	DEC A
 F9BF		NOP
-F9C0		BNE	_sub_Delay_Private_Loop
+F9C0		BNE	(subI)Delay
 F9C2		DEC B
-F9C3		BNE	_sub_Delay=ACCB
+F9C3		BNE	(sub)Delay=ACCB
 F9C5		RTS
 F9C6	A_F9C6:	LDA A	0x81
 F9C8		BNE	0xF9E3
-F9CA		LDA B	_CPLD_4001
+F9CA		LDA B	(CPLD)4001
 F9CD		AND B	0x02
 F9CF		BNE	0xF9D9
 F9D1		LDA A	0x82
@@ -1246,7 +1262,7 @@ F9D9	A_F9D9:	CLR	0x82
 F9DC		RTS
 F9DD	A_F9DD:	AIM	0xEF	0x02
 F9E0		OIM	0x01	0x81
-F9E3	A_F9E3:	LDA B	_CPLD_4001
+F9E3	A_F9E3:	LDA B	(CPLD)4001
 F9E6		ROR B
 F9E7		BCS	0xF9F1
 F9E9		LDA A	0x83
@@ -1255,9 +1271,9 @@ F9ED		OIM	0x01	0x83
 F9F0		RTS
 F9F1	A_F9F1:	CLR	0x83
 F9F4		RTS
-F9F5	A_F9F5:	LDA A	_INT_RAM_BAUD_Rate
+F9F5	A_F9F5:	LDA A	(RAM_INT)BAUD_Rate
 F9F7		ORA A	0x08
-F9F9		STA A	_CPLD_4001
+F9F9		STA A	(CPLD)4001
 F9FC		BRA	0xF9F5
 F9FE	A_F9FE:	CLR A
 F9FF		STA A	0x8D
@@ -1272,9 +1288,9 @@ FA0F		DEC	0xBC
 FA12		BNE	0xFA0D
 FA14		JSR	0x8515
 FA17	A_FA17:	BSR	0xF9FE
-FA19		LDA A	_register_SCI_TxRxControlAndStatus
-FA1B		LDA A	_register_SCI_RxData
-FA1D		BSR	_sub_Delay_1_unit
+FA19		LDA A	(register)SCI_TxRxControlAndStatus
+FA1B		LDA A	(register)SCI_RxData
+FA1D		BSR	(sub)Delay_1_unit
 FA1F		CLR A
 FA20		STA A	0x9E
 FA22		STA A	0xB0
@@ -1316,7 +1332,7 @@ FA6D		EOR B	0xFF
 FA6F		BEQ	0xFA17
 FA71	A_FA71:	EIM	0x10	0x02
 FA74		LDA B	0x32
-FA76		JSR	_sub_Delay=ACCB
+FA76		JSR	(sub)Delay=ACCB
 FA79		BRA	0xFA71
 FA7B	A_FA7B:	BSR	0xFA80
 FA7D		BNE	0xFA71
@@ -1377,7 +1393,7 @@ FADD	A_FADD:	LDA A	0x22
 FADF		STA A	0x8D
 FAE1		RTS
 FAE2	A_FAE2:	BSR	0xFB60
-FAE4		STS	_INT_RAM_StackPointerStorage
+FAE4		STS	(RAM_INT)StackPointerStorage
 FAE6		LDA A	0x8D
 FAE8		BEQ	0xFB03
 FAEA		JMP	0xFF7C
@@ -1390,7 +1406,7 @@ FAF8		LDX	0xFB4E	;set X to table FB4E
 FAFB		ABX	;add ACCB to X
 FAFC		LDX	0x00	;load X with value from table
 FAFE		JSR	0x00	;jump to sub at X
-FB00		JSR	_sub_Delay_1_unit
+FB00		JSR	(sub)Delay_1_unit
 FB03	A_FB03:	LDA B	0x05
 FB05	A_FB05:	DEC B
 FB06		BNE	0xFB05
@@ -1427,28 +1443,28 @@ FB46		JSR	0xFF22
 FB49		STA B	0x00
 FB4B		INX
 FB4C		BRA	0xFB43
-FB4E	_lookupTable_For_0xFAF8:	DW	251,147	;operation command 0x0 Create/Access a directory refrence
-FB50		DW	253,2	;operation command 0x1 Open a file
-FB52		DW	252,212	;operation command 0x2 Close a file
-FB54		DW	254,112	;operation command 0x3 Read data from a file
-FB56		DW	254,192	;operation command 0x4 Write data to a file
-FB58		DW	252,115	;operation command 0x5 Delete a file
-FB5A		DW	251,122	;operation command 0x6 Format a disk
-FB5C		DW	251,114	;operation command 0x7 Get drive status
-FB5E		DW	251,102	;operation command 0x8 Change to FDC mode
+FB4E	(table)Operation_Commands:	DW	0FB93H	;operation command 0x0 Create/Access a directory refrence
+FB50		DW	0FD02H	;operation command 0x1 Open a file
+FB52		DW	0FCD4H	;operation command 0x2 Close a file
+FB54		DW	0FE70H	;operation command 0x3 Read data from a file
+FB56		DW	0FEC0H	;operation command 0x4 Write data to a file
+FB58		DW	0FC73H	;operation command 0x5 Delete a file
+FB5A		DW	0FB7AH	;operation command 0x6 Format a disk
+FB5C		DW	0FB72H	;operation command 0x7 Get drive status
+FB5E		DW	0FB66H	;operation command 0x8 Change to FDC mode
 FB60	A_FB60:	CLR A
 FB61		STA A	0xD8
 FB63		STA A	0xD9
 FB65		RTS
-FB66	_sub(FAF8)_opCode_8:	LDA A	0xD8	;op cmd 0x8 Change to FDC mode
+FB66	(sub)operation_0x8:	LDA A	0xD8	;operation command 0x8 Change to FDC mode
 FB68		BEQ	0xFB6D
 FB6A		JMP	0xFF65
-FB6D	A_FB6D:	LDS	_INT_RAM_StackPointerStorage
+FB6D	A_FB6D:	LDS	(RAM_INT)StackPointerStorage
 FB6F		JMP	START_FDC_MODE
-FB72	_sub(FAF8)_opCode_7:	JSR	0xF4B3	;op cmd 0x7 Get drive status
+FB72	(sub)operation_0x7:	JSR	0xF4B3	;operation command 0x7 Get drive status
 FB75		BNE	0xFB82
 FB77		JMP	0xFF3A
-FB7A	_sub(FAF8)_opCode_6:	CLR A	;op cmd 0x6 Format a disk
+FB7A	(sub)operation_0x6:	CLR A	;operation command 0x6 Format a disk
 FB7B		JSR	0xF2C8
 FB7E		LDA A	0x8D
 FB80		BEQ	0xFB85
@@ -1458,7 +1474,7 @@ FB88		LDA A	0x80
 FB8A		STA A	0x84EB
 FB8D		JSR	0xFE4B
 FB90		JMP	0xFCFC
-FB93	_sub(FAF8)_opCode_0:	CLR	0xD8	;op cmd 0x0 Create/Access a directory refrence
+FB93	(sub)operation_0x0:	CLR	0xD8	;operation command 0x0 Create/Access a directory refrence
 FB96		LDA B	0x1B
 FB98		LDX	0x862A
 FB9B		STX	0xE8
@@ -1561,7 +1577,7 @@ FC6B		STX	0xDA
 FC6D		CPX	0x84CC
 FC70		BLS	0xFC3E
 FC72		RTS
-FC73	_sub(FAF8)_opCode_5:	TIM	0x02	0xD9	;op cmd 0x5 Delete a file
+FC73	(sub)operation_0x5:	TIM	0x02	0xD9	;operation command 0x5 Delete a file
 FC76		BNE	0xFC7B
 FC78	A_FC78:	JMP	0xFF65
 FC7B	A_FC7B:	JSR	0xFD88
@@ -1604,10 +1620,10 @@ FCC4		STA A	0x00
 FCC6		INX
 FCC7		BRA	0xFCBD
 FCC9	A_FCC9:	LDD	0x1F
-FCCC		JSR	_sub_ClearMemoryRange
+FCCC		JSR	(sub)ClearMemoryRange
 FCCF		JSR	0xFE48
 FCD2		BRA	0xFCFC
-FCD4	_sub(FAF8)_opCode_2:	LDA A	0xD8	;op cmd 0x2 Close a file
+FCD4	(sub)operation_0x2:	LDA A	0xD8	;operation command 0x2 Close a file
 FCD6		BEQ	0xFCFC
 FCD8		TST	0xF3
 FCDB		BEQ	0xFCFC
@@ -1626,7 +1642,7 @@ FCF6		JSR	0xFE4B
 FCF9		JSR	0xFDA1
 FCFC	A_FCFC:	JSR	0xFB60
 FCFF		JMP	0xFF3A
-FD02	_sub(FAF8)_opCode_1:	TIM	0x01	0xD9	;op cmd 0x1 Open a file
+FD02	(sub)operation_0x1:	TIM	0x01	0xD9	;operation command 0x1 Open a file
 FD05		BEQ	0xFD13
 FD07		CLR A
 FD08		LDA A	0x8515
@@ -1654,14 +1670,14 @@ FD38		LDX	0x8013
 FD3B		STX	0xDE
 FD3D		CLR A
 FD3E		CLR B
-FD3F		SDT	0xE3
+FD3F		STD	0xE3
 FD41		BRA	0xFD85
 FD43	A_FD43:	TIM	0x02	0xD9
 FD46		BEQ	0xFD13
 FD48		LDX	0xDA
 FD4A		PSHX
 FD4B		LDD	0x19
-FD4D		SDT	0xE3
+FD4D		STD	0xE3
 FD4F		LDX	0x8013
 FD52		STX	0xDE
 FD54		LDA A	0xD8
@@ -1679,7 +1695,7 @@ FD6B		BEQ	0xFD78
 FD6D		BCC	0xFD68
 FD6F		ADDD	0x500
 FD72		ADDD	0xDE
-FD74		SDT	0xDE
+FD74		STD	0xDE
 FD76		BRA	0xFD85
 FD78	A_FD78:	LDX	0x8513
 FD7B		STX	0xDE
@@ -1722,7 +1738,7 @@ FDCC		LDX	0xDA
 FDCE		STA A	0x1D
 FDD0	A_FDD0:	LDX	0xDA
 FDD2		LDD	0xE3
-FDD4		SDT	0x19
+FDD4		STD	0x19
 FDD6		LDA A	0xF4
 FDD8		LDA B	0x1E
 FDDA		STA B	0xF4
@@ -1791,13 +1807,13 @@ FE58		LDX	0x513
 FE5B		STX	0x8000
 FE5E		CLR B
 FE5F		LDA A	0xE0
-FE61		SDT	0x8002
+FE61		STD	0x8002
 FE64		CLR	0x8004
 FE67		JSR	0xF77A
 FE6A		LDA A	0x8D
 FE6C		BEQ	0xFE32
 FE6E		BRA	0xFE45
-FE70	_sub(FAF8)_opCode_3:	CLR	0xD9	;op cmd 0x3 Read data from a file
+FE70	(sub)operation_0x3:	CLR	0xD9	;operation command 0x3 Read data from a file
 FE73		LDA A	0xD8
 FE75		CMP A	0x03
 FE77		BEQ	0xFE7C
@@ -1834,7 +1850,7 @@ FEB6		STX	0xDE
 FEB8		DEC	0xE7
 FEBB		BNE	0xFEA9
 FEBD		JMP	0xFF43
-FEC0	_sub(FAF8)_opCode_4:	CLR	0xD9	;op cmd 0x4 Write data to a file
+FEC0	(sub)operation_0x4:	CLR	0xD9	;operation command 0x4 Write data to a file
 FEC3		LDA A	0xD8
 FEC5		BEQ	0xFE79
 FEC7		CMP A	0x03
@@ -1923,7 +1939,7 @@ FF63		BRA	0xFF54
 FF65	A_FF65:	LDA A	0x30
 FF67		BRA	0xFFA5
 FF69	A_FF69:	OIM	0x08	0x02
-FF6C		JSR	_sub_Delay_14_units
+FF6C		JSR	(sub)Delay_14_units
 FF6F		AIM	0xF7	0x02
 FF72		BRA	0xFFAA
 FF74		LDA A	0x10
@@ -1956,100 +1972,97 @@ FFA7		JSR	0xFF3A
 FFAA	A_FFAA:	CLR A
 FFAB		STA A	0x8D
 FFAD		STA A	0xD8
-FFAF		JSR	_sub_Delay_1_unit
-FFB2		LDS	_INT_RAM_StackPointerStorage
+FFAF		JSR	(sub)Delay_1_unit
+FFB2		LDS	(RAM_INT)StackPointerStorage
 FFB4		JMP	0xFB03
-FFB7	_table_BAUD_Rates:	DB	11000000B	;BAUD 9600
-FFB8		DB	01000000B	;BAUD 19200
-FFB9		DB	01000000B	;BAUD 19200
-FFBA		DB	11010000B	;BAUD 150
-FFBB		DB	01110000B	;BAUD 300
-FFBC		DB	11110000B	;BAUD 600
-FFBD		DB	00110000B	;BAUD 1200
-FFBE		DB	10110000B	;BAUD 2400
-FFBF		DB	00100000B	;BAUD 4800
-FFC0		DB	11000000B	;BAUD 9600
-FFC1		DB	01000000B	;BAUD 19200
-FFC2		DB	10000000B	;BAUD 38400
-FFC3		DB	00000000B	;BAUD 76800
-FFC4		DB	00100000B	;BAUD 4800
-FFC5		DB	11000000B	;BAUD 9600
-FFC6		DB	01000000B	;BAUD 19200
-FFC7	_table_FDC_Commands:	DB	'F'	;F = FDC Format with verify
-FFC8		DW	242,173
+FFB7	(table)BAUD_Rates:	DB	11000000B	;BAUD=9600
+FFB8		DB	01000000B	;BAUD=19200
+FFB9		DB	01000000B	;BAUD=19200
+FFBA		DB	11010000B	;BAUD=150
+FFBB		DB	01110000B	;BAUD=300
+FFBC		DB	11110000B	;BAUD=600
+FFBD		DB	00110000B	;BAUD=1200
+FFBE		DB	10110000B	;BAUD=2400
+FFBF		DB	00100000B	;BAUD=4800
+FFC0		DB	11000000B	;BAUD=9600
+FFC1		DB	01000000B	;BAUD=19200
+FFC2		DB	10000000B	;BAUD=38400
+FFC3		DB	00000000B	;BAUD=76800
+FFC4		DB	00100000B	;BAUD=4800
+FFC5		DB	11000000B	;BAUD=9600
+FFC6		DB	01000000B	;BAUD=19200
+FFC7	(table)FDC_Commands:	DB	'F'	;F = FDC Format with verify
+FFC8		DW	0F2ADH
 FFCA		DB	'G'	;G = FDC Format without verify
-FFCB		DW	242,170
+FFCB		DW	0F2AAH
 FFCD		DB	'R'	;R = FDC Read one logical sector
-FFCE		DW	241,253
+FFCE		DW	0F1FDH
 FFD0		DB	'W'	;W = FDC Write one logical sector with verify
-FFD1		DW	242,20
+FFD1		DW	0F214H
 FFD3		DB	'X'	;X = FDC Write one logical sector without verify
-FFD4		DW	242,17
+FFD4		DW	0F211H
 FFD6		DB	'A'	;A = FDC Read ID section
-FFD7		DW	242,81
+FFD7		DW	0F251H
 FFD9		DB	'B'	;B = FDC Write ID section with verify
-FFDA		DW	242,107
+FFDA		DW	0F26BH
 FFDC		DB	'C'	;C = FDC Write ID section without verify
-FFDD		DW	242,104
+FFDD		DW	0F268H
 FFDF		DB	'S'	;S = FDC Search ID section
-FFE0		DW	243,91
+FFE0		DW	0F35BH
 FFE2		DB	'D'	;D = FDC Check drive condition
-FFE3		DW	243,200
+FFE3		DW	0F3C8H
 FFE5		DB	'M'	;M = FDC Change modes
-FFE6		DW	244,0
-FFE8	_dummyData:	DB	00H	;blank space
-FFE9		DB	0FFH
-FFEA		DB	00H
-FFEB		DB	0FFH
-FFEC		DB	00H
-FFED		DB	0FFH
-FFEE	_Vector_TRAP:	DW	240,0
-FFF0	_Vector_IRQ2SIO:	DW	240,0
-FFF2	_Vector_IRQ2TOI:	DW	240,0
-FFF4	_Vector_IRQ2OCI:	DW	240,0
-FFF6	_Vector_IRQ2ICI:	DW	240,0
-FFF8	_Vector_IRQ1:	DW	240,0
-FFFA	_Vector_SWI:	DW	240,0
-FFFC	_Vector_NMI:	DW	240,0
-FFFE	_Vector_RESET:	DW	240,0
+FFE6		DW	0F400H
+FFE8	(dummyData):	DW	00FFH	;blank space
+FFEA		DW	00FFH
+FFEC		DW	00FFH
+FFEE	(vector)TRAP:	DW	0F000H
+FFF0	(vector)IRQ2SIO:	DW	0F000H
+FFF2	(vector)IRQ2TOI:	DW	0F000H
+FFF4	(vector)IRQ2OCI:	DW	0F000H
+FFF6	(vector)IRQ2ICI:	DW	0F000H
+FFF8	(vector)IRQ1:	DW	0F000H
+FFFA	(vector)SWI:	DW	0F000H
+FFFC	(vector)NMI:	DW	0F000H
+FFFE	(vector)RESET:	DW	0F000H
 
 
 ****************************************************************
 * SYMBOL TABLE
 ****************************************************************
-0000	_register_PORT1Direction:	ref from: F006
-0001	_register_PORT2Direction:	ref from: F02E
-0002	_register_PORT1Data:	ref from: F00A F145 F14E F154 F1AF F446 F44C F65D F69D F6DF F746 F77A F788 F9DD FA71 FF69 FF6F
-0003	_register_PORT2Data:
-0004	_register_PORT3Direction:	ref from: F00E
-0005	_register_PORT4Direction:	ref from: F010
-0006	_register_PORT3Data:
-0007	_register_PORT4Data:
-0008	_register_TimerControlAndStatus:
-0009	_register_TimerCounterHi:
-000A	_register_TimerCounterLow:
-000B	_register_TimerOutputCompareHi:
-000C	_register_TimerOutputCompareLow:
-000D	_register_TimerInputCaptureHi:
-000E	_register_TimerInputCaptureLow:
-000F	_register_Port3ControlAndStatus:
-0010	_register_SCI_RateAndModeControl:	ref from: F032
-0011	_register_SCI_TxRxControlAndStatus:	ref from: F036 F064 F157 F184 F192 FA19
-0012	_register_SCI_RxData:	ref from: F066 F163 FA1B
-0013	_register_SCI_TxData:	ref from: F190
-0014	_register_RAMControl:
-0015	_register_Reserved(15):
-0016	_register_Reserved(16):
-0017	_register_Reserved(17):
-0018	_register_Reserved(18):
-0019	_register_Reserved(19):
-001A	_register_Reserved(1A):
-001B	_register_Reserved(1B):
-001C	_register_Reserved(1C):
-001D	_register_Reserved(1D):
-001E	_register_Reserved(1E):
-001F	_register_Reserved(1F):
-0080	_INT_RAM_BAUD_Rate:	ref from: F027 F1DA F1DD F457 F45A F8F3 F8F6 F955 F95F F9F5	;BAUD Rate from switch positions
+0000	(register)PORT1Direction:	ref from: F006
+0001	(register)PORT2Direction:	ref from: F02E
+0002	(register)PORT1Data:	ref from: F00A F145 F14E F154 F1AF F446 F44C F65D F69D F6DF F746 F77A F788 F9DD FA71 FF69 FF6F
+0003	(register)PORT2Data:
+0004	(register)PORT3Direction:	ref from: F00E
+0005	(register)PORT4Direction:	ref from: F010
+0006	(register)PORT3Data:
+0007	(register)PORT4Data:
+0008	(register)TimerControlAndStatus:
+0009	(register)TimerCounterHi:
+000A	(register)TimerCounterLow:
+000B	(register)TimerOutputCompareHi:
+000C	(register)TimerOutputCompareLow:
+000D	(register)TimerInputCaptureHi:
+000E	(register)TimerInputCaptureLow:
+000F	(register)Port3ControlAndStatus:
+0010	(register)SCI_RateAndModeControl:	ref from: F032
+0011	(register)SCI_TxRxControlAndStatus:	ref from: F036 F064 F157 F184 F192 FA19
+0012	(register)SCI_RxData:	ref from: F066 F163 FA1B
+0013	(register)SCI_TxData:	ref from: F190
+0014	(register)RAMControl:
+0015	(register)Reserved[15]:
+0016	(register)Reserved[16]:
+0017	(register)Reserved[17]:
+0018	(register)Reserved[18]:
+0019	(register)Reserved[19]:
+001A	(register)Reserved[1A]:
+001B	(register)Reserved[1B]:
+001C	(register)Reserved[1C]:
+001D	(register)Reserved[1D]:
+001E	(register)Reserved[1E]:
+001F	(register)Reserved[1F]:
+0080	(RAM_INT)BAUD_Rate:	ref from: F027 F1DA F1DD F457 F45A F8F3 F8F6 F955 F95F F9F5	;BAUD Rate from switch positions
 0081	ref from: F9C6 F9E0
 0082	ref from: F9D1 F9D5 F9D9
 0083	ref from: F9E9 F9ED F9F1
@@ -2113,7 +2126,7 @@ FFFE	_Vector_RESET:	DW	240,0
 00E1	ref from: FAF5 FB35
 00E2	ref from: FB3A FF13
 00E3	ref from: FD3F FD4D FD66 FDD2 FE7C FEAE FEB1 FF09 FF11
-00E5	_INT_RAM_StackPointerStorage:	ref from: FAE4 FB6D FFB2	;2 byte stack storage
+00E5	(RAM_INT)StackPointerStorage:	ref from: FAE4 FB6D FFB2	;2 byte stack storage
 00E7	ref from: FE8B FEA2 FEB8
 00E8	ref from: FB9B FD8D FD9A FDC2 FF5C FF61
 00EA	ref from: FBAD FBCB FC31 FC5F
@@ -2125,26 +2138,26 @@ FFFE	_Vector_RESET:	DW	240,0
 00F2	ref from: FDF7 FE0E FE17 FE21
 00F3	ref from: FCD8 FEF8
 00F4	ref from: FDA3 FDD6 FDDA FDE6 FE96
-4000	_CPLD_4000:	ref from: F014 F4D5 F4DA F4DF F6DC F6F7 F743 F792 F79C F7BF F7F6 F82F F838 F942 F947 F962 F967 F96F F99C F9A1
-4001	_CPLD_4001:	ref from: F017 F029 F1DF F45D F46E F48C F636 F64D F7E4 F7ED F8F8 F96A F9CA F9E3 F9F9
-4002	_CPLD_4002:	ref from: F4B5 F4E8 F6AD F6C6 F7FC
-4003	_CPLD_4003:	ref from: F6BF F6EA F7BA F802
+4000	(CPLD)4000:	ref from: F014 F4D5 F4DA F4DF F6DC F6F7 F743 F792 F79C F7BF F7F6 F82F F838 F942 F947 F962 F967 F96F F99C F9A1	;set = stepper motor???
+4001	(CPLD)4001:	ref from: F017 F029 F1DF F45D F46E F48C F636 F64D F7E4 F7ED F8F8 F96A F9CA F9E3 F9F9	;get = 1111_0000 dip switches
+4002	(CPLD)4002:	ref from: F4B5 F4E8 F6AD F6C6 F7FC
+4003	(CPLD)4003:	ref from: F6BF F6EA F7BA F802
 8000	ref from: F2EB F7AD FE5B
 8002	ref from: F2FB F38E F754 F775 FE61
 8004	ref from: F2F6 F495 F760 F881 FE64
 8005	ref from: FCA3 FCF3 FDEC FE98 FEE9
 8011	ref from: F734 F7A2
-842B	_EXT_RAM_ArrayStorage1??:
+842B	(RAM_EXT)ArrayStorage1??:
 84CC	ref from: FD25
 84EB	ref from: FB8A
 84FF	ref from: FBDB
 8515	called from: F0A9 FA14	ref from: FD08
-8615	_EXT_RAM_ArrayStorage2??:
+8615	(RAM_EXT)ArrayStorage2??:
 8629	ref from: FC84 FCF0 FEE6
-862A	_EXT_RAM_ArrayStorage3??:
+862A	(RAM_EXT)ArrayStorage3??:
 8642	ref from: FC1A
 8643	ref from: FBA3 FBB0
-F000	_ProgramStart:	;mask all interrupts
+F000	ProgramStart:	;mask all interrupts
 F055	START_FDC_MODE:	jumped from: F123 FB6F
 F05B	jumped from: F142	;clear INT RAM 008D -> 0x23 bytes
 F070	jumped from: F07F F0E0 F0E6
@@ -2191,26 +2204,26 @@ F1C9	jumped from: F1BB
 F1D1	jumped from: F1E6
 F1D4	jumped from: F1A0
 F1E4	jumped from: F1B2
-F1E8	_sub(F0F0)_FDC_Default:	;this is a default is entry not in table
+F1E8	(sub)FDC_Default:	;this is a default, entry not in table
 F1F8	jumped from: F1EA
 F1FA	jumped from: F1F5
-F1FD	_sub(F0F0)_FDC_R:	;R = Read one logical sector
-F211	_sub(F0F0)_FDC_X:	;X = Write one logical sector without verify
-F214	_sub(F0F0)_FDC_W:	;W = Write one logical sector with verify
+F1FD	(sub)FDC_R:	;R = Read one logical sector
+F211	(sub)FDC_X:	;X = Write one logical sector without verify
+F214	(sub)FDC_W:	;W = Write one logical sector with verify
 F217	jumped from: F200 F205 F20A
 F233	jumped from: F23C F282 F369
 F237	jumped from: F231
 F24F	jumped from: F217 F21C F221 F226 F23F F246 F24A F254 F259
-F251	_sub(F0F0)_FDC_A:	;A = Read ID section
+F251	(sub)FDC_A:	;A = Read ID section
 F265	jumped from: F20F
-F268	_sub(F0F0)_FDC_C:	;C = Write ID section without verify
-F26B	_sub(F0F0)_FDC_B:	;B = Write ID section with verify
+F268	(sub)FDC_C:	;C = Write ID section without verify
+F26B	(sub)FDC_B:	;B = Write ID section with verify
 F282	jumped from: F296
 F285	jumped from: F280
 F29A	jumped from: F292
 F2A8	jumped from: F24F F26E F273 F278 F298 F29F F2A3
-F2AA	_sub(F0F0)_FDC_G:	;G = Format without verify
-F2AD	_sub(F0F0)_FDC_F:	;F = Format with verify
+F2AA	(sub)FDC_G:	;G = Format without verify
+F2AD	(sub)FDC_F:	;F = Format with verify
 F2C8	called from: FB7B	jumped from: F2B5 F2C2
 F2DC	jumped from: F337
 F2DF	jumped from: F33C
@@ -2225,7 +2238,7 @@ F32C	jumped from: F31D
 F335	jumped from: F2DA
 F33E	jumped from: F314
 F351	jumped from: F321
-F35B	_sub(F0F0)_FDC_S:	;S = Search ID section
+F35B	(sub)FDC_S:	;S = Search ID section
 F369	jumped from: F383
 F36C	jumped from: F35F
 F370	jumped from: F32A
@@ -2236,13 +2249,13 @@ F394	jumped from: F37F
 F397	jumped from: F3B5
 F3A4	jumped from: F3C3
 F3BB	jumped from: F3AB
-F3C8	_sub(F0F0)_FDC_D:	;D = Check drive condition
+F3C8	(sub)FDC_D:	;D = Check drive condition
 F3D2	jumped from: F370
 F3D4	jumped from: F3CC
 F3E2	jumped from: F3DA
 F3F6	jumped from: F3F1
 F3FC	jumped from: F3ED
-F400	_sub(F0F0)_FDC_M:	;M = Change modes
+F400	(sub)FDC_M:	;M = Change modes
 F413	jumped from: F404
 F41B	jumped from: F411
 F41F	jumped from: F3D2 F409 F415
@@ -2261,7 +2274,7 @@ F47B	jumped from: F46C F48A
 F482	jumped from: F462 F491
 F495	called from: F207 F223
 F4A4	jumped from: F4A0
-F4A8	_lookupTable_For_0xF498:	;variable lookup table
+F4A8	(table)For_0xF498:	;variable lookup table
 F4AF	called from: F3E5
 F4B3	called from: F6A2 F77D FB72
 F4B4	jumped from: F4B1
@@ -2369,7 +2382,7 @@ F87E	called from: F76E F7A5
 F88F	jumped from: F8AA
 F896	jumped from: F8A2
 F8A7	jumped from: F886 F88A
-F8AC	_lookupTable_For_0xF75D:	;variable lookup table
+F8AC	(table)For_0xF75D:	;variable lookup table
 F8BA	called from: F731 F79F
 F8C2	jumped from: F8CA
 F8CF	called from: F899 F8C5
@@ -2390,13 +2403,13 @@ F955	jumped from: F993
 F990	jumped from: F94D F998
 F995	jumped from: F97C
 F99C	jumped from: F988
-F9A5	_lookupTable_For_0xF952:	;variable lookup table (stepper motor stuff?)
-F9A9	_lookupTable_For_0xF990:	;variable lookup table (stepper motor stuff?)
-F9AD	_sub_ClearMemoryRange:	called from: F03E F061 F2F1 FCCC	jumped from: F9B3
-F9B6	_sub_Delay_14_units:	called from: F058 F906 FF6C
-F9BA	_sub_Delay_1_unit:	called from: F068 F6E2 FA1D FB00 FFAF	jumped from: F449
-F9BC	_sub_Delay=ACCB:	called from: F046 F6F2 F974 F980 FA76	jumped from: F9B8 F9C3
-F9BE	_sub_Delay_Private_Loop:	jumped from: F9C0
+F9A5	(table)For_0xF952:	;variable lookup table (stepper motor stuff?)
+F9A9	(table)For_0xF990:	;variable lookup table (stepper motor stuff?)
+F9AD	(sub)ClearMemoryRange:	called from: F03E F061 F2F1 FCCC	jumped from: F9B3
+F9B6	(sub)Delay_14_units:	called from: F058 F906 FF6C
+F9BA	(sub)Delay_1_unit:	called from: F068 F6E2 FA1D FB00 FFAF	jumped from: F449
+F9BC	(sub)Delay=ACCB:	called from: F046 F6F2 F974 F980 FA76	jumped from: F9B8 F9C3
+F9BE	(subI)Delay:	jumped from: F9C0
 F9C6	called from: F1AC
 F9D9	jumped from: F9CF
 F9DD	jumped from: F9D3
@@ -2431,15 +2444,15 @@ FB0D	jumped from: FB26
 FB32	jumped from: FAF3
 FB35	jumped from: FB22 FB30
 FB43	jumped from: FB4C
-FB4E	_lookupTable_For_0xFAF8:	;operation command 0x0 Create/Access a directory refrence
+FB4E	(table)Operation_Commands:	;operation command 0x0 Create/Access a directory refrence
 FB60	called from: FAE2 FCFC
-FB66	_sub(FAF8)_opCode_8:	;op cmd 0x8 Change to FDC mode
+FB66	(sub)operation_0x8:	;operation command 0x8 Change to FDC mode
 FB6D	jumped from: FB68
-FB72	_sub(FAF8)_opCode_7:	;op cmd 0x7 Get drive status
-FB7A	_sub(FAF8)_opCode_6:	;op cmd 0x6 Format a disk
+FB72	(sub)operation_0x7:	;operation command 0x7 Get drive status
+FB7A	(sub)operation_0x6:	;operation command 0x6 Format a disk
 FB82	jumped from: FB75
 FB85	jumped from: FB80
-FB93	_sub(FAF8)_opCode_0:	;op cmd 0x0 Create/Access a directory refrence
+FB93	(sub)operation_0x0:	;operation command 0x0 Create/Access a directory refrence
 FBAD	jumped from: FBA8
 FBBA	jumped from: FBB3
 FBC0	jumped from: FBB8
@@ -2462,7 +2475,7 @@ FC3E	jumped from: FC70
 FC48	jumped from: FC5D
 FC5F	jumped from: FC5A
 FC66	jumped from: FC52
-FC73	_sub(FAF8)_opCode_5:	;op cmd 0x5 Delete a file
+FC73	(sub)operation_0x5:	;operation command 0x5 Delete a file
 FC78	jumped from: FBF9
 FC7B	jumped from: FC76
 FC84	jumped from: FCAA
@@ -2470,10 +2483,10 @@ FC94	jumped from: FC9A
 FC9C	jumped from: FC95
 FCBD	jumped from: FCC7
 FCC9	jumped from: FCB7 FCBB FCC0
-FCD4	_sub(FAF8)_opCode_2:	;op cmd 0x2 Close a file
+FCD4	(sub)operation_0x2:	;operation command 0x2 Close a file
 FCF3	jumped from: FCEE
 FCFC	jumped from: FB90 FCD2 FCD6 FCDB FCDF FCE8
-FD02	_sub(FAF8)_opCode_1:	;op cmd 0x1 Open a file
+FD02	(sub)operation_0x1:	;operation command 0x1 Open a file
 FD13	jumped from: FCE1 FD05 FD0D FD1E FD23 FD46
 FD16	jumped from: FD11
 FD20	jumped from: FD18
@@ -2505,14 +2518,14 @@ FE45	jumped from: FE51 FE6E
 FE48	called from: FCCF FDDE
 FE4B	called from: FB8D FCF6 FDEF FEEC
 FE53	jumped from: FE4F
-FE70	_sub(FAF8)_opCode_3:	;op cmd 0x3 Read data from a file
+FE70	(sub)operation_0x3:	;operation command 0x3 Read data from a file
 FE79	jumped from: FE7E FEC5 FEC9
 FE7C	jumped from: FE77
 FE89	jumped from: FE83
 FE8B	jumped from: FE87
 FEA2	jumped from: FE92
 FEA9	jumped from: FEBB
-FEC0	_sub(FAF8)_opCode_4:	;op cmd 0x4 Write data to a file
+FEC0	(sub)operation_0x4:	;operation command 0x4 Write data to a file
 FED0	jumped from: FF16
 FEE6	jumped from: FEE0
 FEEC	jumped from: FEE4
@@ -2537,17 +2550,17 @@ FF98	jumped from: FF92
 FFA0	jumped from: FF86 FF8E FF96 FF9E
 FFA5	jumped from: FF67 FF76 FF7A
 FFAA	jumped from: FF72
-FFB7	_table_BAUD_Rates:	;BAUD 9600
-FFC7	_table_FDC_Commands:
-FFE8	_dummyData:	;blank space
-FFEE	_Vector_TRAP:
-FFF0	_Vector_IRQ2SIO:
-FFF2	_Vector_IRQ2TOI:
-FFF4	_Vector_IRQ2OCI:
-FFF6	_Vector_IRQ2ICI:
-FFF8	_Vector_IRQ1:
-FFFA	_Vector_SWI:
-FFFC	_Vector_NMI:
-FFFE	_Vector_RESET:
+FFB7	(table)BAUD_Rates:	;BAUD=9600
+FFC7	(table)FDC_Commands:
+FFE8	(dummyData):	;blank space
+FFEE	(vector)TRAP:
+FFF0	(vector)IRQ2SIO:
+FFF2	(vector)IRQ2TOI:
+FFF4	(vector)IRQ2OCI:
+FFF6	(vector)IRQ2ICI:
+FFF8	(vector)IRQ1:
+FFFA	(vector)SWI:
+FFFC	(vector)NMI:
+FFFE	(vector)RESET:
 ****************************************************************
 SYMBOL TABLE:  532  ENTRIES

@@ -1,4 +1,4 @@
-;Tandy PDD firmware reverse engineering
+;Tandy PDD1 firmware reverse engineering
 
 cpu				6301
 orig			0xF000
@@ -6,6 +6,9 @@ FileIn			c:\dcDisASM\PDD\PDD.BIN
 ;FileOptions	EPROM boot loader (TMS320 only)
 ;file out can be .ASM, .RTF, .HTML
 FileOut			c:\dcDisasm\PDD\PDD.ASM
+
+Header			;Tandy PDD1 firmware reverse engineering
+Header			;By BiggRanger
 
 ;flag	asciiOnly	;only prints ascii characters in output
 ;flag	colorJump	green
@@ -17,7 +20,7 @@ FileOut			c:\dcDisasm\PDD\PDD.ASM
 ;flag	colorLabels	cyan
 ;flag	colorComment	green
 ;flag	noSymbolTable
-;flag	radixRepresentationIntel	;or Motorola, this only affects output.
+;flag	radixRepresentationIntel	;or radixRepresentationMotorola, this only affects output.
 ;flag	showOpCodeHEX
 ;flag	showOpCodeASCII
 ;flag	showMnemonicComments
@@ -38,9 +41,9 @@ FileOut			c:\dcDisasm\PDD\PDD.ASM
 ;----------------------------------------------------------
 ;0000-001F	Internal Registers (see below)
 ;0080-00FF	Internal RAM
-;4000-40FF	CPLD (Glue Logic + Floppy Motor Control)
-;8000-87FF	External RAM
-;F000-FFFF	Internal ROM
+;4000-4003	CPLD (Glue Logic + Hardware IO Control)
+;8000-87FF	External RAM (2K)
+;F000-FFFF	Internal ROM (4K)
 ;----------------------------------------------------------
 ;I/O ports
 ;Port.Bit	I/O		Pin#	ID	Function
@@ -65,88 +68,88 @@ FileOut			c:\dcDisasm\PDD\PDD.ASM
 ;----------------------------------------------------------
 ;symbols describing registers of the HD63A03V1
 ;----------------------------------------------------------
-data	0x0000	byte	hex	_register_PORT1Direction
-data	0x0001	byte	hex	_register_PORT2Direction
-data	0x0002	byte	hex	_register_PORT1Data
-data	0x0003	byte	hex	_register_PORT2Data
-data	0x0004	byte	hex	_register_PORT3Direction
-data	0x0005	byte	hex	_register_PORT4Direction
-data	0x0006	byte	hex	_register_PORT3Data
-data	0x0007	byte	hex	_register_PORT4Data
-data	0x0008	byte	hex	_register_TimerControlAndStatus
-data	0x0009	byte	hex	_register_TimerCounterHi
-data	0x000A	byte	hex	_register_TimerCounterLow
-data	0x000B	byte	hex	_register_TimerOutputCompareHi
-data	0x000C	byte	hex	_register_TimerOutputCompareLow
-data	0x000D	byte	hex	_register_TimerInputCaptureHi
-data	0x000E	byte	hex	_register_TimerInputCaptureLow
-data	0x000F	byte	hex	_register_Port3ControlAndStatus
-data	0x0010	byte	hex	_register_SCI_RateAndModeControl
-data	0x0011	byte	hex	_register_SCI_TxRxControlAndStatus
-data	0x0012	byte	hex	_register_SCI_RxData
-data	0x0013	byte	hex	_register_SCI_TxData
-data	0x0014	byte	hex	_register_RAMControl
-data	0x0015	byte	hex	_register_Reserved(15)
-data	0x0016	byte	hex	_register_Reserved(16)
-data	0x0017	byte	hex	_register_Reserved(17)
-data	0x0018	byte	hex	_register_Reserved(18)
-data	0x0019	byte	hex	_register_Reserved(19)
-data	0x001A	byte	hex	_register_Reserved(1A)
-data	0x001B	byte	hex	_register_Reserved(1B)
-data	0x001C	byte	hex	_register_Reserved(1C)
-data	0x001D	byte	hex	_register_Reserved(1D)
-data	0x001E	byte	hex	_register_Reserved(1E)
-data	0x001F	byte	hex	_register_Reserved(1F)
+data	0x0000	byte	hex	(register)PORT1Direction
+data	0x0001	byte	hex	(register)PORT2Direction
+data	0x0002	byte	hex	(register)PORT1Data
+data	0x0003	byte	hex	(register)PORT2Data
+data	0x0004	byte	hex	(register)PORT3Direction
+data	0x0005	byte	hex	(register)PORT4Direction
+data	0x0006	byte	hex	(register)PORT3Data
+data	0x0007	byte	hex	(register)PORT4Data
+data	0x0008	byte	hex	(register)TimerControlAndStatus
+data	0x0009	byte	hex	(register)TimerCounterHi
+data	0x000A	byte	hex	(register)TimerCounterLow
+data	0x000B	byte	hex	(register)TimerOutputCompareHi
+data	0x000C	byte	hex	(register)TimerOutputCompareLow
+data	0x000D	byte	hex	(register)TimerInputCaptureHi
+data	0x000E	byte	hex	(register)TimerInputCaptureLow
+data	0x000F	byte	hex	(register)Port3ControlAndStatus
+data	0x0010	byte	hex	(register)SCI_RateAndModeControl
+data	0x0011	byte	hex	(register)SCI_TxRxControlAndStatus
+data	0x0012	byte	hex	(register)SCI_RxData
+data	0x0013	byte	hex	(register)SCI_TxData
+data	0x0014	byte	hex	(register)RAMControl
+data	0x0015	byte	hex	(register)Reserved[15]
+data	0x0016	byte	hex	(register)Reserved[16]
+data	0x0017	byte	hex	(register)Reserved[17]
+data	0x0018	byte	hex	(register)Reserved[18]
+data	0x0019	byte	hex	(register)Reserved[19]
+data	0x001A	byte	hex	(register)Reserved[1A]
+data	0x001B	byte	hex	(register)Reserved[1B]
+data	0x001C	byte	hex	(register)Reserved[1C]
+data	0x001D	byte	hex	(register)Reserved[1D]
+data	0x001E	byte	hex	(register)Reserved[1E]
+data	0x001F	byte	hex	(register)Reserved[1F]
 ;----------------------------------------------------------
 ;symbols for CPLD
 ;----------------------------------------------------------
-data	0x4000	byte	hex	_CPLD_4000
-data	0x4001	byte	hex	_CPLD_4001	;get=switch positions set=BAUD clock
-;										;1111_0000 dip switches
-;										;1111_0000 BAUD clock
-data	0x4002	byte	hex	_CPLD_4002
-data	0x4003	byte	hex	_CPLD_4003
+data	0x4000	byte	hex	(CPLD)4000	;set = stepper motor???
+data	0x4001	byte	hex	(CPLD)4001	;get = 1111_0000 dip switches
+;										;set = 1111_0000 BAUD clock
+data	0x4002	byte	hex	(CPLD)4002
+data	0x4003	byte	hex	(CPLD)4003
 ;----------------------------------------------------------
 ;reset and interrupt vectors
 ;----------------------------------------------------------
 box		0xFFF0	0xFFFF	;RESET AND INTERRUPT VECTORS
-data	0xFFF0	word	hex	_Vector_IRQ2SIO
-data	0xFFF2	word	hex	_Vector_IRQ2TOI
-data	0xFFF4	word	hex	_Vector_IRQ2OCI
-data	0xFFF6	word	hex	_Vector_IRQ2ICI
-data	0xFFF8	word	hex	_Vector_IRQ1
-data	0xFFFA	word	hex	_Vector_SWI
-data	0xFFFC	word	hex	_Vector_NMI
-data	0xFFEE	word	hex	_Vector_TRAP
-data	0xFFFE	word	hex	_Vector_RESET
+data	0xFFF0	word	hex	(vector)IRQ2SIO
+data	0xFFF2	word	hex	(vector)IRQ2TOI
+data	0xFFF4	word	hex	(vector)IRQ2OCI
+data	0xFFF6	word	hex	(vector)IRQ2ICI
+data	0xFFF8	word	hex	(vector)IRQ1
+data	0xFFFA	word	hex	(vector)SWI
+data	0xFFFC	word	hex	(vector)NMI
+data	0xFFEE	word	hex	(vector)TRAP
+data	0xFFFE	word	hex	(vector)RESET
 ;----------------------------------------------------------
 
 
 ;----------------------------------------------------------
 ;symbols for Internal RAM
 ;----------------------------------------------------------
-data	0x0080	byte	hex	_INT_RAM_BAUD_Rate				;BAUD Rate from switch positions
-data	0x00E5	word	hex	_INT_RAM_StackPointerStorage	;2 byte stack storage
+data	0x0080	byte	hex	(RAM_INT)BAUD_Rate				;BAUD Rate from switch positions
+data	0x00E5	word	hex	(RAM_INT)StackPointerStorage	;2 byte stack storage
 ;----------------------------------------------------------
+
 
 ;----------------------------------------------------------
 ;symbols for External RAM
 ;----------------------------------------------------------
-data	0x842B	byte	hex	_EXT_RAM_ArrayStorage1??
-data	0x8615	byte	hex	_EXT_RAM_ArrayStorage2??
-data	0x862A	byte	hex	_EXT_RAM_ArrayStorage3??
+data	0x842B	byte	hex	(RAM_EXT)ArrayStorage1??
+data	0x8615	byte	hex	(RAM_EXT)ArrayStorage2??
+data	0x862A	byte	hex	(RAM_EXT)ArrayStorage3??
 ;----------------------------------------------------------
-
 
 
 ;----------------------------------------------------------
 ;start documenting code
 ;----------------------------------------------------------
-code	0xF000	_ProgramStart	;mask all interrupts
+code	0xF000	ProgramStart	;mask all interrupts
 comment	0xF001	;set stack to 87FF (top of EXT RAM)
 view	0xF004	bin	;port 1 settings
 view	0xF008	bin	;port 1 settings
 view	0xF00C	bin	;port 3+4 settings
+
 
 ;----------------------------------------------------------
 box		0xF017	0xF036	;Read dip switches and setup BAUD Rate
@@ -164,7 +167,12 @@ view	0xF030	bin	;Value -> SCI clock is from Port 2.2
 view	0xF034	bin	;set TxRx control and status
 ;----------------------------------------------------------
 
+
+
+
 comment	0xF038	;clear INT RAM 0081-00FF
+
+
 
 ;----------------------------------------------------------
 box		0xF04C	0xF053	;Read dip switches and set operation mode
@@ -175,12 +183,15 @@ view	0xF051	bin	;C is set for 0x30 and down
 view	0xF053	hex	;Mode=init jump to code - Fall over to FDC mode
 ;----------------------------------------------------------
 
+
 code	0xF055	START_FDC_MODE
 
 
 comment	0xF05B	;clear INT RAM 008D -> 0x23 bytes
 
 
+;----------------------------------------------------------
+box		0xF0F0	0xF10C	;Switch/Case Block For FDC commands
 comment	0xF0F0	;set X to table FFC7
 comment	0xF0F3	;load value from 008E into ACCA
 comment	0xF0F5	;compare with table
@@ -195,6 +206,7 @@ comment	0xF103	;store ACCA in 008D
 comment	0xF105	;load X with F1EB (this is "Case Default")
 comment	0xF10A	;load into X value in X+1 (address HH+LL)
 comment	0xF10C	;jump to sub at location in X
+;----------------------------------------------------------
 
 
 view	0xF184	bin	;test bit 5 TX_READY
@@ -203,11 +215,14 @@ view	0xF184	bin	;test bit 5 TX_READY
 view	0xF192	bin	;test bit 5 TX_READY
 
 
+;----------------------------------------------------------
+box		0xFAF5	0xFAFF	;Switch/Case Block For operation commands
 comment	0xFAF5	;load value from 00E1 into ACCB
 comment	0xFAF8	;set X to table FB4E
 comment	0xFAFB	;add ACCB to X
 comment	0xFAFC	;load X with value from table
 comment	0xFAFE	;jump to sub at X
+;----------------------------------------------------------
 
 
 
@@ -240,14 +255,18 @@ comment	0xFAFE	;jump to sub at X
 ;identified subroutines
 ;----------------------------------------------------------
 
-box		0xF9AD	0xF9B5	;SUB CLEAR MEMORY (X=addressStart D=Length)
-code	0xF9AD	_sub_ClearMemoryRange
+;----------------------------------------------------------
+box		0xF9AD	0xF9B5	;SUB - CLEAR MEMORY (X=addressStart D=Length)
+code	0xF9AD	(sub)ClearMemoryRange
+;----------------------------------------------------------
 
-box		0xF9B6	0xF9C5	;DELAY LOOP
-code	0xF9B6	_sub_Delay_14_units
-code	0xF9BA	_sub_Delay_1_unit
-code	0xF9BC	_sub_Delay=ACCB
-code	0xF9BE	_sub_Delay_Private_Loop
+;----------------------------------------------------------
+box		0xF9B6	0xF9C5	;SUB - DELAY LOOP
+code	0xF9B6	(sub)Delay_14_units
+code	0xF9BA	(sub)Delay_1_unit
+code	0xF9BC	(sub)Delay=ACCB
+code	0xF9BE	(subI)Delay
+;----------------------------------------------------------
 
 
 
@@ -261,45 +280,45 @@ code	0xF9BE	_sub_Delay_Private_Loop
 ;----------------------------------------------------------
 ;variable tables
 ;----------------------------------------------------------
-table	0xF4A8	0x07	byte	hex	_lookupTable_For_0xF498	;variable lookup table
-table	0xF8AC	0x0E	byte	hex	_lookupTable_For_0xF75D	;variable lookup table
-table	0xF9A5	0x04	byte	hex	_lookupTable_For_0xF952	;variable lookup table (stepper motor stuff?)
-table	0xF9A9	0x04	byte	hex	_lookupTable_For_0xF990	;variable lookup table (stepper motor stuff?)
-table	0xFFE8	0x06	byte	hex	_dummyData	;blank space
+table	0xF4A8	0x07	byte	hex	(table)For_0xF498	;variable lookup table
+table	0xF8AC	0x0E	byte	hex	(table)For_0xF75D	;variable lookup table
+table	0xF9A5	0x04	byte	hex	(table)For_0xF952	;variable lookup table (stepper motor stuff?)
+table	0xF9A9	0x04	byte	hex	(table)For_0xF990	;variable lookup table (stepper motor stuff?)
+table	0xFFE8	0x06	word	hex	(dummyData)	;blank space
 ;----------------------------------------------------------
 
 
 
 ;----------------------------------------------------------
-;Table BAUD Rate
+;value table for 0xF021 - BAUD Rate
 ;----------------------------------------------------------
-box		0xFFB7	0xFFC6	;BAUD Rate lookup table (for switch settings)
-table	0xFFB7	0x10	byte	bin	_table_BAUD_Rates
-comment	0xFFB7	;BAUD 9600
-comment	0xFFB8	;BAUD 19200
-comment	0xFFB9	;BAUD 19200
-comment	0xFFBA	;BAUD 150
-comment	0xFFBB	;BAUD 300
-comment	0xFFBC	;BAUD 600
-comment	0xFFBD	;BAUD 1200
-comment	0xFFBE	;BAUD 2400
-comment	0xFFBF	;BAUD 4800
-comment	0xFFC0	;BAUD 9600
-comment	0xFFC1	;BAUD 19200
-comment	0xFFC2	;BAUD 38400
-comment	0xFFC3	;BAUD 76800
-comment	0xFFC4	;BAUD 4800
-comment	0xFFC5	;BAUD 9600
-comment	0xFFC6	;BAUD 19200
+box		0xFFB7	0xFFC6	;BAUD Rate lookup - variable table for 0xF021 (for switch settings)
+table	0xFFB7	0x10	byte	bin	(table)BAUD_Rates
+comment	0xFFB7	;BAUD=9600
+comment	0xFFB8	;BAUD=19200
+comment	0xFFB9	;BAUD=19200
+comment	0xFFBA	;BAUD=150
+comment	0xFFBB	;BAUD=300
+comment	0xFFBC	;BAUD=600
+comment	0xFFBD	;BAUD=1200
+comment	0xFFBE	;BAUD=2400
+comment	0xFFBF	;BAUD=4800
+comment	0xFFC0	;BAUD=9600
+comment	0xFFC1	;BAUD=19200
+comment	0xFFC2	;BAUD=38400
+comment	0xFFC3	;BAUD=76800
+comment	0xFFC4	;BAUD=4800
+comment	0xFFC5	;BAUD=9600
+comment	0xFFC6	;BAUD=19200
 ;----------------------------------------------------------
 
 
 ;----------------------------------------------------------
-;switch table for 0xF0F0 - FDC Emulation Mode Commands - (Symbol/address)
+;switch table for 0xF0F0 - FDC Emulation Mode Commands - (Symbol/address lookup)
 ;----------------------------------------------------------
-box		0xFFC7	0xFFE7	;FDC Emulation mode - Switch Table For 0xF0F0 (Symbol/address)
-;table	0xFFC7	//will not work for this because of mixed types.
-data	0xFFC7	byte	asc	_table_FDC_Commands
+box		0xFFC7	0xFFE7	;FDC Emulation mode - Switch Table For 0xF0F0 (Symbol/address lookup)
+;table	0xFFC7	//will not work for this because of mixed data types.
+data	0xFFC7	byte	asc	(table)FDC_Commands
 data	0xFFC8	word	hex
 data	0xFFCA	byte	asc
 data	0xFFCB	word	hex
@@ -334,26 +353,26 @@ view	0xFFDF	asc	;S = FDC Search ID section
 view	0xFFE2	asc	;D = FDC Check drive condition
 view	0xFFE5	asc	;M = FDC Change modes
 
-code	0xF2AD	_sub(F0F0)_FDC_F	;F = Format with verify
-code	0xF2AA	_sub(F0F0)_FDC_G	;G = Format without verify
-code	0xF1FD	_sub(F0F0)_FDC_R	;R = Read one logical sector
-code	0xF214	_sub(F0F0)_FDC_W	;W = Write one logical sector with verify
-code	0xF211	_sub(F0F0)_FDC_X	;X = Write one logical sector without verify
-code	0xF251	_sub(F0F0)_FDC_A	;A = Read ID section
-code	0xF26B	_sub(F0F0)_FDC_B	;B = Write ID section with verify
-code	0xF268	_sub(F0F0)_FDC_C	;C = Write ID section without verify
-code	0xF35B	_sub(F0F0)_FDC_S	;S = Search ID section
-code	0xF3C8	_sub(F0F0)_FDC_D	;D = Check drive condition
-code	0xF400	_sub(F0F0)_FDC_M	;M = Change modes
-code	0xF1E8	_sub(F0F0)_FDC_Default	;this is a default is entry not in table
+code	0xF2AD	(sub)FDC_F	;F = Format with verify
+code	0xF2AA	(sub)FDC_G	;G = Format without verify
+code	0xF1FD	(sub)FDC_R	;R = Read one logical sector
+code	0xF214	(sub)FDC_W	;W = Write one logical sector with verify
+code	0xF211	(sub)FDC_X	;X = Write one logical sector without verify
+code	0xF251	(sub)FDC_A	;A = Read ID section
+code	0xF26B	(sub)FDC_B	;B = Write ID section with verify
+code	0xF268	(sub)FDC_C	;C = Write ID section without verify
+code	0xF35B	(sub)FDC_S	;S = Search ID section
+code	0xF3C8	(sub)FDC_D	;D = Check drive condition
+code	0xF400	(sub)FDC_M	;M = Change modes
+code	0xF1E8	(sub)FDC_Default	;this is a default, entry not in table
 ;----------------------------------------------------------
 
 
 ;----------------------------------------------------------
-;switch table for for FAF8 - address lookup table
+;switch table for for FAF8 - Operation Commands (address lookup)
 ;----------------------------------------------------------
-box		0xFB4E	0xFB5F	;SWITCH TABLE FOR FAF8 (addrerss)
-table	0xFB4E	0x12	word	hex	_lookupTable_For_0xFAF8
+box		0xFB4E	0xFB5F	;Operation Commands - Switch Table For 0xFAF8 (address lookup)
+table	0xFB4E	0x12	word	hex	(table)Operation_Commands
 
 comment	0xFB4E	;operation command 0x0 Create/Access a directory refrence
 comment	0xFB50	;operation command 0x1 Open a file
@@ -365,14 +384,13 @@ comment	0xFB5A	;operation command 0x6 Format a disk
 comment	0xFB5C	;operation command 0x7 Get drive status
 comment	0xFB5E	;operation command 0x8 Change to FDC mode
 
-code	0xFB93	_sub(FAF8)_opCode_0	;op cmd 0x0 Create/Access a directory refrence
-code	0xFD02	_sub(FAF8)_opCode_1	;op cmd 0x1 Open a file
-code	0xFCD4	_sub(FAF8)_opCode_2	;op cmd 0x2 Close a file
-code	0xFE70	_sub(FAF8)_opCode_3	;op cmd 0x3 Read data from a file
-code	0xFEC0	_sub(FAF8)_opCode_4	;op cmd 0x4 Write data to a file
-code	0xFC73	_sub(FAF8)_opCode_5	;op cmd 0x5 Delete a file
-code	0xFB7A	_sub(FAF8)_opCode_6	;op cmd 0x6 Format a disk
-code	0xFB72	_sub(FAF8)_opCode_7	;op cmd 0x7 Get drive status
-code	0xFB66	_sub(FAF8)_opCode_8	;op cmd 0x8 Change to FDC mode
+code	0xFB93	(sub)operation_0x0	;operation command 0x0 Create/Access a directory refrence
+code	0xFD02	(sub)operation_0x1	;operation command 0x1 Open a file
+code	0xFCD4	(sub)operation_0x2	;operation command 0x2 Close a file
+code	0xFE70	(sub)operation_0x3	;operation command 0x3 Read data from a file
+code	0xFEC0	(sub)operation_0x4	;operation command 0x4 Write data to a file
+code	0xFC73	(sub)operation_0x5	;operation command 0x5 Delete a file
+code	0xFB7A	(sub)operation_0x6	;operation command 0x6 Format a disk
+code	0xFB72	(sub)operation_0x7	;operation command 0x7 Get drive status
+code	0xFB66	(sub)operation_0x8	;operation command 0x8 Change to FDC mode
 ;----------------------------------------------------------
-
