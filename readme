@@ -3,8 +3,8 @@ Tandy PDD, and PDD2 floppy disk drives (cira 1984). These drives were used with 
 Tandy Model 100, 102, and 200 portable computers, and also used with the Brother
 automatic knitting machines.
 
-PDD.ASM is the decompiled assembly source for the PDD1 that is slowly being documented.
-PDD.dcDisASM is the commenting and disassembler directive file that adds the documentation to the ASM file.
+PDD1.ASM is the decompiled assembly source for the PDD1 that is slowly being documented.
+PDD1.dcDisASM is the commenting and disassembler directive file that adds the documentation to the ASM file.
 
 PDD1.LST is the decompiled assembly from DASMx 1.40
 
