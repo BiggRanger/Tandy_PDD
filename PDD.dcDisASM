@@ -3,34 +3,36 @@
 cpu				6301
 orig			0xF000
 FileIn			c:\dcDisASM\PDD\PDD.BIN
+FileOut			c:\dcDisasm\PDD\PDD.ASM
 ;FileOptions	EPROM boot loader (TMS320 only)
 ;file out can be .ASM, .RTF, .HTML
-FileOut			c:\dcDisasm\PDD\PDD.ASM
 
 Header			;Tandy PDD1 firmware reverse engineering
 Header			;By BiggRanger
 
-;flag	asciiOnly	;only prints ascii characters in output
-;flag	colorJump	green
-;flag	colorCall	purple
-;flag	colorReturn	red
-;flag	colorBox	brown
-;flag	colorCode	black
-;flag	colorValues	orange
-;flag	colorLabels	cyan
-;flag	colorComment	green
+;;flag	asciiOnly	;only prints ascii characters in output
+;;flag	colorJump	green
+;;flag	colorCall	purple
+;;flag	colorReturn	red
+;;flag	colorBox	brown
+;;flag	colorCode	black
+;;flag	colorValues	orange
+;;flag	colorLabels	cyan
+;;flag	colorComment	green
 ;flag	noSymbolTable
-;flag	radixRepresentationIntel	;or radixRepresentationMotorola, this only affects output.
-;flag	showOpCodeHEX
-;flag	showOpCodeASCII
-;flag	showMnemonicComments
+;flag	noJumpLines
+;;flag	radixRepresentationIntel	;or Motorola, this only affects output.
+;;flag	showOpCodeHEX
+;;flag	showOpCodeASCII
+;;flag	showMnemonicComments
 
 ;TYPE = byte, word, dword, qword
 ;REPRESENTATION = asc, hex, dec, bin
 
 ;CODE		address			label			[COMMENT]
 ;DATA		address			TYPE			REPRESENTATION		[LABEL	[COMMENT]]
-;TABLE		address			length			TYPE	[REPRESENTATION 	[LABEL	[COMMENT]]]]
+;TABLE		addressStart	length			TYPE	[REPRESENTATION 	[LABEL	[COMMENT]]]]
+;BYTEARRAY	addressStart	length			REPRESENTATION	[COMMENT]
 ;COMMENT	adderss			COMMENT
 ;VIEW		address			REPRESENTATION	[COMMENT]
 ;BOX		addressStart	addressEnd		[COMMENT]
@@ -68,6 +70,7 @@ Header			;By BiggRanger
 ;----------------------------------------------------------
 ;symbols describing registers of the HD63A03V1
 ;----------------------------------------------------------
+box		0x0000	0x001F	;INTERNAL DEVICE REGISTERS
 data	0x0000	byte	hex	(register)PORT1Direction
 data	0x0001	byte	hex	(register)PORT2Direction
 data	0x0002	byte	hex	(register)PORT1Data
@@ -130,14 +133,13 @@ data	0xFFFE	word	hex	(vector)RESET
 data	0x0080	byte	hex	(RAM_INT)BAUD_Rate				;BAUD Rate from switch positions
 data	0x00E5	word	hex	(RAM_INT)StackPointerStorage	;2 byte stack storage
 ;----------------------------------------------------------
-
-
-;----------------------------------------------------------
 ;symbols for External RAM
 ;----------------------------------------------------------
 data	0x842B	byte	hex	(RAM_EXT)ArrayStorage1??
+data	0x8515	byte	hex	(RAM_EXT)CodeExecutionAddress	;Where IPL code is launched (via S9)
 data	0x8615	byte	hex	(RAM_EXT)ArrayStorage2??
 data	0x862A	byte	hex	(RAM_EXT)ArrayStorage3??
+data	0x87FF	byte	hex	(RAM_EXT)Stack					;Top of Stack
 ;----------------------------------------------------------
 
 
@@ -145,26 +147,26 @@ data	0x862A	byte	hex	(RAM_EXT)ArrayStorage3??
 ;start documenting code
 ;----------------------------------------------------------
 code	0xF000	ProgramStart	;mask all interrupts
-comment	0xF001	;set stack to 87FF (top of EXT RAM)
-view	0xF004	bin	;port 1 settings
-view	0xF008	bin	;port 1 settings
-view	0xF00C	bin	;port 3+4 settings
+comment	0xF001					;set stack to 87FF (top of EXT RAM)
+view	0xF004	bin				;port 1 settings
+view	0xF008	bin				;port 1 settings
+view	0xF00C	bin				;port 3+4 settings
 
 
 ;----------------------------------------------------------
-box		0xF017	0xF036	;Read dip switches and setup BAUD Rate
-comment	0xF017	;get switch positions from CPLD, put in ACCB
-view	0xF01A	bin	;Mask 1111_0000, look at only dip switch
-comment	0xF01C	;push to stack
-comment	0xF01D	;bit shift down 4x
-comment	0xF021	;set X to address of lookup table FFB7
-comment	0xF024	;add ACCB to X (a + address of lookup table)
-comment	0xF025	;load into ACCA BAUD rate value from lookup table
-comment	0xF027	;store ACCA value (BAUD Rate) into address 0080
-comment	0xF029	;send this value to the CPLD, this is the clock divider for the SIO clock
-view	0xF02C	bin	;BIT 5 = SCI TX_DATA
-view	0xF030	bin	;Value -> SCI clock is from Port 2.2
-view	0xF034	bin	;set TxRx control and status
+box		0xF017	0xF036			;Read dip switches and setup BAUD Rate
+comment	0xF017					;get switch positions from CPLD, put in ACCB
+view	0xF01A	bin				;Mask 1111_0000, look at only dip switch
+comment	0xF01C					;push to stack
+comment	0xF01D					;bit shift down 4x
+comment	0xF021					;set X to address of lookup table FFB7
+comment	0xF024					;add ACCB to X (a + address of lookup table)
+comment	0xF025					;load into ACCA BAUD rate value from lookup table
+comment	0xF027					;store ACCA value (BAUD Rate) into address 0080
+comment	0xF029					;send this value to the CPLD, this is the clock divider for the SIO clock
+view	0xF02C	bin				;BIT 5 = SCI TX_DATA
+view	0xF030	bin				;Value -> SCI clock is from Port 2.2
+view	0xF034	bin				;set TxRx control and status
 ;----------------------------------------------------------
 
 
@@ -175,12 +177,12 @@ comment	0xF038	;clear INT RAM 0081-00FF
 
 
 ;----------------------------------------------------------
-box		0xF04C	0xF053	;Read dip switches and set operation mode
-comment	0xF04C	;get the masked dip switch values from the stack
-view	0xF04D	bin	;C is clear for 0xD0 and up
-view	0xF04F	hex	;Mode=operation jump to code
-view	0xF051	bin	;C is set for 0x30 and down
-view	0xF053	hex	;Mode=init jump to code - Fall over to FDC mode
+box		0xF04C	0xF053			;Read dip switches and set operation mode
+comment	0xF04C					;get the masked dip switch values from the stack
+view	0xF04D	bin				;C is clear for 0xD0 and up
+view	0xF04F	hex				;Mode=operation jump to code
+view	0xF051	bin				;C is set for 0x30 and down
+view	0xF053	hex				;Mode=init jump to code - Fall over to FDC mode
 ;----------------------------------------------------------
 
 
@@ -231,10 +233,7 @@ comment	0xFAFE	;jump to sub at X
 
 
 
-;code points for boot loader stuff
-;0x8515 is what gets executed after S9 is sent
-;code	0x8515	_EntryPoint_CodeExecutionAddress(8515)
-;byte	0x8515	_EXT_RAM_CodeExecutionAddress(8515)
+
 ;code	0xF08B	_EntryPoint_SpecialRomJumpBootLoader
 
 ;code	0xF9F1	_sub_xxxxxx__Private_Clear_0083
@@ -284,7 +283,7 @@ table	0xF4A8	0x07	byte	hex	(table)For_0xF498	;variable lookup table
 table	0xF8AC	0x0E	byte	hex	(table)For_0xF75D	;variable lookup table
 table	0xF9A5	0x04	byte	hex	(table)For_0xF952	;variable lookup table (stepper motor stuff?)
 table	0xF9A9	0x04	byte	hex	(table)For_0xF990	;variable lookup table (stepper motor stuff?)
-table	0xFFE8	0x06	word	hex	(dummyData)	;blank space
+table	0xFFE8	0x06	word	hex	(dummyData)			;blank space
 ;----------------------------------------------------------
 
 
