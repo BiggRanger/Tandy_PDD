@@ -5,13 +5,13 @@
 * dcDisASM V1.0.0
 * Copyright 2016-2017
 *
-* File In:     c:\dcDisASM\PDD\PDD.BIN
-* File Out:    c:\dcDisasm\PDD\PDD.ASM
-* File Config: c:\dcDisasm\PDD\PDD.dcDisASM
+* File In:     c:\dcDisASM\PDD\PDD1.BIN
+* File Out:    c:\dcDisasm\PDD\PDD1.ASM
+* File Config: c:\dcDisasm\PDD\PDD1.dcDisASM
 * CPU Type:    6301
 * Origin:      0xF000
 *
-* Date: 2017.08.28 Time: 09:52:46
+* Date: 2017.08.28 Time: 13:25:32
 ****************************************************************
 
 |                                                     F000	ProgramStart:	SEI	;mask all interrupts
@@ -1992,27 +1992,27 @@ L||||||||||||||||-|--------------------------|---|---<FA14		JSR	(RAM_EXT)CodeExe
                                                       FFC5		DB	11000000B	;BAUD=9600
                                                       FFC6		DB	01000000B	;BAUD=19200
                                                       FFC7	(table)FDC_Commands:	DB	'F'	;F = FDC Format with verify
-                                                      FFC8		DW	0F2ADH
+                                                      FFC8		DW	0F2ADH	;address of subroutine for F
                                                       FFCA		DB	'G'	;G = FDC Format without verify
-                                                      FFCB		DW	0F2AAH
+                                                      FFCB		DW	0F2AAH	;address of subroutine for G
                                                       FFCD		DB	'R'	;R = FDC Read one logical sector
-                                                      FFCE		DW	0F1FDH
+                                                      FFCE		DW	0F1FDH	;address of subroutine for R
                                                       FFD0		DB	'W'	;W = FDC Write one logical sector with verify
-                                                      FFD1		DW	0F214H
+                                                      FFD1		DW	0F214H	;address of subroutine for W
                                                       FFD3		DB	'X'	;X = FDC Write one logical sector without verify
-                                                      FFD4		DW	0F211H
+                                                      FFD4		DW	0F211H	;address of subroutine for X
                                                       FFD6		DB	'A'	;A = FDC Read ID section
-                                                      FFD7		DW	0F251H
+                                                      FFD7		DW	0F251H	;address of subroutine for A
                                                       FFD9		DB	'B'	;B = FDC Write ID section with verify
-                                                      FFDA		DW	0F26BH
+                                                      FFDA		DW	0F26BH	;address of subroutine for B
                                                       FFDC		DB	'C'	;C = FDC Write ID section without verify
-                                                      FFDD		DW	0F268H
+                                                      FFDD		DW	0F268H	;address of subroutine for C
                                                       FFDF		DB	'S'	;S = FDC Search ID section
-                                                      FFE0		DW	0F35BH
+                                                      FFE0		DW	0F35BH	;address of subroutine for S
                                                       FFE2		DB	'D'	;D = FDC Check drive condition
-                                                      FFE3		DW	0F3C8H
+                                                      FFE3		DW	0F3C8H	;address of subroutine for D
                                                       FFE5		DB	'M'	;M = FDC Change modes
-                                                      FFE6		DW	0F400H
+                                                      FFE6		DW	0F400H	;address of subroutine for M
                                                       FFE8	(dummyData):	DW	00FFH	;blank space
                                                       FFEA		DW	00FFH
                                                       FFEC		DW	00FFH
@@ -2555,7 +2555,7 @@ FFA0	jumped from: FF86 FF8E FF96 FF9E
 FFA5	jumped from: FF67 FF76 FF7A
 FFAA	jumped from: FF72
 FFB7	(table)BAUD_Rates:	;BAUD=9600
-FFC7	(table)FDC_Commands:
+FFC7	(table)FDC_Commands:	;F = FDC Format with verify
 FFE8	(dummyData):	;blank space
 FFEE	(vector)TRAP:
 FFF0	(vector)IRQ2SIO:
