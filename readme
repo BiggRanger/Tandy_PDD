@@ -8,7 +8,7 @@ PDD.dcDisASM is the commenting and disassembler directive file that adds the doc
 
 PDD1.LST is the decompiled assembly from DASMx 1.40
 
-PDD1_Dump.INFO, the readme for getting the PDD1 firmware to dump.
+ROM_DUMPER/PDD1_Dump.INFO, the readme for getting the PDD1 firmware to dump.
 
 Usefull Information:
 http://www.k2g2.org/wiki:brother_fb-100
