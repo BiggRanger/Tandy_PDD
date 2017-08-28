@@ -2,10 +2,10 @@
 
 cpu				6301
 orig			0xF000
-FileIn			c:\dcDisASM\PDD\PDD.BIN
+FileIn			c:\dcDisASM\PDD\PDD1.BIN
 ;FileOptions	EPROM boot loader (TMS320 only)
 ;file out can be .ASM, .RTF, .HTML
-FileOut			c:\dcDisasm\PDD\PDD.ASM
+FileOut			c:\dcDisasm\PDD\PDD1.ASM
 
 ;flag	asciiOnly	;only prints ascii characters in output
 ;flag	colorJump	green
