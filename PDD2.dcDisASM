@@ -1,0 +1,504 @@
+Header			;Tandy PDD2 firmware reverse engineering
+Header			;By BiggRanger
+
+orig			0xF000
+FileIn			c:\dcDisASM\PDD2\PDD2.BIN
+FileOut			c:\dcDisasm\PDD2\PDD2.ASM
+;FileOptions	EPROM boot loader (TMS320 only)
+;file out can be .ASM, .RTF, .HTML
+
+include			c:\dcDisasm\CPU_INC\6301.INC
+
+;flag	asciiOnly	;only prints ascii characters in output
+;flag	colorJump	green
+;flag	colorCall	purple
+;flag	colorReturn	red
+;flag	colorBox	brown
+;flag	colorCode	black
+;flag	colorValues	orange
+;flag	colorLabels	cyan
+;flag	colorComment	green
+;flag	noSymbolTable
+;flag	noJumpLines
+flag	radixRepresentationCPP	;Intel, CPP, or Motorola, this only affects output.
+flag	showOpCodeHEX
+flag	showOpCodeASCII
+;flag	showMnemonicComments
+
+;TYPE = byte, word, dword, qword
+;REPRESENTATION = asc, hex, dec, bin
+
+;CODE		address			label			[COMMENT]
+;IOLABEL	ioAddress		label			[COMMENT]
+;DATA		address			TYPE			REPRESENTATION		[LABEL	[COMMENT]]
+;TABLE		addressStart	length			TYPE	[REPRESENTATION 	[LABEL	[COMMENT]]]]
+;BYTEARRAY	addressStart	length			REPRESENTATION	[COMMENT]
+;COMMENT	adderss			COMMENT
+;VIEW		address			REPRESENTATION	[COMMENT]
+;BOX		addressStart	addressEnd		[COMMENT]
+;IGNORE		addressStart	addressEnd		[COMMENT]
+
+;----------------------------------------------------------
+;Memory Map of PDD (using mode 6):
+;----------------------------------------------------------
+;0000-001F	Internal Registers (see below)
+;0080-00FF	Internal RAM
+;4000-4003	CPLD (Glue Logic + Hardware IO Control)
+;8000-87FF	External RAM (2K)
+;F000-FFFF	Internal ROM (4K)
+;----------------------------------------------------------
+;I/O ports
+;Port.Bit	I/O		Pin#	ID	Function
+;----------------------------------------------------------
+;Port1.B0	Input	Pin18	P10	CTS
+;Port1.B1	Input	Pin19	P11	DSR
+;Port1.B2	Output	Pin20	P12	RTS
+;Port1.B3	Output	Pin22	P13	DTR
+;Port1.B4	Output	Pin23	P14	PS Alarm (Low Battery LED)
+;Port1.B5	Output	Pin24	P15	LED101 (Drive Access LED)
+;Port1.B6	Output	Pin25	P16	To MA7340
+;Port1.B7	Output	Pin26	P17	SCAN
+
+;Port2.B0	Input	Pin11	P20	Mode (pulled Low)
+;Port2.B1	Input	Pin12	P21	Mode (pulled Hi)
+;Port2.B2	Input	Pin23	P22	(SCI) CLKOUT from CPLD for BAUD rate
+;Port2.B3	Input	Pin24	P23	(SCI) /RXD
+;Port2.B4	Output	Pin25	P24	(SCI) /TXD
+;----------------------------------------------------------
+
+
+;----------------------------------------------------------
+;symbols for CPLD
+;----------------------------------------------------------
+data	0x4000	byte	hex	(CPLD)4000	;set = stepper motor???
+data	0x4001	byte	hex	(CPLD)4001	;get = 1111_0000 dip switches
+;										;set = 1111_0000 BAUD clock
+data	0x4002	byte	hex	(CPLD)4002
+data	0x4003	byte	hex	(CPLD)4003
+;----------------------------------------------------------
+
+
+
+;----------------------------------------------------------
+;symbols for Internal RAM
+;----------------------------------------------------------
+code	0x8013	(RAM_EXT)ExternalProgram			;Start Code Execution				
+;----------------------------------------------------------
+
+
+
+;----------------------------------------------------------
+;symbols for External RAM
+;----------------------------------------------------------
+data	0x87FF	byte	hex	(RAM_EXT)Stack					;Top of Stack
+;----------------------------------------------------------
+
+
+;----------------------------------------------------------
+;start documenting code
+;----------------------------------------------------------
+code	0xF000	ProgramStart	;set stack to 87FF (top of EXT RAM)
+
+BOX		0xF1B1	0xF1E4			;Serial Data Receive
+
+BOX		0xF1E5	0xF210			;Serial Data Transmit
+
+
+
+
+
+;----------------------------------------------------------
+;identify branch tricks
+;----------------------------------------------------------
+data	0xF1AB	byte	hex
+comment 0xF1AB	;branch trick, skip next opcode
+data	0xF209	byte	hex
+comment 0xF209	;branch trick, skip next opcode
+data	0xF264	byte	hex
+comment 0xF264	;branch trick, skip next opcode
+data	0xF267	byte	hex
+comment 0xF267	;branch trick, skip next opcode
+data	0xF28F	byte	hex
+comment 0xF28F	;branch trick, skip next opcode
+data	0xF3CE	byte	hex
+comment 0xF3CE	;branch trick, skip next opcode
+data	0xF3D1	byte	hex
+comment 0xF3D1	;branch trick, skip next opcode
+data	0xF432	byte	hex
+comment 0xF432	;branch trick, skip next opcode
+data	0xF505	byte	hex
+comment	0xF505	;branch trick, skip next opcode
+data	0xF508	byte	hex
+comment	0xF508	;branch trick, skip next opcode
+data	0xF50B	byte	hex
+comment	0xF50B	;branch trick, skip next opcode
+data	0xF50E	byte	hex
+comment	0xF50E	;branch trick, skip next opcode
+data	0xF511	byte	hex
+comment	0xF511	;branch trick, skip next opcode
+data	0xF514	byte	hex
+comment	0xF514	;branch trick, skip next opcode
+data	0xF66F	byte	hex
+comment	0xF66F	;branch trick, skip next opcode
+data	0xF6A5	byte	hex
+comment	0xF6A5	;branch trick, skip next opcode
+data	0xF6A8	byte	hex
+comment	0xF6A8	;branch trick, skip next opcode
+data	0xF6AB	byte	hex
+comment	0xF6AB	;branch trick, skip next opcode
+data	0xF7C7	byte	hex
+comment	0xF7C7	;branch trick, skip next opcode
+data	0xF81D	byte	hex
+comment	0xF81D	;branch trick, PC+=3, skip next 2 opcodes
+data	0xF925	byte	hex
+comment	0xF925	;branch trick, skip next opcode
+data	0xF9DE	byte	hex
+comment	0xF9DE	;branch trick, PC+=3, skip next 2 opcodes
+data	0xFB9E	byte	hex
+comment	0xFB9E	;branch trick, skip next opcode
+data	0xFBA1	byte	hex
+comment	0xFBA1	;branch trick, skip next opcode
+data	0xFBA6	byte	hex
+comment	0xFBA6	;branch trick, skip next opcode
+data	0xFBA9	byte	hex
+comment	0xFBA9	;branch trick, skip next opcode
+data	0xFCB1	byte	hex
+comment	0xFCB1	;branch trick, skip next opcode
+data	0xFD8A	byte	hex
+comment 0xFD8A	;branch trick, skip next opcode
+data	0xFD8F	byte	hex
+comment 0xFD8F	;branch trick, skip next opcode
+data	0xFD92	byte	hex
+comment 0xFD92	;branch trick, skip next opcode
+data	0xFD95	byte	hex
+comment 0xFD95	;branch trick, skip next opcode
+data	0xFD98	byte	hex
+comment 0xFD98	;branch trick, skip next opcode
+data	0xFEC2	byte	hex
+comment	0xFEC2	;branch trick, skip next opcode
+data	0xFED3	byte	hex
+comment	0xFED3	;branch trick, skip next opcode
+;----------------------------------------------------------
+
+
+
+;----------------------------------------------------------
+; Label SWI parameters
+;----------------------------------------------------------
+;Found SWI parameter values
+;DB	0x00	after ASL -> 0x00
+;DB	0x01	after ASL -> 0x02
+;DB	0x02	after ASL -> 0x04
+;DB	0x04	after ASL -> 0x08
+;DB	0x07	after ASL -> 0x0E
+;DB	0x08	after ASL -> 0x10
+;DB	0x09	after ASL -> 0x12
+;DB	0x0A	after ASL -> 0x14
+;DB	0x0B	after ASL -> 0x16
+;DB	0x0D	after ASL -> 0x1A
+;DB	0x0E	after ASL -> 0x1C
+;DB	0x0F	after ASL -> 0x1E
+;DB	0x12	after ASL -> 0x24
+;DB	0x13	after ASL -> 0x26
+
+data	0xF07C	byte	hex
+comment 0xF07C	;SWI Parameter
+data	0xF085	byte	hex
+comment 0xF085	;SWI Parameter
+data	0xF09B	byte	hex
+comment 0xF09B	;SWI Parameter
+data	0xF0B3	byte	hex
+comment 0xF0B3	;SWI Parameter
+data	0xF126	byte	hex
+comment 0xF126	;SWI Parameter
+data	0xF216	byte	hex
+comment 0xF216	;SWI Parameter
+data	0xF615	byte	hex
+comment 0xF615	;SWI Parameter
+data	0xF638	byte	hex
+comment 0xF638	;SWI Parameter
+data	0xF6F4	byte	hex
+comment 0xF6F4	;SWI Parameter
+data	0xF74C	byte	hex
+comment 0xF74C	;SWI Parameter
+data	0xF814	byte	hex
+comment 0xF814	;SWI Parameter
+data	0xF81C	byte	hex
+comment 0xF81C	;SWI Parameter
+data	0xF81F	byte	hex
+comment 0xF81F	;SWI Parameter
+data	0xF83B	byte	hex
+comment 0xF83B	;SWI Parameter
+data	0xF852	byte	hex
+comment 0xF852	;SWI Parameter
+data	0xF86B	byte	hex
+comment 0xF86B	;SWI Parameter
+data	0xF8C2	byte	hex
+comment 0xF8C2	;SWI Parameter
+data	0xF8D8	byte	hex
+comment 0xF8D8	;SWI Parameter
+data	0xF920	byte	hex
+comment 0xF920	;SWI Parameter
+data	0xF950	byte	hex
+comment 0xF950	;SWI Parameter
+data	0xF95B	byte	hex
+comment 0xF95B	;SWI Parameter
+data	0xF988	byte	hex
+comment 0xF988	;SWI Parameter
+data	0xF9A1	byte	hex
+comment 0xF9A1	;SWI Parameter
+data	0xF9C4	byte	hex
+comment 0xF9C4	;SWI Parameter
+data	0xF9E0	byte	hex
+comment 0xF9E0	;SWI Parameter
+data	0xFA41	byte	hex
+comment 0xFA41	;SWI Parameter
+data	0xFA5E	byte	hex
+comment 0xFA5E	;SWI Parameter
+data	0xFAF2	byte	hex
+comment 0xFAF2	;SWI Parameter
+data	0xFAFF	byte	hex
+comment 0xFAFF	;SWI Parameter
+data	0xFB0C	byte	hex
+comment 0xFB0C	;SWI Parameter
+data	0xFB32	byte	hex
+comment 0xFB32	;SWI Parameter
+data	0xFB39	byte	hex
+comment 0xFB39	;SWI Parameter
+data	0xFB3B	byte	hex
+comment 0xFB3B	;SWI Parameter
+data	0xFB3F	byte	hex
+comment 0xFB3F	;SWI Parameter
+data	0xFB46	byte	hex
+comment 0xFB46	;SWI Parameter
+data	0xFB4C	byte	hex
+comment 0xFB4C	;SWI Parameter
+data	0xFB4E	byte	hex
+comment 0xFB4E	;SWI Parameter
+data	0xFB82	byte	hex
+comment 0xFB82	;SWI Parameter
+data	0xFB8A	byte	hex
+comment 0xFB8A	;SWI Parameter
+data	0xFBAE	byte	hex
+comment 0xFBAE	;SWI Parameter
+data	0xFBDB	byte	hex
+comment 0xFBDB	;SWI Parameter
+data	0xFBEB	byte	hex
+comment 0xFBEB	;SWI Parameter
+data	0xFC47	byte	hex
+comment 0xFC47	;SWI Parameter
+data	0xFC4B	byte	hex
+comment 0xFC4B	;SWI Parameter
+data	0xFC99	byte	hex
+comment 0xFC99	;SWI Parameter
+data	0xFCF4	byte	hex
+comment 0xFCF4	;SWI Parameter
+data	0xFD05	byte	hex
+comment 0xFD05	;SWI Parameter
+data	0xFD17	byte	hex
+comment 0xFD17	;SWI Parameter
+data	0xFD53	byte	hex
+comment 0xFD53	;SWI Parameter
+data	0xFD74	byte	hex
+comment 0xFD74	;SWI Parameter
+data	0xFDB8	byte	hex
+comment 0xFDB8	;SWI Parameter
+data	0xFDC1	byte	hex
+comment 0xFDC1	;SWI Parameter
+data	0xFDDD	byte	hex
+comment 0xFDDD	;SWI Parameter
+data	0xFDE1	byte	hex
+comment 0xFDE1	;SWI Parameter
+;----------------------------------------------------------
+
+
+;----------------------------------------------------------
+; Trap calls using invalid opcodes
+;----------------------------------------------------------
+comment 0xF139	;Call Trap
+comment 0xF26A	;Call Trap
+comment 0xF3D4	;Call Trap
+comment 0xF435	;Call Trap
+comment 0xF4C1	;Call Trap
+comment 0xF517	;Call Trap
+comment 0xF5FB	;Call Trap
+comment 0xF6AE	;Call Trap
+;----------------------------------------------------------
+
+
+BOX		0xFF5F	0xFF66
+table	0xFF5F	8		byte	HEX		Table1
+
+BOX		0xFF67	0xFF6C
+table 0xFF67 	6		byte	HEX		Table2
+
+BOX		0xFF6D	0xFF78
+table 0xFF6D 	12		byte	HEX		Table3
+
+BOX		0xFF79	0xFF84
+table 0xFF79 	12		byte	HEX		Table4
+
+BOX		0xFF85	0xFF8C
+table 0xFF85 	8		byte	HEX		Table5
+
+;----------------------------------------------------------
+;Software Interrupt
+;----------------------------------------------------------
+BOX			0xFF13	0xFF29			;Software Interrupt
+CODE		0xFF13			SWI		;unwind stack from SWI to origianl PC+1
+COMMENT		0xFF18					;pull address of SWI call (PC+1)
+COMMENT		0xFF19					;get byte from SWI PC+1
+COMMENT		0xFF1B					;IX++
+COMMENT		0xFF1C					;push x to stack (PC of SWI + 2)
+COMMENT		0xFF1D					;SWI_LookupTable
+COMMENT		0xFF20					;shift B left (=B*2)
+COMMENT		0xFF21					;add B to X
+COMMENT		0xFF22					;load data at X to IX
+COMMENT		0xFF24					;push X to stack
+COMMENT		0xFF25					;jump down and get original B from SWI stack dump
+COMMENT		0xFF29					;Return, jumps to function from table
+;----------------------------------------------------------
+
+;----------------------------------------------------------
+;IRQ1, IRQ2 Handeling
+;----------------------------------------------------------
+BOX			0xFF2A	0xFF5E		;hardware interrupt handeling
+CODE		0xFF2A	IRQ2TOI
+CODE		0xFF5E	IRQ1,IQR2
+;----------------------------------------------------------
+
+
+
+;----------------------------------------------------------
+;Address Index Tables
+;----------------------------------------------------------
+BOX		0xFF8D	0xFFB7				;SWI_FunctionTable
+TABLE	0xFF8D	44	word	hex	SWI_FunctionTable
+
+code	0xF824	SWI_Funct(0x00)		;SWI Call 0x00
+code	0xF9BB	SWI_Funct(0x01)		;SWI Call 0x01
+code	0xF998	SWI_Funct(0x02)		;SWI Call 0x02
+code	0xF949	SWI_Funct(0x03)
+code	0xFAFC	SWI_Funct(0x04)		;SWI Call 0x04
+code	0xF9DA	SWI_Funct(0x05)
+code	0xFC67	SWI_Funct(0x06)
+code	0xFA68	SWI_Funct(0x07)		;SWI Call 0x07
+code	0xFA63	SWI_Funct(0x08)		;SWI Call 0x08
+code	0xFC74	SWI_Funct(0x09)		;SWI Call 0x09
+code	0xF870	SWI_Funct(0x0A)		;SWI Call 0x0A
+code	0xFE9A	SWI_Funct(0x0B)		;SWI Call 0x0B
+code	0xFC92	SWI_Funct(0x0C)
+code	0xFCC6	SWI_Funct(0x0D)		;SWI Call 0x0D
+code	0xFC51	SWI_Funct(0x0E)		;SWI Call 0x0E
+code	0xFEC5	SWI_Funct(0x0F)		;SWI Call 0x0F
+code	0xF1B1	SerialData_Receive
+code	0xF1E5	SerialData_Transmit
+code	0xFE59	SWI_Funct(0x12)		;SWI Call 0x12
+code	0xFE60	SWI_Funct(0x13)		;SWI Call 0x13
+code	0xFCE0	SWI_Funct(0x14)
+code	0xFDB0	SWI_Funct(0x15)
+
+comment	0xFF8D						;SWI_Funct(0x00)
+comment	0xFF8F  					;SWI_Funct(0x01)
+comment	0xFF91  					;SWI_Funct(0x02)
+comment	0xFF93						;SWI_Funct(0x03)
+comment	0xFF95  					;SWI_Funct(0x04)
+comment	0xFF97						;SWI_Funct(0x05)
+comment	0xFF99						;SWI_Funct(0x06)
+comment	0xFF9B  					;SWI_Funct(0x07)
+comment	0xFF9D  					;SWI_Funct(0x08)
+comment	0xFF9F  					;SWI_Funct(0x09)
+comment	0xFFA1  					;SWI_Funct(0x0A)
+comment	0xFFA3  					;SWI_Funct(0x0B)
+comment	0xFFA5						;SWI_Funct(0x0C)
+comment	0xFFA7  					;SWI_Funct(0x0D)
+comment	0xFFA9  					;SWI_Funct(0x0E)
+comment	0xFFAB  					;SWI_Funct(0x0F)
+comment	0xFFAD						;SerialData_Receive SWI_Funct(0x10)
+comment	0xFFAF						;SerialData_Transmit SWI_Funct(0x11)
+comment	0xFFB1  					;SWI_Funct(0x12)
+comment	0xFFB3  					;SWI_Funct(0x13)
+comment	0xFFB5						;SWI_Funct(0x14)
+comment	0xFFB7						;SWI_Funct(0x15)
+;----------------------------------------------------------
+
+;----------------------------------------------------------
+;Address Index Tables
+;----------------------------------------------------------
+BOX		0xFFB9	0xFFDE				;Function Table	
+TABLE	0xFFB9	38	word	hex	Other_FunctionTable
+
+code	0xF230	Other_Funct(0x00)
+code	0xF4D0	Other_Funct(0x01)
+code	0xF495	Other_Funct(0x02)
+code	0xF69D	Other_Funct(0x03)
+code	0xF63D	Other_Funct(0x04)
+code	0xF425	Other_Funct(0x05)
+code	0xF212	Other_Funct(0x06)
+code	0xF6F3	Other_Funct(0x07)
+code	0xF137	Other_Funct(0x08,0X0A,0x0B)
+code	0xF75F	Other_Funct(0x09)
+;code	0xF137	Other_Funct(0x0A)
+;code	0xF137	Other_Funct(0x0B)
+code	0xF746	Other_Funct(0x0C)
+code	0xF365	Other_Funct(0x0D)
+code	0xF801	Other_Funct(0x0E)
+code	0xF76B	Other_Funct(0x0F)
+code	0xF78E	Other_Funct(0x10)
+code	0xF757	Other_Funct(0x11)
+code	0xF7DC	Other_Funct(0x12)
+
+comment	0xFFB9						;Other_Funct(0x00)
+comment	0xFFBB  					;Other_Funct(0x01)
+comment	0xFFBD  					;Other_Funct(0x02)
+comment	0xFFBF						;Other_Funct(0x03)
+comment	0xFFC1  					;Other_Funct(0x04)
+comment	0xFFC3						;Other_Funct(0x05)
+comment	0xFFC5						;Other_Funct(0x06)
+comment	0xFFC7  					;Other_Funct(0x07)
+comment	0xFFC9  					;Other_Funct(0x08,0X0A,0x0B)
+comment	0xFFCB  					;Other_Funct(0x09)
+comment	0xFFCD  					;Other_Funct(0x08,0X0A,0x0B)
+comment	0xFFCF  					;Other_Funct(0x08,0X0A,0x0B)
+comment	0xFFD1						;Other_Funct(0x0C)
+comment	0xFFD3  					;Other_Funct(0x0D)
+comment	0xFFD5  					;Other_Funct(0x0E)
+comment	0xFFD7  					;Other_Funct(0x0F)
+comment	0xFFD9						;Other_Funct(0x10)
+comment	0xFFDB						;Other_Funct(0x11)
+comment	0xFFDD  					;Other_Funct(0x12)
+;----------------------------------------------------------
+
+
+BYTEARRAY	0xFFDF	15			asc	;Author
+
+
+
+;----------------------------------------------------------
+;Vector Table Labels
+;----------------------------------------------------------
+code	0xF716	Trap
+;code	0xFF5E	IRQ2SIO,IRQ2OCI,IRQ2ICI,IRQ1
+;code	0xFF2A	IRQ2TOI
+;code	0xFF5E	IRQ2OCI
+;code	0xFF5E	IRQ2ICI
+;code	0xFF5E	IRQ1
+;code	0xFF13	SWI
+;code	0xF000	NMI
+;code	0xF000	RESET
+
+comment	0xFFEE	;handels invalid opcodes
+comment	0xFFF0	;jumps to RTI, does nothing
+;comment	0xFFF2	;
+comment	0xFFF4	;jumps to RTI, does nothing
+comment	0xFFF6	;jumps to RTI, does nothing
+comment	0xFFF8	;jumps to RTI, does nothing
+comment	0xFFFA	;jumps to SWI code
+;comment	0xFFFC	;
+;comment	0xFFFE	;
+;----------------------------------------------------------
+
+
+
+
+
