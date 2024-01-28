@@ -6,12 +6,12 @@ automatic knitting machines.
 PDD1.ASM is the decompiled assembly source for the PDD1 that is slowly (very slowly) being documented.
 PDD1.dcDisASM is the commenting and disassembler directive file that adds the documentation to the ASM file.
 
-6301.inc is the CPU characteristic file for the Hitachi 6301.
-
 PDD1.LST is the decompiled assembly from DASMx 1.40
 
 PDD2.ASM is the decompiled assembly source for the PDD2 that is slowly being documented.
 PDD2.dcDisASM is the commenting and disassembler directive file that adds the documentation to the ASM file.
+
+6301.inc is the CPU characteristic file for the Hitachi 6301 the dcDisASM uses.
 
 ROM_DUMPER/PDD1_Dump.INFO, the readme for getting the PDD1 firmware to dump.
 
