@@ -54,43 +54,71 @@ flag	showOpCodeASCII
 ;Port1.B1	Input	Pin19	P11	DSR
 ;Port1.B2	Output	Pin20	P12	RTS
 ;Port1.B3	Output	Pin22	P13	DTR
-;Port1.B4	Output	Pin23	P14	PS Alarm (Low Battery LED)
-;Port1.B5	Output	Pin24	P15	LED101 (Drive Access LED)
-;Port1.B6	Output	Pin25	P16	To MA7340
-;Port1.B7	Output	Pin26	P17	SCAN
+;Port1.B4	Output	Pin23	P14	Alarm
+;Port1.B5	Output	Pin24	P15	WC on R/W module
+;Port1.B6	Output	Pin25	P16	Drives LED1
+;Port1.B7	Output	Pin26	P17	Scan
 
-;Port2.B0	Input	Pin11	P20	Mode (pulled Low)
+;Port2.B0	Output	Pin11	P20	Serial Output enable, Mode (pulled Low)
 ;Port2.B1	Input	Pin12	P21	Mode (pulled Hi)
-;Port2.B2	Input	Pin13	P22	(SCI) CLKOUT from CPLD for BAUD rate
+;Port2.B2	Input	Pin13	P22	(SCI) CLKOUT from CPLD for BAUD rate (start Hi)
 ;Port2.B3	Input	Pin14	P23	(SCI) /RXD
 ;Port2.B4	Output	Pin15	P24	(SCI) /TXD
+;Port2.B5	N/A
+;Port2.B6	N/A
+;Port2.B7	N/A
+
+;Port3.B0	I/O		Pin51	P30	AD0
+;Port3.B1	I/O		Pin50	P31	AD1
+;Port3.B2	I/O		Pin45	P32	AD2
+;Port3.B3	I/O		Pin44	P33	AD3
+;Port3.B4	I/O		Pin43	P34	AD4
+;Port3.B5	I/O		Pin42	P35	AD5
+;Port3.B6	I/O		Pin41	P36	AD6
+;Port3.B7	I/O		Pin40	P37	AD7
+
+;Port4.B0	I/O		Pin37	P40	A8
+;Port4.B1	I/O		Pin36	P41	A9
+;Port4.B2	I/O		Pin35	P42	A10
+;Port4.B3	Input	Pin32	P43	A11 E1	*Config jumper pulled hi
+;Port4.B4	Input	Pin31	P44	A12 E2	*Config jumper pulled hi
+;Port4.B5	Input	Pin30	P45	A13 E3	*Config jumper pulled hi
+;Port4.B6	I/O		Pin29	P46	A14 *CS1 on CPLD
+;Port4.B7	I/O		Pin28	P47	A15 *CS0 on CPLD
+;Idle address lines on port 4 can be assigned as inputs
 ;----------------------------------------------------------
 
 
 ;----------------------------------------------------------
-;symbols for CPLD
+;Map for CPLD
 ;----------------------------------------------------------
 data	0x4000	byte	hex	(CPLD)4000	;set = stepper motor???
-data	0x4001	byte	hex	(CPLD)4001	;get = 1111_0000 dip switches
-;										;set = 1111_0000 BAUD clock
+data	0x4001	byte	hex	(CPLD)4001	;get = 1111_0000 dip switches, set = 1111_0000 BAUD clock
+
 data	0x4002	byte	hex	(CPLD)4002
 data	0x4003	byte	hex	(CPLD)4003
 ;----------------------------------------------------------
 
 
-
 ;----------------------------------------------------------
-;symbols for Internal RAM
+;Map for Internal RAM
 ;----------------------------------------------------------
 
 data	0x0080	byte	hex		(RAM_INT)BAUD_Value_A
 data	0x0081	word	hex		(RAM_INT)StackPointerStorage		;Store stack pointer when computing checksum
 
+data	0x0083	byte	hex		(RAM_INT)Brian83					;TPDD2 backup.ba (sets to 0x00)
+data	0x0084	byte	hex		(RAM_INT)Brian84					;Reset drive status on pg 102 (sets to 0xFF)
+
 data	0x008A	byte	hex		(RAM_INT)SerDatRX_1
 data	0x008B	byte	hex		(RAM_INT)CPLD_Switch_0
 
 data	0x0090	byte	hex		(RAM_INT)SerDatTX_1
-data	0x0093	byte	hex		(RAM_INT)SerDatTX_2
+data	0x0093	byte	hex		(RAM_INT)PCB_ConfigSwitchesE1E2E3
+
+data	0x0094	byte	hex		(RAM_INT)Brian94					;Reset drive status on pg 102 (sets to 0x0F)
+data	0x0096	byte	hex		(RAM_INT)Brian96					;Reset drive status on pg 102 (sets to 0x0F), TPDD2 backup.ba (sets to 0x00)
+
 data	0x0099	word	hex		(RAM_INT)DataPacket_Data
 data	0x009B	byte	hex		(RAM_INT)Checksum_Temp_A
 data	0x009C	byte	hex		(RAM_INT)Checksum_Temp_B
@@ -106,27 +134,34 @@ data	0x00B5	byte	hex		(RAM_INT)Checksum_Value
 
 
 ;----------------------------------------------------------
-;symbols for External RAM
+;Map for External RAM
 ;----------------------------------------------------------
-code	0x8013					(RAM_EXT)ExternalProgram			;Start Code Execution				
+code	0x8013					(RAM_EXT)ExternalProgram	;Start Code Execution
 
-data	0x87FF	byte	hex		(RAM_EXT)Stack						;Top of Stack
+data	0x87FF	byte	hex		(RAM_EXT)Stack				;Top of Stack
 ;----------------------------------------------------------
-
 
 ;----------------------------------------------------------
 ;start documenting code
 ;----------------------------------------------------------
-code	0xF000	ProgramStart	;set stack to 87FF (top of EXT RAM)
 
-view	0xF003	binary
-view	0xF008	binary
-view	0xF00D	binary
+
+
+
+;----------------------------------------------------------
+;Startup and initalization
+;----------------------------------------------------------
+box		0xF000	0xF02D			;Startup and initalization
+code	0xF000	ProgramStart	;set stack to 87FF (top of EXT RAM)
+view	0xF003	binary			;set data for port 1 and port 2
+view	0xF008	binary			;set direction for port 1 and port 2
+view	0xF00D	binary			;set direction for port 3 and port 4
 
 view	0xF015	binary
 
 view	0xF01F	binary
 view	0xF024	binary
+;----------------------------------------------------------
 
 
 ;----------------------------------------------------------
@@ -140,13 +175,17 @@ comment 0xF03A					;BAUD table - 7 entries
 comment 0xF040					;Table 0, 2, 4, 6
 comment 0xF042					;send this value to the CPLD, this is the clock divider for the SIO clock
 comment 0xF045					;Table 1, 3, 5, 7
-view	0xF049	binary			;look at bit 2 from CPLD
+view	0xF049	binary			;look at bit 6 from (CPLD)4001
 comment	0xF04D					;set RAM to FF
-view	0xF050	binary			;look at bit 0x10 from CPLD
+view	0xF050	binary			;look at bit 5 from CPLD
 comment	0xF054					;set MSB high
 ;----------------------------------------------------------
 
+comment	0xF060					;read config E1 (bit 3), E2 (bit 4), E3 (bit 5) from PCB.
 
+
+comment 0xF071					;Test E2 on PCB, normally hi
+comment 0xF076					;Test Seial DSR
 
 
 ;----------------------------------------------------------
@@ -165,10 +204,15 @@ comment 0xF109					;Command_FunctionTable
 
 box		0xF1B1	0xF1E4			;Serial Data Receive
 
+;----------------------------------------------------------
+;Serial Data Transmit
+;----------------------------------------------------------
 box		0xF1E5	0xF210			;Serial Data Transmit
-
-
-
+comment 0xF1FE					;Test E3 on PCB, normally hi
+comment 0xF201					;skip XON XOFF check
+comment	0xF203					;Check XOFF
+comment	0xF220					;Check XON
+;----------------------------------------------------------
 
 
 box		0xF150	0xF1B0
@@ -214,6 +258,11 @@ code	0xFEB7	Clear_X_Size_D		;Clear X for D bytes
 box		0xFEC0	0xFECD
 
 box		0xFECE	0xFF12
+
+
+
+
+comment 0xFF4F					;Test E1 on PCB, normally hi
 
 ;----------------------------------------------------------
 ;identify branch tricks
@@ -480,11 +529,11 @@ table 0xFF79 	12		byte	HEX		Table4
 ;----------------------------------------------------------
 ;Table - BAUD Rate
 ;----------------------------------------------------------
-BOX		0xFF85	0xFF8C	;BAUD Rate Table
+BOX		0xFF85	0xFF8C	;BAUD Rate Table (Pg. 18 - 1200, 2400, 9600, 19200)
 table 	0xFF85 	8		byte	binary	Table_BAUD
-comment	0xFF85						;BAUD=19200??
-comment	0xFF87						;BAUD=9600??
-comment	0xFF89						;BAUD=38400??
+comment	0xFF85						;BAUD=??
+comment	0xFF87						;BAUD=??
+comment	0xFF89						;BAUD=??
 comment	0xFF8B						;BAUD=19200
 ;----------------------------------------------------------
 
