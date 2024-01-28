@@ -1,14 +1,13 @@
 Header			;Tandy PDD1 firmware reverse engineering
 Header			;By BiggRanger
 
-cpu				6301
 orig			0xF000
-FileIn			c:\dcDisASM\PDD\PDD1.BIN
-FileOut			c:\dcDisasm\PDD\PDD1.ASM
+FileIn			c:\dcDisASM\PDD1\PDD1.BIN
+FileOut			c:\dcDisasm\PDD1\PDD1.ASM
 ;FileOptions	EPROM boot loader (TMS320 only)
 ;file out can be .ASM, .RTF, .HTML
 
-include			c:\dcDisasm\PDD\6301.INC
+include			c:\dcDisasm\CPU_INC\6301.INC
 
 ;;flag	asciiOnly	;only prints ascii characters in output
 ;;flag	colorJump	green
@@ -22,8 +21,8 @@ include			c:\dcDisasm\PDD\6301.INC
 ;flag	noSymbolTable
 ;flag	noJumpLines
 flag	radixRepresentationCPP	;Intel, CPP, or Motorola, this only affects output.
-;;flag	showOpCodeHEX
-;;flag	showOpCodeASCII
+flag	showOpCodeHEX
+flag	showOpCodeASCII
 ;;flag	showMnemonicComments
 
 ;TYPE = byte, word, dword, qword
@@ -62,9 +61,9 @@ flag	radixRepresentationCPP	;Intel, CPP, or Motorola, this only affects output.
 
 ;Port2.B0	Input	Pin11	P20	Mode (pulled Low)
 ;Port2.B1	Input	Pin12	P21	Mode (pulled Hi)
-;Port2.B2	Input	Pin23	P22	(SCI) CLKOUT from CPLD for BAUD rate
-;Port2.B3	Input	Pin24	P23	(SCI) /RXD
-;Port2.B4	Output	Pin25	P24	(SCI) /TXD
+;Port2.B2	Input	Pin13	P22	(SCI) CLKOUT from CPLD for BAUD rate
+;Port2.B3	Input	Pin14	P23	(SCI) /RXD
+;Port2.B4	Output	Pin15	P24	(SCI) /TXD
 ;----------------------------------------------------------
 
 
@@ -246,10 +245,10 @@ table	0xFFE8	0x06	word	hex	(dummyData)			;blank space
 ;----------------------------------------------------------
 box		0xFFB7	0xFFC6	;BAUD Rate lookup - variable table for 0xF021 (for switch settings)
 table	0xFFB7	0x10	byte	bin	(table)BAUD_Rates
-comment	0xFFB7	;BAUD=9600
+comment	0xFFB7	;BAUD=9600 - Test Mode 0
 comment	0xFFB8	;BAUD=19200
-comment	0xFFB9	;BAUD=19200
-comment	0xFFBA	;BAUD=150
+comment	0xFFB9	;BAUD=19200 - Test Mode 1
+comment	0xFFBA	;BAUD=150 - FDC Mode
 comment	0xFFBB	;BAUD=300
 comment	0xFFBC	;BAUD=600
 comment	0xFFBD	;BAUD=1200
@@ -259,7 +258,7 @@ comment	0xFFC0	;BAUD=9600
 comment	0xFFC1	;BAUD=19200
 comment	0xFFC2	;BAUD=38400
 comment	0xFFC3	;BAUD=76800
-comment	0xFFC4	;BAUD=4800
+comment	0xFFC4	;BAUD=4800 - Brother Mode
 comment	0xFFC5	;BAUD=9600
 comment	0xFFC6	;BAUD=19200
 ;----------------------------------------------------------
