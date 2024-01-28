@@ -61,9 +61,9 @@ flag	showOpCodeASCII
 
 ;Port2.B0	Input	Pin11	P20	Mode (pulled Low)
 ;Port2.B1	Input	Pin12	P21	Mode (pulled Hi)
-;Port2.B2	Input	Pin23	P22	(SCI) CLKOUT from CPLD for BAUD rate
-;Port2.B3	Input	Pin24	P23	(SCI) /RXD
-;Port2.B4	Output	Pin25	P24	(SCI) /TXD
+;Port2.B2	Input	Pin13	P22	(SCI) CLKOUT from CPLD for BAUD rate
+;Port2.B3	Input	Pin14	P23	(SCI) /RXD
+;Port2.B4	Output	Pin15	P24	(SCI) /TXD
 ;----------------------------------------------------------
 
 
@@ -82,7 +82,30 @@ data	0x4003	byte	hex	(CPLD)4003
 ;----------------------------------------------------------
 ;symbols for Internal RAM
 ;----------------------------------------------------------
-code	0x8013	(RAM_EXT)ExternalProgram			;Start Code Execution				
+
+
+data	0x0081	word	hex		(RAM_INT)StackPointerStorage		;Store stack pointer when computing checksum
+
+data	0x0099	word	hex		(RAM_INT)DataPacket_Data
+data	0x009B	byte	hex		(RAM_INT)Checksum_Temp_A
+data	0x009C	byte	hex		(RAM_INT)Checksum_Temp_B
+
+data	0x00B5	byte	hex		(RAM_INT)Checksum_Value
+
+
+data	0x008A	byte	hex		(RAM_INT)SerDatRX_1
+data	0x00A8	byte	hex		(RAM_INT)SerDatRX_2
+
+data	0x0090	byte	hex		(RAM_INT)SerDatTX_1
+data	0x0093	byte	hex		(RAM_INT)SerDatTX_2
+data	0x00A0	byte	hex		(RAM_INT)SerDatTX_3
+
+
+data	0x0080	byte	hex		(RAM_INT)BAUD_Value_A
+data	0x009F	byte	hex		(RAM_INT)BAUD_Value_B
+
+
+
 ;----------------------------------------------------------
 
 
@@ -90,7 +113,9 @@ code	0x8013	(RAM_EXT)ExternalProgram			;Start Code Execution
 ;----------------------------------------------------------
 ;symbols for External RAM
 ;----------------------------------------------------------
-data	0x87FF	byte	hex	(RAM_EXT)Stack					;Top of Stack
+code	0x8013					(RAM_EXT)ExternalProgram			;Start Code Execution				
+
+data	0x87FF	byte	hex		(RAM_EXT)Stack						;Top of Stack
 ;----------------------------------------------------------
 
 
@@ -99,13 +124,83 @@ data	0x87FF	byte	hex	(RAM_EXT)Stack					;Top of Stack
 ;----------------------------------------------------------
 code	0xF000	ProgramStart	;set stack to 87FF (top of EXT RAM)
 
-BOX		0xF1B1	0xF1E4			;Serial Data Receive
+view	0xF003	binary
+view	0xF008	binary
+view	0xF00D	binary
 
-BOX		0xF1E5	0xF210			;Serial Data Transmit
+view	0xF015	binary
+
+view	0xF01F	binary
+view	0xF024	binary
+
+
+;----------------------------------------------------------
+;BAUD Rate Setup
+;----------------------------------------------------------
+box		0xF030	0xF054			;BAUD Rate Setup
+comment	0xF030					;get switch settings from CPLD
+view	0xF034	binary			;mask bits - only look at 2 MSB
+comment	0xF036					;rotate through carry 0000_1100
+comment 0xF03A					;BAUD table - 7 entries
+comment 0xF040					;Table 0, 2, 4, 6
+comment 0xF042					;send this value to the CPLD, this is the clock divider for the SIO clock
+
+view	0xF049	binary			;look at bit 2 from CPLD
+comment	0xF04D					;set RAM to FF
+view	0xF050	binary			;look at bit 0x10 from CPLD
+comment	0xF054					;set MSB high
+
+;----------------------------------------------------------
+
+
+
+box		0xF1B1	0xF1E4			;Serial Data Receive
+
+box		0xF1E5	0xF210			;Serial Data Transmit
 
 
 
 
+
+box		0xF150	0xF1B0
+
+
+
+
+
+
+box		0xF824	0xF86F			;SWI_Funct(0x00)
+
+box		0xF870	0xF891			;SWI_Funct(0x0A)
+
+comment	0xF881					;Branch Trick, OpCode at F882 is CLR B
+
+
+
+
+;----------------------------------------------------------
+;packet checksum
+;----------------------------------------------------------
+box		0xFE59	0xFE99			;Packet checksum code
+comment	0xFE5B					;acc D = 0x0011
+comment	0xFE64					;increment index by 0x13 bytes
+comment	0xFE65					;acc D = 0x0500
+code	0xFE68	Checksum_Branch
+code	0xFE70	Checksum_Loop
+;----------------------------------------------------------
+
+;----------------------------------------------------------
+;Clear Data
+;----------------------------------------------------------
+box		0xFEB6	0xFEBF				;Clear Memory at X for B or D bytes
+code	0xFEB6	Clear_X_Size_B		;Clear A and X for B bytes
+code	0xFEB7	Clear_X_Size_D		;Clear X for D bytes
+;----------------------------------------------------------
+
+
+box		0xFEC0	0xFECD
+
+box		0xFECE	0xFF12
 
 ;----------------------------------------------------------
 ;identify branch tricks
@@ -338,8 +433,15 @@ table 0xFF6D 	12		byte	HEX		Table3
 BOX		0xFF79	0xFF84
 table 0xFF79 	12		byte	HEX		Table4
 
-BOX		0xFF85	0xFF8C
-table 0xFF85 	8		byte	HEX		Table5
+BOX		0xFF85	0xFF8C	;BAUD Rate Table
+table 	0xFF85 	8		byte	binary	Table_BAUD
+comment	0xFF85						;BAUD=2400
+comment	0xFF87						;BAUD=9600
+comment	0xFF89						;BAUD=19200
+comment	0xFF8B						;BAUD=38400
+
+
+
 
 ;----------------------------------------------------------
 ;Software Interrupt
@@ -393,8 +495,8 @@ code	0xFC51	SWI_Funct(0x0E)		;SWI Call 0x0E
 code	0xFEC5	SWI_Funct(0x0F)		;SWI Call 0x0F
 code	0xF1B1	SerialData_Receive
 code	0xF1E5	SerialData_Transmit
-code	0xFE59	SWI_Funct(0x12)		;SWI Call 0x12
-code	0xFE60	SWI_Funct(0x13)		;SWI Call 0x13
+code	0xFE59	Checksum_1			;SWI Call 0x12
+code	0xFE60	Checksum_2			;SWI Call 0x13
 code	0xFCE0	SWI_Funct(0x14)
 code	0xFDB0	SWI_Funct(0x15)
 
@@ -416,8 +518,8 @@ comment	0xFFA9  					;SWI_Funct(0x0E)
 comment	0xFFAB  					;SWI_Funct(0x0F)
 comment	0xFFAD						;SerialData_Receive SWI_Funct(0x10)
 comment	0xFFAF						;SerialData_Transmit SWI_Funct(0x11)
-comment	0xFFB1  					;SWI_Funct(0x12)
-comment	0xFFB3  					;SWI_Funct(0x13)
+comment	0xFFB1  					;Checksum_1 SWI_Funct(0x12)
+comment	0xFFB3  					;Checksum_2 SWI_Funct(0x13)
 comment	0xFFB5						;SWI_Funct(0x14)
 comment	0xFFB7						;SWI_Funct(0x15)
 ;----------------------------------------------------------
