@@ -12,8 +12,10 @@
 * File Out:      c:\dcDisasm\PDD2\PDD2.ASM
 * File Config:   c:\dcDisASM\PDD2\PDD2.dcDisASM
 * Included File: c:\dcDisasm\CPU_INC\6301.INC
+* Included File: c:\dcDisasm\PDD2\PDD2_Misc.inc
+* Included File: c:\dcDisasm\PDD2\PDD2_Tables.inc
 *
-* Date: 2024.01.28 Time: 17:43:42
+* Date: 2024.01.28 Time: 20:30:11
 ****************************************************************
 
 
@@ -51,10 +53,10 @@
 |  |                                            [F03A]	[CE FF 85   ]	[    ]		LDX #0xFF85	;BAUD table - 7 entries
 |  |                                            [F03D]	[3A         ]	[:   ]		ABX
 |  |                                            [F03E]	[E6 00      ]	[    ]		LDA B 0x00, X
-|  |                                            [F040]	[D7 80      ]	[    ]		STA B (RAM_INT)BAUD_Value_A	;Table 0, 2, 4, 6
+|  |                                            [F040]	[D7 80      ]	[    ]		STA B (RAM_INT)BAUD_Setting	;Table 0, 2, 4, 6
 |  |                                            [F042]	[F7 40 01   ]	[ @  ]		STA B (CPLD)4001	;send this value to the CPLD, this is the clock divider for the SIO clock
 |  |                                            [F045]	[E6 01      ]	[    ]		LDA B 0x01, X	;Table 1, 3, 5, 7
-|  |                                            [F047]	[D7 9F      ]	[    ]		STA B (RAM_INT)BAUD_Value_B
+|  |                                            [F047]	[D7 9F      ]	[    ]		STA B (RAM_INT)BAUD_DelayLoop
 |  |                                            [F049]	[85 20      ]	[    ]		BIT A #0b0010_0000	;look at bit 6 from (CPLD)4001
 |  |                                       r---<[F04B]	[27 0A      ]	['   ]		BEQ A_F057
 |  |                                       |    [F04D]	[72 FF 8A   ]	[r   ]		OIM #0xFF, (RAM_INT)SerDatRX_1	;set RAM to FF
@@ -76,9 +78,9 @@
 ||r|-------------------------------------------<[F06B]	[27 68      ]	['h  ]		BEQ A_F0D5
 ||||                                            [F06D]	[96 8B      ]	[    ]		LDA A (RAM_INT)CPLD_Switch_0
 ||||                                       r---<[F06F]	[26 30      ]	[&0  ]		BNE A_F0A1
-||||                                       |    [F071]	[7B 10 93   ]	[{   ]		TIM #0x10, (RAM_INT)PCB_ConfigSwitchesE1E2E3	;Test E2 on PCB, normally hi
+||||                                       |    [F071]	[7B 10 93   ]	[{   ]		TIM #0x10, (RAM_INT)PCB_ConfigSwitchesE1E2E3	;Test E2 on PCB, normally high
 ||||                                       }---<[F074]	[27 2B      ]	['+  ]		BEQ A_F0A1
-||||                                       |    [F076]	[7B 02 02   ]	[{   ]		TIM #0x02, (register)PORT1Data	;Test Seial DSR
+||||                                       |    [F076]	[7B 02 02   ]	[{   ]		TIM #0x02, (register)PORT1Data	;Test Serial DSR
 ||||                                       }---<[F079]	[26 26      ]	[&&  ]		BNE A_F0A1
 ||||                                       |    [F07B]	[3F         ]	[?   ]		SWI
 ||||                                       |    [F07C]	[09         ]	[    ]		DB	0x09	;SWI Parameter
@@ -127,7 +129,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  ||||  |                            |   || |L-->[F0D1]	[C1 05      ]	[    ]	A_F0D1:	CMP B #0x05
  ||||  |                            |   |L-|---<[F0D3]	[25 E0      ]	[%   ]		BCS A_F0B5
  |}||--|----------------------------|---|--|--->[F0D5]	[86 08      ]	[    ]	A_F0D5:	LDA A #0x08
- ||||  |                            |   |  |    [F0D7]	[9A 80      ]	[    ]		ORA A (RAM_INT)BAUD_Value_A
+ ||||  |                            |   |  |    [F0D7]	[9A 80      ]	[    ]		ORA A (RAM_INT)BAUD_Setting
  ||||  |                            |   |  |    [F0D9]	[B7 40 01   ]	[ @  ]		STA A (CPLD)4001
  ||||  |                            |   |  |    [F0DC]	[20 FE      ]	[    ]	A_F0DC:	BRA A_F0DC
  ||||  |                            |   |  L--->[F0DE]	[0F         ]	[    ]	A_F0DE:	SEI
@@ -152,7 +154,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  ||||  ||                           |   |   |   [F0FF]	[C0 22      ]	[ "  ]		SUB B #0x22	;if command > 0x30 subtract 0x22
  ||||  ||                           |   |   L-->[F101]	[71 FE 03   ]	[q   ]	A_F101:	AIM #0xFE, (register)PORT2Data
  ||||  ||                           |   |       [F104]	[58         ]	[X   ]		ASL B	;B*2 - set pointer correctly for function table
- ||||  ||                           |   |       [F105]	[C1 26      ]	[ &  ]		CMP B #0x26
+ ||||  ||                           |   |       [F105]	[C1 26      ]	[ &  ]		CMP B #0x26	;if command > 0x13 branch to Command_FMT_Invalid
  ||||  ||     r---------------------|---|------<[F107]	[24 2E      ]	[$.  ]		BCC Command_FMT_Invalid
  ||||  ||     |                     |   |       [F109]	[CE FF B9   ]	[    ]		LDX #0xFFB9	;Command_FunctionTable
  ||||  ||     |                     |   |       [F10C]	[3A         ]	[:   ]		ABX
@@ -166,9 +168,9 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| |||     |    |                |   |       [F11E]	[4F         ]	[O   ]		CLR A
  |||| |||     |    |                |   |       [F11F]	[97 8E      ]	[    ]		STA A A_8E
  |||| |||     |    |                |   |       [F121]	[AD 00      ]	[    ]		JSR 0x00, X
- |||| ||}-----|----|----------------|---|------>[F123]	[D6 9F      ]	[    ]	A_F123:	LDA B (RAM_INT)BAUD_Value_B
+ |||| ||}-----|----|----------------|---|------>[F123]	[D6 9F      ]	[    ]	A_F123:	LDA B (RAM_INT)BAUD_DelayLoop
  |||| |||     |    |                |   |       [F125]	[3F         ]	[?   ]		SWI
- |||| |||     |    |                |   |       [F126]	[0F         ]	[    ]		DB	0x0F	;SWI Parameter
+ |||| |||     |    |                |   |       [F126]	[0F         ]	[    ]		DB	0x0F	;JSR DelayLoop_B:
  |||| |||     |    |                }---|------<[F127]	[8D 11      ]	[    ]		BSR A_F13A
  |||| |||     |    |                |   |       [F129]	[86 0A      ]	[    ]		LDA A #0x0A
  |||| |||     |    |                |   |       [F12B]	[97 11      ]	[    ]		STA A (register)SCI_TxRxControlAndStatus
@@ -177,7 +179,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| |||     |    |                |   |  |    [F131]	[72 01 03   ]	[r   ]		OIM #0x01, (register)PORT2Data
  |||| |||     |    |                |   L--L--<>[F134]	[7E F0 B4   ]	[~   ]	A_F134:	JMP A_F0B4
  |||| |||     }----|----------------|---------->[F137]	[86 36      ]	[ 6  ]	Command_FMT_Invalid:	LDA A #0x36
- |||| |||     |    |                |           [F139]	[00         ]	[    ]		INVALID	;Call Trap
+ |||| |||     |    |                |           [F139]	[00         ]	[    ]		INVALID	;Call Trap:
  |||| |||     |    |                }---------->[F13A]	[C6 42      ]	[ B  ]	A_F13A:	LDA B #0x42
  |||| |||     |    |                |           [F13C]	[D7 A3      ]	[    ]		STA B A_A3
  |||| |||     |    |                |           [F13E]	[C6 FF      ]	[    ]		LDA B #0xFF
@@ -293,13 +295,13 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| |||   | |    |                     ||||   [F1FA]	[D7 13      ]	[    ]		STA B (register)SCI_TxData
  |||| |||   | |    |                     ||||   [F1FC]	[5F         ]	[_   ]		CLR B
  |||| |||   | |    |                     |||L-->[F1FD]	[39         ]	[9   ]	A_F1FD:	RTS
- |||| |||   | |    |                     ||L--->[F1FE]	[7B 20 93   ]	[{   ]	A_F1FE:	TIM #0x20, (RAM_INT)PCB_ConfigSwitchesE1E2E3	;Test E3 on PCB, normally hi
+ |||| |||   | |    |                     ||L--->[F1FE]	[7B 20 93   ]	[{   ]	A_F1FE:	TIM #0x20, (RAM_INT)PCB_ConfigSwitchesE1E2E3	;Test E3 on PCB, normally high
  |||| |||   | |    |                     |L----<[F201]	[27 E8      ]	['   ]		BEQ A_F1EB	;skip XON XOFF check
  |||| |||   | |    |                     |      [F203]	[81 13      ]	[    ]		CMP A #0x13	;Check XOFF
  |||| |||   | |    |                     |  r--<[F205]	[26 03      ]	[&   ]		BNE A_F20A
  |||| |||   | |    |                     |  |   [F207]	[97 90      ]	[    ]		STA A (RAM_INT)SerDatTX_1
  |||| |||   | |    |                     |  |   [F209]	[8C         ]	[    ]		DB	0x8C	;branch trick, skip next opcode
- |||| |||   | |    |                     |  L-->[F20A]	[80 11      ]	[    ]	A_F20A:	SUB A #0x11
+ |||| |||   | |    |                     |  L-->[F20A]	[80 11      ]	[    ]	A_F20A:	SUB A #0x11	;Check XON
  |||| |||   | |    |                     }-----<[F20C]	[26 D9      ]	[&   ]		BNE A_F1E7
  |||| |||   | |    |                     |      [F20E]	[97 90      ]	[    ]		STA A (RAM_INT)SerDatTX_1
  |||| |||   | |    |                     L-----<[F210]	[20 D5      ]	[    ]		BRA A_F1E7
@@ -344,7 +346,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| ||||| | || |||   ||               |||L--->[F265]	[86 31      ]	[ 1  ]	A_F265:	LDA A #0x31
  |||| ||||| | || |||   ||               |||     [F267]	[8C         ]	[    ]		DB	0x8C	;branch trick, skip next opcode
  |||| ||||| | || |||   ||               |||r--->[F268]	[86 5E      ]	[ ^  ]	A_F268:	LDA A #0x5E
- |||| ||||| | || |||   ||               ||||    [F26A]	[00         ]	[    ]		INVALID	;Call Trap
+ |||| ||||| | || |||   ||               ||||    [F26A]	[00         ]	[    ]		INVALID	;Call Trap:
  |||| ||||| | || |||   ||               |L||--->[F26B]	[D7 DC      ]	[    ]	A_F26B:	STA B A_DC
  |||| ||||| | || |||r--||---------------|-||---<[F26D]	[BD F6 0B   ]	[    ]		JSR A_F60B
  |||| ||||| | || ||||  ||               | ||    [F270]	[7D 84 EB   ]	[}   ]		TST A_84EB
@@ -522,7 +524,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| ||||||||||||||| |||       |     | |||L--->[F3CF]	[86 11      ]	[    ]	A_F3CF:	LDA A #0x11
  |||| ||||||||||||||| |||       |     | |||     [F3D1]	[8C         ]	[    ]		DB	0x8C	;branch trick, skip next opcode
  |||| ||||||||||||||| |||       |     | |||r--->[F3D2]	[86 60      ]	[ `  ]	A_F3D2:	LDA A #0x60
- |||| ||||||||||||||| |||       |     | ||||    [F3D4]	[00         ]	[    ]		INVALID	;Call Trap
+ |||| ||||||||||||||| |||       |     | ||||    [F3D4]	[00         ]	[    ]		INVALID	;Call Trap:
  |||| ||||||||||||||| |||       |     | ||L|--->[F3D5]	[B6 84 CC   ]	[    ]	A_F3D5:	LDA A A_84CC
  |||| ||||||||||||||| |||       |     | || L---<[F3D8]	[26 F8      ]	[&   ]		BNE A_F3D2
  |||| ||||||||||||||| |||       |     | }|-----<[F3DA]	[8D 0E      ]	[    ]		BSR A_F3EA
@@ -570,7 +572,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| ||||||||||||||||||| | |   |      |  ||    [F430]	[86 35      ]	[ 5  ]		LDA A #0x35
  |||| ||||||||||||||||||| | |   |      |  ||    [F432]	[8C         ]	[    ]		DB	0x8C	;branch trick, skip next opcode
  |||| ||||||||||||||||||| | |   |      |  L|--->[F433]	[86 5F      ]	[ _  ]	A_F433:	LDA A #0x5F
- |||| ||||||||||||||||||| | |   |      |   |    [F435]	[00         ]	[    ]		INVALID	;Call Trap
+ |||| ||||||||||||||||||| | |   |      |   |    [F435]	[00         ]	[    ]		INVALID	;Call Trap:
  |||| ||||||||||||||||||| | |   |r-----|---L--<>[F436]	[BD F5 7C   ]	[  | ]	A_F436:	JSR A_F57C
  |||| ||||||||||||||||||| | |   ||     |        [F439]	[DE C7      ]	[    ]		LDX A_C7
  |||| ||||||||||||||||||| | |   ||     |        [F43B]	[A6 1D      ]	[    ]		LDA A 0x1D, X
@@ -636,7 +638,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| ||||||||||||||||||||||| |||| r-----------<[F4B9]	[BD F5 91   ]	[    ]		JSR A_F591
  |||| |||||||||||||||||L|||||-||||-|----------->[F4BC]	[7F 00 C3   ]	[    ]	A_F4BC:	CLR A_00C3
  |||| |||||||||||||L|||-|||||-||||-|----------->[F4BF]	[96 C3      ]	[    ]	A_F4BF:	LDA A A_C3
- |||| ||||||||||||| ||| ||||| |||| |            [F4C1]	[00         ]	[    ]		INVALID	;Call Trap
+ |||| ||||||||||||| ||| ||||| |||| |            [F4C1]	[00         ]	[    ]		INVALID	;Call Trap:
  |||| ||||||||||||| ||| ||||| ||L|-|----------->[F4C2]	[7B 02 C6   ]	[{   ]	A_F4C2:	TIM #0x02, A_C6
  |||| ||||||||||||| ||| ||||| || | |r----------<[F4C5]	[27 4B      ]	['K  ]		BEQ A_F512
  |||| ||||||||||||| ||| L||||-||-|-||---------->[F4C7]	[96 8C      ]	[    ]	A_F4C7:	LDA A A_8C
@@ -679,7 +681,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| ||||||||||||| |||  |||| || | |}|||--|---->[F512]	[86 10      ]	[    ]	A_F512:	LDA A #0x10
  |||| ||||||||||||| |||  |||| || | |||||  |     [F514]	[8C         ]	[    ]		DB	0x8C	;branch trick, skip next opcode
  |||| ||||||||||||| |||  |||| || | ||L||--|---->[F515]	[96 C3      ]	[    ]	A_F515:	LDA A A_C3
- |||| ||||||||||||| |||  |||| || | || ||  |     [F517]	[00         ]	[    ]		INVALID	;Call Trap
+ |||| ||||||||||||| |||  |||| || | || ||  |     [F517]	[00         ]	[    ]		INVALID	;Call Trap:
  |||| ||||||||||||| |||  |||| || | || ||  L---->[F518]	[97 C6      ]	[    ]	A_F518:	STA A A_C6
  |||| ||||||||||||| |||  |||| || }-||-||-------<[F51A]	[8D 60      ]	[ `  ]		BSR A_F57C
  |||| ||||||||||||| |||  |||| || |r||-||-------<[F51C]	[BD F5 DA   ]	[    ]		JSR A_F5DA
@@ -785,7 +787,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| ||||||||||||| |||  | | |||  |     |||     [F5F5]	[81 9F      ]	[    ]		CMP A #0x9F
  |||| ||||||||||||| |||  | | |||  |     ||| r--<[F5F7]	[25 03      ]	[%   ]		BCS A_F5FC
  |||| ||||||||||||| |||  | | |||  |     ||| |   [F5F9]	[86 61      ]	[ a  ]		LDA A #0x61
- |||| ||||||||||||| |||  | | |||  |     ||| |   [F5FB]	[00         ]	[    ]		INVALID	;Call Trap
+ |||| ||||||||||||| |||  | | |||  |     ||| |   [F5FB]	[00         ]	[    ]		INVALID	;Call Trap:
  |||| ||||||||||||| |||  | | |||  |     ||| L-->[F5FC]	[97 D8      ]	[    ]	A_F5FC:	STA A A_D8
  |||| ||||||||||||| |||  | | |||  |     |||     [F5FE]	[08         ]	[    ]		INX
  |||| ||||||||||||| |||  | | |||  |     |L|----<[F5FF]	[20 DF      ]	[    ]		BRA A_F5E0
@@ -874,7 +876,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| |||||||| |||   |   |   |        |  L|---->[F6A9]	[86 6E      ]	[ n  ]	A_F6A9:	LDA A #0x6E
  |||| |||||||| |||   |   |   |        |   |     [F6AB]	[8C         ]	[    ]		DB	0x8C	;branch trick, skip next opcode
  |||| |||||||| |||   |   |   |        |   |r--->[F6AC]	[86 3F      ]	[ ?  ]	A_F6AC:	LDA A #0x3F
- |||| |||||||| |||   |   |   |        |   ||    [F6AE]	[00         ]	[    ]		INVALID	;Call Trap
+ |||| |||||||| |||   |   |   |        |   ||    [F6AE]	[00         ]	[    ]		INVALID	;Call Trap:
  |||| |||||||| |||   |   L---|--------|---L|--<>[F6AF]	[BD F4 C9   ]	[    ]	A_F6AF:	JSR A_F4C9
  |||| |||||||| |||   |       |        |    |    [F6B2]	[D1 DC      ]	[    ]		CMP B A_DC
  |||| |||||||| |||   |       |        L----|---<[F6B4]	[26 F0      ]	[&   ]		BNE A_F6A6
@@ -918,7 +920,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| |||||||| |||           |             |    [F6FF]	[72 08 02   ]	[r   ]		OIM #0x08, (register)PORT1Data
  |||| |||||||| |||           |             |    [F702]	[4F         ]	[O   ]		CLR A
  |||| |||||||| |||           |             |    [F703]	[97 11      ]	[    ]		STA A (register)SCI_TxRxControlAndStatus
- ||||r||||||||-|||-----------|-------------|---<[F705]	[BD FE C3   ]	[    ]		JSR A_FEC3
+ ||||r||||||||-|||-----------|-------------|---<[F705]	[BD FE C3   ]	[    ]		JSR DelayLoop14
  ||||||||||||| |||           |             |    [F708]	[32         ]	[2   ]		PUL A
  ||||||||||||| |||           |             |r-->[F709]	[9A 02      ]	[    ]	A_F709:	ORA A (register)PORT1Data
  ||||||||||||| |||           |             ||   [F70B]	[85 02      ]	[    ]		BIT A #0x02
@@ -1080,35 +1082,35 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  ||||||                                         [F82B]	[97 88      ]	[    ]		STA A A_88
  ||||||                                         [F82D]	[97 83      ]	[    ]		STA A (RAM_INT)Brian83
  ||||||                                         [F82F]	[97 8E      ]	[    ]		STA A A_8E
- ||||||                                         [F831]	[72 03 80   ]	[r   ]		OIM #0x03, (RAM_INT)BAUD_Value_A
+ ||||||                                         [F831]	[72 03 80   ]	[r   ]		OIM #0x03, (RAM_INT)BAUD_Setting
  ||||||                                r-------<[F834]	[8D 34      ]	[ 4  ]		BSR A_F86A
- ||||||                                |  r----<[F836]	[27 17      ]	['   ]		BEQ A_F84F
- ||||||                                |r-|---->[F838]	[C6 04      ]	[    ]	A_F838:	LDA B #0x04
- ||||||                                || |     [F83A]	[3F         ]	[?   ]		SWI
- ||||||                                || |     [F83B]	[08         ]	[    ]		DB	0x08	;SWI Parameter
- ||||||                                || |     [F83C]	[D6 8E      ]	[    ]		LDA B A_8E
- ||||||                                ||r|----<[F83E]	[26 26      ]	[&&  ]		BNE A_F866
+ ||||||                                | r-----<[F836]	[27 17      ]	['   ]		BEQ A_F84F
+ ||||||                                | |r---->[F838]	[C6 04      ]	[    ]	A_F838:	LDA B #0x04
+ ||||||                                | ||     [F83A]	[3F         ]	[?   ]		SWI
+ ||||||                                | ||     [F83B]	[08         ]	[    ]		DB	0x08	;SWI Parameter
+ ||||||                                | ||     [F83C]	[D6 8E      ]	[    ]		LDA B A_8E
+ ||||||                                |r||----<[F83E]	[26 26      ]	[&&  ]		BNE A_F866
  ||||||                                ||||     [F840]	[7A 00 A1   ]	[z   ]		DEC A_00A1
  ||||||                                ||||r---<[F843]	[27 1D      ]	['   ]		BEQ A_F862
  ||||||                                }||||---<[F845]	[8D 23      ]	[ #  ]		BSR A_F86A
- ||||||                                |}|||---<[F847]	[26 EF      ]	[&   ]		BNE A_F838
+ ||||||                                |||}|---<[F847]	[26 EF      ]	[&   ]		BNE A_F838
  ||||||                                |||||    [F849]	[D7 84      ]	[    ]		STA B (RAM_INT)Brian84
  ||||||                                |||||    [F84B]	[4F         ]	[O   ]		CLR A
  ||||||                                |||||    [F84C]	[DD 85      ]	[    ]		STD A_85
  ||||||                                |||||    [F84E]	[39         ]	[9   ]		RTS
- ||||||                                |||}|--->[F84F]	[C6 FC      ]	[    ]	A_F84F:	LDA B #0xFC
+ ||||||                                ||}||--->[F84F]	[C6 FC      ]	[    ]	A_F84F:	LDA B #0xFC
  ||||||                                |||||    [F851]	[3F         ]	[?   ]		SWI
  ||||||                                |||||    [F852]	[08         ]	[    ]		DB	0x08	;SWI Parameter
  ||||||                                |||||    [F853]	[D6 8E      ]	[    ]		LDA B A_8E
- ||||||                                ||}||---<[F855]	[26 0F      ]	[&   ]		BNE A_F866
+ ||||||                                |}|||---<[F855]	[26 0F      ]	[&   ]		BNE A_F866
  ||||||                                |||||    [F857]	[7A 00 A1   ]	[z   ]		DEC A_00A1
  ||||||                                ||||}---<[F85A]	[27 06      ]	['   ]		BEQ A_F862
  ||||||                                }||||---<[F85C]	[8D 0C      ]	[    ]		BSR A_F86A
- ||||||                                |||L|---<[F85E]	[27 EF      ]	['   ]		BEQ A_F84F
- ||||||                                |L|-|---<[F860]	[20 D6      ]	[    ]		BRA A_F838
- ||||||                                | | L--->[F862]	[C6 81      ]	[    ]	A_F862:	LDA B #0x81
- ||||||                                | |      [F864]	[D7 8E      ]	[    ]		STA B A_8E
- ||||||                                | L----->[F866]	[72 FF 84   ]	[r   ]	A_F866:	OIM #0xFF, (RAM_INT)Brian84
+ ||||||                                ||L||---<[F85E]	[27 EF      ]	['   ]		BEQ A_F84F
+ ||||||                                || L|---<[F860]	[20 D6      ]	[    ]		BRA A_F838
+ ||||||                                ||  L--->[F862]	[C6 81      ]	[    ]	A_F862:	LDA B #0x81
+ ||||||                                ||       [F864]	[D7 8E      ]	[    ]		STA B A_8E
+ ||||||                                |L------>[F866]	[72 FF 84   ]	[r   ]	A_F866:	OIM #0xFF, (RAM_INT)Brian84
  ||||||                                |        [F869]	[39         ]	[9   ]		RTS
  ||||||                                L------->[F86A]	[3F         ]	[?   ]	A_F86A:	SWI
  ||||||                                         [F86B]	[09         ]	[    ]		DB	0x09	;SWI Parameter
@@ -1302,18 +1304,18 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||             ||  | |     | ||  |||        [F9BD]	[D7 A2      ]	[    ]		STA B A_A2
  |||||             ||  | |     | ||  |||        [F9BF]	[97 97      ]	[    ]		STA A A_97
  |||||             ||  | |     | ||  |||   r---<[F9C1]	[20 04      ]	[    ]		BRA A_F9C7
- |||||             ||  | |     | ||  |||  r|--->[F9C3]	[3F         ]	[?   ]	A_F9C3:	SWI
- |||||             ||  | |     | ||  |||  ||    [F9C4]	[00         ]	[    ]		DB	0x00	;SWI Parameter
- |||||             ||  | |     | ||  ||| r||---<[F9C5]	[26 11      ]	[&   ]		BNE A_F9D8
+ |||||             ||  | |     | ||  ||| r-|--->[F9C3]	[3F         ]	[?   ]	A_F9C3:	SWI
+ |||||             ||  | |     | ||  ||| | |    [F9C4]	[00         ]	[    ]		DB	0x00	;SWI Parameter
+ |||||             ||  | |     | ||  ||| |r|---<[F9C5]	[26 11      ]	[&   ]		BNE A_F9D8
  |||||             ||  | |     | |L--|||-||L--<>[F9C7]	[8D 82      ]	[    ]	A_F9C7:	BSR A_F94B
  |||||             ||  | |     | |   ||| ||r---<[F9C9]	[26 04      ]	[&   ]		BNE A_F9CF
  |||||             ||  | |     | |   |||r|||---<[F9CB]	[8D 3A      ]	[ :  ]		BSR A_FA07
  |||||             ||  | |     | |   ||}||||---<[F9CD]	[27 EB      ]	['   ]		BEQ A_F9BA
  |||||             ||  | |     | |   ||||||L--->[F9CF]	[7A 00 A2   ]	[z   ]	A_F9CF:	DEC A_00A2
- |||||             ||  | |     | |   ||||}|----<[F9D2]	[27 04      ]	['   ]		BEQ A_F9D8
+ |||||             ||  | |     | |   |||||}----<[F9D2]	[27 04      ]	['   ]		BEQ A_F9D8
  |||||             ||  | |     | }---||||||----<[F9D4]	[8D 1D      ]	[    ]		BSR A_F9F3
- |||||             ||  | |     | |   |||||L----<[F9D6]	[24 EB      ]	[$   ]		BCC A_F9C3
- |||||             ||  | |     | |   }|||L----<>[F9D8]	[20 DE      ]	[    ]	A_F9D8:	BRA A_F9B8
+ |||||             ||  | |     | |   ||||L|----<[F9D6]	[24 EB      ]	[$   ]		BCC A_F9C3
+ |||||             ||  | |     | |   }|||-L---<>[F9D8]	[20 DE      ]	[    ]	A_F9D8:	BRA A_F9B8
  |||||             ||  | |     | |   |L||------>[F9DA]	[86 81      ]	[    ]	SWI_Funct(0x05):	LDA A #0x81
  |||||             ||  | |     | |   | ||       [F9DC]	[97 98      ]	[    ]		STA A A_98
  |||||             ||  | |     | |   | ||       [F9DE]	[8C         ]	[    ]		DB	0x8C	;branch trick, PC+=3, skip next 2 opcodes
@@ -1342,7 +1344,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||             ||  | |     | |      L-|---->[FA07]	[7F 00 98   ]	[    ]	A_FA07:	CLR A_0098
  |||||             ||  | |     | |        |     [FA0A]	[CE 80 00   ]	[    ]		LDX #0x8000
  |||||             ||  | |     | |        L---->[FA0D]	[DF 99      ]	[    ]	A_FA0D:	STX (RAM_INT)DataPacket_Data
- |||||             ||  | |     | |              [FA0F]	[CE FF 79   ]	[  y ]		LDX #0xFF79
+ |||||             ||  | |     | |              [FA0F]	[CE FF 79   ]	[  y ]		LDX #0xFF79	;Table4 Unknown
  |||||             ||  | |     | |              [FA12]	[DF B3      ]	[    ]		STX A_B3
  |||||             |}--|-|-----|-|------r-----<>[FA14]	[BD FC E7   ]	[    ]	A_FA14:	JSR A_FCE7
  |||||             ||  | |     | |      |       [FA17]	[DE 99      ]	[    ]		LDX (RAM_INT)DataPacket_Data
@@ -1429,16 +1431,16 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||             ||  | |     |       ||| |    [FAAB]	[09         ]	[    ]		DEX
  |||||             ||  | |     |       ||| |    [FAAC]	[DF B0      ]	[    ]		STX A_B0
  |||||             ||  | |     |       ||| L--->[FAAE]	[D7 B2      ]	[    ]	A_FAAE:	STA B A_B2
- |||||             ||  | |     |       ||| r--->[FAB0]	[CE FF 5F   ]	[  _ ]	A_FAB0:	LDX #0xFF5F
+ |||||             ||  | |     |       ||| r--->[FAB0]	[CE FF 5F   ]	[  _ ]	A_FAB0:	LDX #0xFF5F	;Table1 Unknown
  |||||             ||  | |     |       ||| |    [FAB3]	[D6 B2      ]	[    ]		LDA B A_B2
  |||||             ||  | |     |       ||| |    [FAB5]	[3A         ]	[:   ]		ABX
- |||||             ||  | |     |       ||| |    [FAB6]	[96 80      ]	[    ]		LDA A (RAM_INT)BAUD_Value_A
+ |||||             ||  | |     |       ||| |    [FAB6]	[96 80      ]	[    ]		LDA A (RAM_INT)BAUD_Setting
  |||||             ||  | |     |       ||| |    [FAB8]	[16         ]	[    ]		TAB
  |||||             ||  | |     |       ||| |    [FAB9]	[C4 03      ]	[    ]		AND B #0x03
  |||||             ||  | |     |       ||| |    [FABB]	[3A         ]	[:   ]		ABX
  |||||             ||  | |     |       ||| |    [FABC]	[84 FC      ]	[    ]		AND A #0xFC
  |||||             ||  | |     |       ||| |    [FABE]	[AA 00      ]	[    ]		ORA A 0x00, X
- |||||             ||  | |     |       ||| |    [FAC0]	[97 80      ]	[    ]		STA A (RAM_INT)BAUD_Value_A
+ |||||             ||  | |     |       ||| |    [FAC0]	[97 80      ]	[    ]		STA A (RAM_INT)BAUD_Setting
  |||||             ||  | |     |       |||r|---<[FAC2]	[8D 26      ]	[ &  ]		BSR A_FAEA
  |||||             ||  | |     |       |||||    [FAC4]	[A7 01      ]	[    ]		STA A 0x01, X
  |||||             ||  | |     |       |||||    [FAC6]	[62 01 00   ]	[b   ]		OIM #0x01, 0x00, X
@@ -1599,7 +1601,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||             |||||||| |||r|||||----------<[FBF3]	[BD FC 94   ]	[    ]		JSR A_FC94
  |||||             |||||||| ||||}||||----------<[FBF6]	[26 B2      ]	[&   ]		BNE A_FBAA
  |||||             |||||||| |||||||||    r----->[FBF8]	[B6 40 03   ]	[ @  ]	A_FBF8:	LDA A (CPLD)4003
- |||||             ||||||||r|||||||||----|-----<[FBFB]	[BD FE C0   ]	[    ]		JSR A_FEC0
+ |||||             ||||||||r|||||||||----|-----<[FBFB]	[BD FE C0   ]	[    ]		JSR DelayLoop02
  |||||             ||||||||||||||||||    |      [FBFE]	[9F 81      ]	[    ]		STS (RAM_INT)StackPointerStorage
  |||||             ||||||||||||||||||    |      [FC00]	[8E 7F FF   ]	[    ]		LDS #0x7FFF
  |||||             ||||||||||||||||||    |      [FC03]	[86 FA      ]	[    ]		LDA A #0xFA
@@ -1747,7 +1749,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||             | |||| |||||||  |       |    [FD17]	[0D         ]	[    ]		DB	0x0D	;SWI Parameter
  |||||             | |||| ||||}||--|-------L--<>[FD18]	[26 65      ]	[&e  ]	A_FD18:	BNE A_FD7F
  |||||             | |||| |||||||  |            [FD1A]	[B6 40 03   ]	[ @  ]		LDA A (CPLD)4003
- |||||             | |||| |}|||||--|-----------<[FD1D]	[BD FE C0   ]	[    ]		JSR A_FEC0
+ |||||             | |||| |}|||||--|-----------<[FD1D]	[BD FE C0   ]	[    ]		JSR DelayLoop02
  |||||             | |||| |||||||  |            [FD20]	[9F 81      ]	[    ]		STS (RAM_INT)StackPointerStorage
  |||||             | |||| |||||||  |            [FD22]	[9E 99      ]	[    ]		LDS (RAM_INT)DataPacket_Data
  |||||             | |||| |||||||  |            [FD24]	[86 FA      ]	[    ]		LDA A #0xFA
@@ -1951,14 +1953,14 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||               || |  |                    [FE99]	[39         ]	[9   ]		RTS
 ;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Packet checksum code ^^^^^^^^^^^^^^^^^^^^
 
- |||||               || |  |                    [FE9A]	[72 04 80   ]	[r   ]	SWI_Funct(0x0B):	OIM #0x04, (RAM_INT)BAUD_Value_A	;SWI Call 0x0B
- |||||               || |  |                    [FE9D]	[96 80      ]	[    ]		LDA A (RAM_INT)BAUD_Value_A
+ |||||               || |  |                    [FE9A]	[72 04 80   ]	[r   ]	SWI_Funct(0x0B):	OIM #0x04, (RAM_INT)BAUD_Setting	;SWI Call 0x0B
+ |||||               || |  |                    [FE9D]	[96 80      ]	[    ]		LDA A (RAM_INT)BAUD_Setting
  |||||               || |  |                    [FE9F]	[B7 40 01   ]	[ @  ]		STA A (CPLD)4001
  |||||               || |  |                    [FEA2]	[96 A7      ]	[    ]		LDA A A_A7
  |||||               || |  |               r---<[FEA4]	[26 0B      ]	[&   ]		BNE A_FEB1
  |||||               || |  |               |    [FEA6]	[86 28      ]	[ (  ]		LDA A #0x28
  |||||               || |  |               |r-->[FEA8]	[36         ]	[6   ]	A_FEA8:	PSH A
- ||||}---------------||-|--|---------------||--<[FEA9]	[8D 18      ]	[    ]		BSR A_FEC3
+ ||||}---------------||-|--|---------------||--<[FEA9]	[8D 18      ]	[    ]		BSR DelayLoop14
  }||||---------------||-|--|---------------||--<[FEAB]	[8D 4C      ]	[ L  ]		BSR A_FEF9
  |||||               || |  |               ||   [FEAD]	[32         ]	[2   ]		PUL A
  |||||               || |  |               ||   [FEAE]	[4A         ]	[J   ]		DEC A
@@ -1977,17 +1979,17 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
 ;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Clear Memory at X for B or D bytes ^^^^^^^^^^^^^^^^^^^^
 
 
-;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv  vvvvvvvvvvvvvvvvvvvv
- || ||               ||    L------------------->[FEC0]	[C6 02      ]	[    ]	A_FEC0:	LDA B #0x02
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Delay Loops vvvvvvvvvvvvvvvvvvvv
+ || ||               ||    L------------------->[FEC0]	[C6 02      ]	[    ]	DelayLoop02:	LDA B #0x02	;2 loops of 0x99
  || ||               ||                         [FEC2]	[8C         ]	[    ]		DB	0x8C	;branch trick, skip next opcode
- || |L---------------||------------------------>[FEC3]	[C6 14      ]	[    ]	A_FEC3:	LDA B #0x14
- || |                ||                    r--->[FEC5]	[86 99      ]	[    ]	SWI_Funct(0x0F):	LDA A #0x99	;SWI Call 0x0F
+ || |L---------------||------------------------>[FEC3]	[C6 14      ]	[    ]	DelayLoop14:	LDA B #0x14	;14 loops of 0x99
+ || |                ||                    r--->[FEC5]	[86 99      ]	[    ]	DelayLoop_B:	LDA A #0x99	;B loops of 0x99
  || |                ||                    |r-->[FEC7]	[4A         ]	[J   ]	A_FEC7:	DEC A
  || |                ||                    |L--<[FEC8]	[26 FD      ]	[&   ]		BNE A_FEC7
  || |                ||                    |    [FECA]	[5A         ]	[Z   ]		DEC B
- || |                ||                    L---<[FECB]	[26 F8      ]	[&   ]		BNE SWI_Funct(0x0F)
+ || |                ||                    L---<[FECB]	[26 F8      ]	[&   ]		BNE DelayLoop_B
  || |                ||                         [FECD]	[39         ]	[9   ]		RTS
-;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Delay Loops ^^^^^^^^^^^^^^^^^^^^
 
 
 ;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv  vvvvvvvvvvvvvvvvvvvv
@@ -2069,11 +2071,11 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  ||                                       ||    [FF40]	[4A         ]	[J   ]		DEC A
  ||                                       ||    [FF41]	[97 A7      ]	[    ]		STA A A_A7
  ||                                       |}---<[FF43]	[26 08      ]	[&   ]		BNE A_FF4D
- ||                                       ||    [FF45]	[71 FB 80   ]	[q   ]		AIM #0xFB, (RAM_INT)BAUD_Value_A
- ||                                       ||    [FF48]	[96 80      ]	[    ]		LDA A (RAM_INT)BAUD_Value_A
+ ||                                       ||    [FF45]	[71 FB 80   ]	[q   ]		AIM #0xFB, (RAM_INT)BAUD_Setting
+ ||                                       ||    [FF48]	[96 80      ]	[    ]		LDA A (RAM_INT)BAUD_Setting
  ||                                       ||    [FF4A]	[B7 40 01   ]	[ @  ]		STA A (CPLD)4001
  L|---------------------------------------|L--<>[FF4D]	[8D AA      ]	[    ]	A_FF4D:	BSR A_FEF9
-  |                                       |     [FF4F]	[7B 08 93   ]	[{   ]		TIM #0x08, (RAM_INT)PCB_ConfigSwitchesE1E2E3	;Test E1 on PCB, normally hi
+  |                                       |     [FF4F]	[7B 08 93   ]	[{   ]		TIM #0x08, (RAM_INT)PCB_ConfigSwitchesE1E2E3	;Test E1 on PCB, normally high
   |                                       }----<[FF52]	[27 0A      ]	['   ]		BEQ IRQ1,IQR2
   |                                       |     [FF54]	[DE A3      ]	[    ]		LDX A_A3
   |                                       |     [FF56]	[09         ]	[    ]		DEX
@@ -2139,14 +2141,14 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
 
 
 ;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;BAUD Rate Table (Pg. 18 - 1200, 2400, 9600, 19200) vvvvvvvvvvvvvvvvvvvv
-                                                [FF85]	[B0         ]	[    ]	Table_BAUD:	DB	0b1011_0000	;BAUD=??
-                                                [FF86]	[11         ]	[    ]		DB	0b0001_0001
-                                                [FF87]	[C0         ]	[    ]		DB	0b1100_0000	;BAUD=??
-                                                [FF88]	[05         ]	[    ]		DB	0b0000_0101
-                                                [FF89]	[40         ]	[@   ]		DB	0b0100_0000	;BAUD=??
-                                                [FF8A]	[02         ]	[    ]		DB	0b0000_0010
+                                                [FF85]	[B0         ]	[    ]	Table_BAUD:	DB	0b1011_0000	;BAUD=1200
+                                                [FF86]	[11         ]	[    ]		DB	17	;BAUD_Value_B Delay Loop
+                                                [FF87]	[C0         ]	[    ]		DB	0b1100_0000	;BAUD=2400
+                                                [FF88]	[05         ]	[    ]		DB	5	;BAUD_Value_B Delay Loop
+                                                [FF89]	[40         ]	[@   ]		DB	0b0100_0000	;BAUD=9600
+                                                [FF8A]	[02         ]	[    ]		DB	2	;BAUD_Value_B Delay Loop
                                                 [FF8B]	[80         ]	[    ]		DB	0b1000_0000	;BAUD=19200
-                                                [FF8C]	[01         ]	[    ]		DB	0b0000_0001
+                                                [FF8C]	[01         ]	[    ]		DB	1	;BAUD_Value_B Delay Loop
 ;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;BAUD Rate Table (Pg. 18 - 1200, 2400, 9600, 19200) ^^^^^^^^^^^^^^^^^^^^
 
 
@@ -2166,7 +2168,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
                                                 [FFA5]	[FC 92      ]	[    ]		DW	0xFC92	;SWI_Funct(0x0C)
                                                 [FFA7]	[FC C6      ]	[    ]		DW	0xFCC6	;SWI_Funct(0x0D)
                                                 [FFA9]	[FC 51      ]	[ Q  ]		DW	0xFC51	;SWI_Funct(0x0E)
-                                                [FFAB]	[FE C5      ]	[    ]		DW	0xFEC5	;SWI_Funct(0x0F)
+                                                [FFAB]	[FE C5      ]	[    ]		DW	0xFEC5	;DelayLoop_B SWI_Funct(0x0F)
                                                 [FFAD]	[F1 B1      ]	[    ]		DW	0xF1B1	;SerialData_Receive SWI_Funct(0x10)
                                                 [FFAF]	[F1 E5      ]	[    ]		DW	0xF1E5	;SerialData_Transmit SWI_Funct(0x11)
                                                 [FFB1]	[FE 59      ]	[ Y  ]		DW	0xFE59	;Checksum_1 SWI_Funct(0x12)
@@ -2210,7 +2212,6 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
                                                 [FFFA]	[FF 13      ]	[    ]	(vector)SWI:	DW	0xFF13	;jumps to SWI code
                                                 [FFFC]	[F0 00      ]	[    ]	(vector)NMI:	DW	0xF000
                                                 [FFFE]	[F0 00      ]	[    ]	(vector)RESET:	DW	0xF000
- |||| ||||  | |  | |                            [F220]	[***********]	[    ]			;Check XON
 
 
 ****************************************************************
@@ -2249,7 +2250,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
 0x001D	(register)Reserved[1D]:
 0x001E	(register)Reserved[1E]:
 0x001F	(register)Reserved[1F]:
-0x0080	(RAM_INT)BAUD_Value_A:	ref from: 0xF040 0xF0D7 0xF831 0xFAB6 0xFAC0 0xFE9A 0xFE9D 0xFF45 0xFF48
+0x0080	(RAM_INT)BAUD_Setting:	ref from: 0xF040 0xF0D7 0xF831 0xFAB6 0xFAC0 0xFE9A 0xFE9D 0xFF45 0xFF48
 0x0081	(RAM_INT)StackPointerStorage:	ref from: 0xF3F6 0xF402 0xFBA4 0xFBC3 0xFBFE 0xFC2C 0xFD20 0xFD4D 0xFD8D 0xFE0A 0xFE54 0xFE68 0xFE97	;Store stack pointer when computing checksum
 0x0083	(RAM_INT)Brian83:	ref from: 0xF82D 0xF887 0xF8BD 0xF91A 0xFA52	;TPDD2 backup.ba (sets to 0x00)
 0x0084	(RAM_INT)Brian84:	ref from: 0xF849 0xF866 0xF8CF 0xF8EA 0xF955 0xF98B	;Reset drive status on pg 102 (sets to 0xFF)
@@ -2276,7 +2277,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
 0x009C	(RAM_INT)Checksum_Temp_B:	ref from: 0xFE83
 0x009D	ref from: 0xFA6B 0xFEE7 0xFEE9
 0x009E	ref from: 0xFA6F 0xFAD7
-0x009F	(RAM_INT)BAUD_Value_B:	ref from: 0xF047 0xF123
+0x009F	(RAM_INT)BAUD_DelayLoop:	ref from: 0xF047 0xF123
 0x00A0	(RAM_INT)SerDatTX_3:	ref from: 0xF157 0xF1E5 0xF1F8 0xFB06 0xFB8D
 0x00A1	ref from: 0xF826 0xF840 0xF857
 0x00A2	ref from: 0xF99A 0xF9AF 0xF9BD 0xF9CF 0xFBBE 0xFBE2
@@ -2380,8 +2381,8 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
 0xF1E7	jumped from: 0xF1F1 0xF1F6 0xF20C 0xF210
 0xF1EB	jumped from: 0xF201
 0xF1FD	jumped from: 0xF1ED
-0xF1FE	jumped from: 0xF1E9	;Test E3 on PCB, normally hi
-0xF20A	jumped from: 0xF205
+0xF1FE	jumped from: 0xF1E9	;Test E3 on PCB, normally high
+0xF20A	jumped from: 0xF205	;Check XON
 0xF212	Command_FMT06_DiskFormat:
 0xF21C	jumped from: 0xF217
 0xF22D	jumped from: 0xF24A
@@ -2609,7 +2610,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
 0xFA92	jumped from: 0xFAE8
 0xFAA9	jumped from: 0xFAE1
 0xFAAE	jumped from: 0xFAA5
-0xFAB0	jumped from: 0xFAD5
+0xFAB0	jumped from: 0xFAD5	;Table1 Unknown
 0xFAD2	jumped from: 0xFACE
 0xFAE3	jumped from: 0xFA88
 0xFAEA	called from: 0xFAC2	jumped from: 0xFADE
@@ -2702,9 +2703,9 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
 0xFEB1	jumped from: 0xFEA4
 0xFEB6	Clear_X_Size_B:	called from: 0xF02D	jumped from: 0xF422	;Clear A and X for B bytes
 0xFEB7	Clear_X_Size_D:	called from: 0xFB1B	jumped from: 0xFEBD	;Clear X for D bytes
-0xFEC0	called from: 0xFBFB 0xFD1D
-0xFEC3	called from: 0xF705 0xFEA9
-0xFEC5	SWI_Funct(0x0F):	jumped from: 0xFECB	;SWI Call 0x0F
+0xFEC0	DelayLoop02:	called from: 0xFBFB 0xFD1D	;2 loops of 0x99
+0xFEC3	DelayLoop14:	called from: 0xF705 0xFEA9	;14 loops of 0x99
+0xFEC5	DelayLoop_B:	jumped from: 0xFECB	;B loops of 0x99
 0xFEC7	jumped from: 0xFEC8
 0xFECE	jumped from: 0xFEDC
 0xFED4	called from: 0xFAC9
@@ -2723,7 +2724,7 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
 0xFF67	Table_SysInfo:	;Hard sector data port address MSB
 0xFF6D	Table_Version:	;System Version Number MSB
 0xFF79	Table4:
-0xFF85	Table_BAUD:	;BAUD=??
+0xFF85	Table_BAUD:	;BAUD=1200
 0xFF8D	SWI_FunctionTable:	;SWI_Funct(0x00)
 0xFFB9	Command_FunctionTable:	;Command_FMT00_CreateDirectory
 0xFFEE	(vector)TRAP:	;handels invalid opcodes
