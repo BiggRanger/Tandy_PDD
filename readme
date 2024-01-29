@@ -9,6 +9,8 @@ PDD1.dcDisASM is the commenting and disassembler directive file that adds the do
 PDD1.LST is the decompiled assembly from DASMx 1.40
 
 PDD2.ASM is the decompiled assembly source for the PDD2 that is slowly being documented.
+PDD2_Misc.inc is misc comments and cleanup code taken out of the dcDisASM file to clean things up.
+PDD2_Tables.inc contains the data tables, comments and cleanup code taken out of the dcDisASM file to clean things up.
 PDD2.dcDisASM is the commenting and disassembler directive file that adds the documentation to the ASM file.
 
 6301.inc is the CPU characteristic file for the Hitachi 6301 the dcDisASM uses.
