@@ -200,6 +200,8 @@ comment 0xF109					;Command_FunctionTable
 ;----------------------------------------------------------
 
 
+box		0xF150	0xF1B0
+
 
 box		0xF1B1	0xF1E4				;Serial Data Receive
 code	0xF1B1	SerialData_Receive
@@ -217,7 +219,27 @@ comment	0xF20A						;Check XON
 ;----------------------------------------------------------
 
 
-box		0xF150	0xF1B0
+
+;----------------------------------------------------------
+;Command_FMT Blocks
+;----------------------------------------------------------
+box		0xF212	0xF22D			;Command_FMT06_DiskFormat
+box		0xF230	0xF364			;Command_FMT00_CreateDirectory
+box		0xF365	0xF422			;Command_FMT0D_FileNameChange
+box		0xF425	0xF493			;Command_FMT05_FileDelete
+box		0xF495	0xF4CF			;Command_FMT02_FileClose
+box		0xF4D0	0xF63B			;Command_FMT01_FileOpen
+box		0xF63D	0xF69A			;Command_FMT04_File_Write
+box		0xF69D	0xF6F1			;Command_FMT03_FileRead
+box		0xF6F3	0xF745			;Command_FMT07_DriveStatus
+box		0xF746	0xF755			;Command_FMT0C_DriveCondition
+box		0xF757	0xF769			;Command_FMT33_SystemVersionInfo Command_FMT23_DriveVersionInfo
+box		0xF76B	0xF78D			;Command_FMT31_DriveMemorySet
+box		0xF78E	0xF7C4			;Command_FMT32_DriveMemoryGet
+box		0xF7DC	0xF7FF			;Command_FMT34_ExecuteProgram
+box		0xF801	0xF822			;Command_FMT30_SectorModeReadWrite
+;----------------------------------------------------------
+
 
 code	0xF716	Trap
 
@@ -229,9 +251,21 @@ comment	0xF762					;Table_Version
 
 
 
+;----------------------------------------------------------
+;SWI_Funct Blocks
+;----------------------------------------------------------
 box		0xF824	0xF86F			;SWI_Funct(0x00)
-
 box		0xF870	0xF891			;SWI_Funct(0x0A)
+box		0xF949	0xF996			;SWI_Funct(0x03)
+box		0xF998	0xF9BA			;SWI_Funct(0x02)
+box		0xF9BB	0xF9D8			;SWI_Funct(0x01)
+box		0xF9DA	0xFA5F			;SWI_Funct(0x05)
+box		0xFA61	0xFAF0			;SWI_Funct(0x08) SWI_Funct(0x07)
+box		0xFAF1	0xFC4E			;SWI_Funct(0x04)
+box		0xFC51	0xFDAF			;SWI_Funct(0x0E) SWI_Funct(0x06) SWI_Funct(0x09) SWI_Funct(0x0C) SWI_Funct(0x0D) SWI_Funct(0x14)
+box		0xFDB0	0xFE56			;SWI_Funct(0x15)
+box		0xFE9A	0xFEB5			;SWI_Funct(0x0B)
+;----------------------------------------------------------
 
 comment	0xF881					;Branch Trick, OpCode at F882 is CLR B
 
