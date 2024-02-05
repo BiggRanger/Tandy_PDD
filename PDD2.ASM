@@ -15,7 +15,7 @@
 * Included File: c:\dcDisasm\PDD2\PDD2_Misc.inc
 * Included File: c:\dcDisasm\PDD2\PDD2_Tables.inc
 *
-* Date: 2024.01.28 Time: 20:30:11
+* Date: 2024.02.04 Time: 20:15:32
 ****************************************************************
 
 
@@ -307,6 +307,8 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| |||   | |    |                     L-----<[F210]	[20 D5      ]	[    ]		BRA A_F1E7
 ;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Serial Data Transmit ^^^^^^^^^^^^^^^^^^^^
 
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT06_DiskFormat vvvvvvvvvvvvvvvvvvvv
  |||| |||r--|-|----|---------------------------<[F212]	[BD F7 82   ]	[    ]	Command_FMT06_DiskFormat:	JSR A_F782
  |||| ||||  | |    |                            [F215]	[3F         ]	[?   ]		SWI
  |||| ||||  | |    |                            [F216]	[04         ]	[    ]		DB	0x04	;SWI Parameter
@@ -320,6 +322,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| ||||  | |  |||                            [F228]	[86 01      ]	[    ]		LDA A #0x01
  |||| ||||  | |  |}|---------------------------<[F22A]	[BD F6 29   ]	[  ) ]		JSR A_F629
  |||| ||||  | |  |||   r-------------------r--<>[F22D]	[7E F4 BC   ]	[~   ]	A_F22D:	JMP A_F4BC
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT06_DiskFormat ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT00_CreateDirectory vvvvvvvvvvvvvvvvvvvv
  |||| ||||  | |  |||   |                   |    [F230]	[86 19      ]	[    ]	Command_FMT00_CreateDirectory:	LDA A #0x19
  |||| ||||r-|-|--|||---|-------------------|---<[F232]	[BD F7 CA   ]	[    ]		JSR A_F7CA
  |||| ||||| | |  |||   |                   |    [F235]	[7F 00 C5   ]	[    ]		CLR A_00C5
@@ -468,6 +474,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| |||||||||||||||  ||          |       |    [F35F]	[CE 84 EB   ]	[    ]		LDX #0x84EB
  |||| |||||||||||||||  ||          |       L--->[F362]	[DF C7      ]	[    ]	A_F362:	STX A_C7
  |||| |||||||||||||||  ||          |            [F364]	[39         ]	[9   ]		RTS
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT00_CreateDirectory ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT0D_FileNameChange vvvvvvvvvvvvvvvvvvvv
  |||| |||||||||||||||  ||       r--|-----------<[F365]	[BD F4 C2   ]	[    ]	Command_FMT0D_FileNameChange:	JSR A_F4C2
  |||| |||||||||||||||  ||       |  |            [F368]	[80 10      ]	[    ]		SUB A #0x10
  |||| |||||||||||||||  ||       |  | r---------<[F36A]	[26 60      ]	[&`  ]		BNE A_F3CC
@@ -564,6 +574,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| ||||||||||||||||||| | |   |      |   |L--<[F41E]	[20 F4      ]	[    ]		BRA A_F414
  |||| ||||||||||||||||||| | |   |      |   L--->[F420]	[C6 1F      ]	[    ]	A_F420:	LDA B #0x1F
  ||}|-|||||||||||||||||||-|-|---|------|-------<[F422]	[7E FE B6   ]	[~   ]		JMP Clear_X_Size_B
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT0D_FileNameChange ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT05_FileDelete vvvvvvvvvvvvvvvvvvvv
  |||| ||||||||||||||||||| | |   }------|-------<[F425]	[BD F4 C2   ]	[    ]	Command_FMT05_FileDelete:	JSR A_F4C2
  |||| ||||||||||||||||||| | |   |      |        [F428]	[80 10      ]	[    ]		SUB A #0x10
  |||| ||||||||||||||||||| | |   |      |  r----<[F42A]	[26 07      ]	[&   ]		BNE A_F433
@@ -619,6 +633,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| ||||||||||||||||||| ||| | ||     L-------<[F48D]	[BD F4 09   ]	[    ]		JSR A_F409
  |||| ||||||||||||||||||| ||| |r||-------------<[F490]	[BD F6 1B   ]	[    ]		JSR A_F61B
  |||| |||||||||||||}|||||-|||-||||-------------<[F493]	[20 2A      ]	[ *  ]		BRA A_F4BF
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT05_FileDelete ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT02_FileClose vvvvvvvvvvvvvvvvvvvv
  |||| ||||||||||||||||||| ||| ||||              [F495]	[96 C5      ]	[    ]	Command_FMT02_FileClose:	LDA A A_C5
  |||| |||||||||||||||||}|-|||-||||-------------<[F497]	[27 23      ]	['#  ]		BEQ A_F4BC
  |||| ||||||||||||||||||| ||| ||||              [F499]	[D6 D9      ]	[    ]		LDA B A_D9
@@ -646,6 +664,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| ||||||||||||| |||  |||| || | ||r---------<[F4CB]	[26 48      ]	[&H  ]		BNE A_F515
  |||| ||||||||||||| |||  |||| || | |||          [F4CD]	[D6 DB      ]	[    ]		LDA B A_DB
  |||| ||||||||||||| |||  |||| || | |||          [F4CF]	[39         ]	[9   ]		RTS
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT02_FileClose ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT01_FileOpen vvvvvvvvvvvvvvvvvvvv
  |||| ||||}||||||||-|||--||||-||-|-|||---------<[F4D0]	[BD F7 CA   ]	[    ]	Command_FMT01_FileOpen:	JSR A_F7CA
  |||| ||||||||||||| |||  |||| || | |||          [F4D3]	[7B 01 C6   ]	[{   ]		TIM #0x01, A_C6
  |||| ||||||||||||| |||  |||| || | |||  r------<[F4D6]	[27 37      ]	['7  ]		BEQ A_F50F
@@ -821,6 +843,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| ||||||||||||   ||  | | |    |        |    [F638]	[02         ]	[    ]		DB	0x02	;SWI Parameter
  |||| ||||||||||||   ||  | L-|----|--------|---<[F639]	[27 D4      ]	['   ]		BEQ A_F60F
  |||| ||||||||||||   ||  |   |    |        L---<[F63B]	[20 DB      ]	[    ]		BRA A_F618
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT01_FileOpen ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT04_File_Write vvvvvvvvvvvvvvvvvvvv
  |||| ||||||||||||   ||  |   |    |             [F63D]	[96 C5      ]	[    ]	Command_FMT04_File_Write:	LDA A A_C5
  |||| ||||||||||||   ||  |   |    |       r----<[F63F]	[26 03      ]	[&   ]		BNE A_F644
  |||| ||||||||L|||---||--|---|----|-------|r--<>[F641]	[7E F1 37   ]	[~ 7 ]	A_F641:	JMP Command_FMT_Invalid
@@ -866,6 +892,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| |||||||| |||   |   |   |        ||||      [F695]	[7A 85 16   ]	[z   ]		DEC A_8516
  |||| |||||||| |||   |   |   |        ||L|-----<[F698]	[26 BF      ]	[&   ]		BNE A_F659
  |||| |||||||| |||   |   |   }--------|L-|----<>[F69A]	[7E F7 2A   ]	[~ * ]	A_F69A:	JMP A_F72A
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT04_File_Write ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT03_FileRead vvvvvvvvvvvvvvvvvvvv
  |||| |||||||| |||   |   |   |        |  |      [F69D]	[96 C5      ]	[    ]	Command_FMT03_FileRead:	LDA A A_C5
  |||| |||||||| |||   |   |   |        |  |      [F69F]	[81 03      ]	[    ]		CMP A #0x03
  |||| |||||||| |||   |   |   |        |  |r----<[F6A1]	[27 0C      ]	['   ]		BEQ A_F6AF
@@ -910,6 +940,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| |||||||| |||           |              |   [F6EE]	[4A         ]	[J   ]		DEC A
  |||| |||||||| |||           |              L--<[F6EF]	[26 EF      ]	[&   ]		BNE A_F6E0
  |||| |||||||| |}|-----------|-----------------<[F6F1]	[20 40      ]	[ @  ]		BRA A_F733
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT03_FileRead ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT07_DriveStatus vvvvvvvvvvvvvvvvvvvv
  |||| |||||||| |||           |                  [F6F3]	[3F         ]	[?   ]	Command_FMT07_DriveStatus:	SWI
  |||| |||||||| |||           |                  [F6F4]	[0A         ]	[    ]		DB	0x0A	;SWI Parameter
  |||| |||||||| |||           |                  [F6F5]	[96 8E      ]	[    ]		LDA A A_8E
@@ -952,6 +986,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  ||||||L-|||-|-||-----------------||-----||----<[F742]	[26 B5      ]	[&   ]		BNE A_F6F9
  ||||||  ||| | ||                 ||     ||     [F744]	[32         ]	[2   ]		PUL A
  ||||||  ||| | ||                 ||     ||     [F745]	[39         ]	[9   ]		RTS
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT07_DriveStatus ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT0C_DriveCondition vvvvvvvvvvvvvvvvvvvv
  ||||||  ||| | ||                 ||     ||     [F746]	[CC 01 15   ]	[    ]	Command_FMT0C_DriveCondition:	LDD #0x0115
  ||||||  ||}-|-||-----------------||-----||----<[F749]	[8D D7      ]	[    ]		BSR A_F722
  ||||||  ||| | ||                 ||     ||     [F74B]	[3F         ]	[?   ]		SWI
@@ -961,6 +999,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  ||||||  ||| | ||                 ||     ||r---<[F752]	[27 01      ]	['   ]		BEQ A_F755
  ||||||  ||| | ||                 ||     |||    [F754]	[5C         ]	[\   ]		INC B
  ||||||  ||| | ||                 ||     |LL--<>[F755]	[20 DA      ]	[    ]	A_F755:	BRA A_F731
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT0C_DriveCondition ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT33_SystemVersionInfo Command_FMT23_DriveVersionInfo vvvvvvvvvvvvvvvvvvvv
  ||||||  ||| | ||                 ||     |      [F757]	[CC 06 3A   ]	[  : ]	Command_FMT33_SystemVersionInfo:	LDD #0x063A	;LDD A=data bytes, B=return code
  ||||||  ||| | ||                 ||     |      [F75A]	[CE FF 67   ]	[  g ]		LDX #0xFF67	;Table_SysInfo
  ||||||  ||| | ||                 ||     |  r--<[F75D]	[20 06      ]	[    ]		BRA A_F765
@@ -970,6 +1012,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  ||||||  ||}-|-||-----------------||-----|-----<[F766]	[8D BA      ]	[    ]		BSR A_F722
  ||||||  ||| | ||                 ||     |      [F768]	[32         ]	[2   ]		PUL A
  ||||||  ||| | ||                 ||     | r---<[F769]	[20 41      ]	[ A  ]		BRA A_F7AC
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT33_SystemVersionInfo Command_FMT23_DriveVersionInfo ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT31_DriveMemorySet vvvvvvvvvvvvvvvvvvvv
  ||||||  ||| | ||                 || r---|-|---<[F76B]	[8D 5B      ]	[ [  ]	Command_FMT31_DriveMemorySet:	BSR A_F7C8
  ||||||  ||| | ||                 || |   | |    [F76D]	[37         ]	[7   ]		PSH B
  ||||||  ||| | ||                 || |   |r|---<[F76E]	[8D 47      ]	[ G  ]		BSR A_F7B7
@@ -988,6 +1034,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  ||||||  ||| |  |                 ||||    ||    [F789]	[D7 DE      ]	[    ]		STA B A_DE
  ||||||  ||| |  |                 ||||    ||    [F78B]	[D7 DF      ]	[    ]		STA B A_DF
  ||||||  ||| |  |                 ||||    ||    [F78D]	[39         ]	[9   ]		RTS
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT31_DriveMemorySet ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT32_DriveMemoryGet vvvvvvvvvvvvvvvvvvvv
  ||||||  ||| |  |                 ||||    ||    [F78E]	[86 03      ]	[    ]	Command_FMT32_DriveMemoryGet:	LDA A #0x03
  ||||||  |}|-|--|-----------------||||----||---<[F790]	[8D 38      ]	[ 8  ]		BSR A_F7CA
  ||||||  ||| |  |                 ||||    ||    [F792]	[A6 03      ]	[    ]		LDA A 0x03, X
@@ -1019,6 +1069,8 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  ||||||  ||| |                    |||||     |   [F7BF]	[CC 80 13   ]	[    ]		LDD #0x8013
  ||||||  ||| |                    |||||     L-->[F7C2]	[E3 01      ]	[    ]	A_F7C2:	ADDD 0x01, X
  ||||||  ||| |                    |||||         [F7C4]	[39         ]	[9   ]		RTS
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT32_DriveMemoryGet ^^^^^^^^^^^^^^^^^^^^
+
  ||||||  ||| |                    |||||   r---->[F7C5]	[86 04      ]	[    ]	A_F7C5:	LDA A #0x04
  ||||||  ||| |                    |||||   |     [F7C7]	[8C         ]	[    ]		DB	0x8C	;branch trick, skip next opcode
  ||||||  ||| |                    |||L|---|---->[F7C8]	[86 02      ]	[    ]	A_F7C8:	LDA A #0x02
@@ -1030,6 +1082,8 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  ||||||  | | |                    ||| |r|-||--->[F7D5]	[97 C3      ]	[    ]	A_F7D5:	STA A A_C3
  ||||||  | | |                    ||L-|||-||---<[F7D7]	[8D A4      ]	[    ]		BSR A_F77D
  ||||||  | | |                    |L--|||-||---<[F7D9]	[7E F7 1C   ]	[~   ]		JMP A_F71C
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT34_ExecuteProgram vvvvvvvvvvvvvvvvvvvv
  ||||||  | | |                    |   ||| }|---<[F7DC]	[8D E7      ]	[    ]	Command_FMT34_ExecuteProgram:	BSR A_F7C5
  ||||||  L-|-|--------------------|---|||-||---<[F7DE]	[8D A2      ]	[    ]		BSR A_F782
  ||||||    | |                    |   ||| ||    [F7E0]	[CC F7 EE   ]	[    ]		LDD #0xF7EE
@@ -1050,6 +1104,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  ||||||                           |   ||| |     [F7FB]	[32         ]	[2   ]		PUL A
  ||||||                           L---|||-|----<[F7FC]	[BD F7 25   ]	[  % ]		JSR A_F725
  ||||||                               L||-|----<[F7FF]	[20 B3      ]	[    ]		BRA A_F7B4
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT34_ExecuteProgram ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Command_FMT30_SectorModeReadWrite vvvvvvvvvvvvvvvvvvvv
  ||||||                                || L----<[F801]	[8D C2      ]	[    ]	Command_FMT30_SectorModeReadWrite:	BSR A_F7C5
  ||||||                                ||       [F803]	[A6 02      ]	[    ]		LDA A 0x02, X
  ||||||                                ||       [F805]	[48         ]	[H   ]		ASL A
@@ -1073,6 +1131,8 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  ||||||                                |   |    [F81F]	[02         ]	[    ]		DB	0x02	;SWI Parameter
  ||||||                                |   L--->[F820]	[96 8E      ]	[    ]	A_F820:	LDA A A_8E
  ||||||                                L-------<[F822]	[20 B1      ]	[    ]		BRA A_F7D5
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Command_FMT30_SectorModeReadWrite ^^^^^^^^^^^^^^^^^^^^
+
 
 ;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;SWI_Funct(0x00) vvvvvvvvvvvvvvvvvvvv
  ||||||                                         [F824]	[86 55      ]	[ U  ]	SWI_Funct(0x00):	LDA A #0x55	;SWI Call 0x00
@@ -1236,6 +1296,8 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||             ||    |     | | |       ||   [F944]	[97 8E      ]	[    ]		STA A A_8E
  |||||             ||    |     | | |       ||   [F946]	[86 4F      ]	[ O  ]		LDA A #0x4F
  |||||             ||    |     | | |     r-|--->[F948]	[39         ]	[9   ]	A_F948:	RTS
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;SWI_Funct(0x03) vvvvvvvvvvvvvvvvvvvv
  |||||             ||    |     | | |     | |    [F949]	[97 97      ]	[    ]	SWI_Funct(0x03):	STA A A_97
  |||||             ||    |     | |r|-----|-|--->[F94B]	[96 8C      ]	[    ]	A_F94B:	LDA A A_8C
  |||||             ||    |     | |||    r|-|---<[F94D]	[2B 40      ]	[+@  ]		BMI A_F98F
@@ -1282,6 +1344,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||             ||    |     | ||| ||   L----<[F991]	[27 CB      ]	['   ]		BEQ A_F95E
  |||||             ||    |     | ||| ||         [F993]	[72 FF 8C   ]	[r   ]		OIM #0xFF, A_8C
  |||||             ||    |     | ||L-||--------<[F996]	[20 F5      ]	[    ]		BRA A_F98D
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;SWI_Funct(0x03) ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;SWI_Funct(0x02) vvvvvvvvvvvvvvvvvvvv
  |||||             ||    |     | ||  ||         [F998]	[C6 02      ]	[    ]	SWI_Funct(0x02):	LDA B #0x02	;SWI Call 0x02
  |||||             ||    |     | ||  ||         [F99A]	[D7 A2      ]	[    ]		STA B A_A2
  |||||             ||    |     | ||  ||         [F99C]	[97 97      ]	[    ]		STA A A_97
@@ -1300,6 +1366,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||             ||  | |     | ||  |||  L----<[F9B6]	[24 E8      ]	[$   ]		BCC A_F9A0
  |||||             ||  | |     | ||  }||------->[F9B8]	[D6 8E      ]	[    ]	A_F9B8:	LDA B A_8E
  |||||             ||  | |     | ||  ||}------->[F9BA]	[39         ]	[9   ]	A_F9BA:	RTS
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;SWI_Funct(0x02) ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;SWI_Funct(0x01) vvvvvvvvvvvvvvvvvvvv
  |||||             ||  | |     | ||  |||        [F9BB]	[C6 02      ]	[    ]	SWI_Funct(0x01):	LDA B #0x02	;SWI Call 0x01
  |||||             ||  | |     | ||  |||        [F9BD]	[D7 A2      ]	[    ]		STA B A_A2
  |||||             ||  | |     | ||  |||        [F9BF]	[97 97      ]	[    ]		STA A A_97
@@ -1316,6 +1386,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||             ||  | |     | }---||||||----<[F9D4]	[8D 1D      ]	[    ]		BSR A_F9F3
  |||||             ||  | |     | |   ||||L|----<[F9D6]	[24 EB      ]	[$   ]		BCC A_F9C3
  |||||             ||  | |     | |   }|||-L---<>[F9D8]	[20 DE      ]	[    ]	A_F9D8:	BRA A_F9B8
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;SWI_Funct(0x01) ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;SWI_Funct(0x05) vvvvvvvvvvvvvvvvvvvv
  |||||             ||  | |     | |   |L||------>[F9DA]	[86 81      ]	[    ]	SWI_Funct(0x05):	LDA A #0x81
  |||||             ||  | |     | |   | ||       [F9DC]	[97 98      ]	[    ]		STA A A_98
  |||||             ||  | |     | |   | ||       [F9DE]	[8C         ]	[    ]		DB	0x8C	;branch trick, PC+=3, skip next 2 opcodes
@@ -1388,6 +1462,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||             ||  | |     |         ||     [FA5D]	[3F         ]	[?   ]		SWI
  |||||             ||  | |     |         ||     [FA5E]	[08         ]	[    ]		DB	0x08	;SWI Parameter
  |||||             ||  | |     |         |L----<[FA5F]	[20 F8      ]	[    ]		BRA A_FA59
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;SWI_Funct(0x05) ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;SWI_Funct(0x08) SWI_Funct(0x07) vvvvvvvvvvvvvvvvvvvv
  |||||             ||  | |     }---------|----->[FA61]	[C6 01      ]	[    ]	A_FA61:	LDA B #0x01
  |||||             ||  | |     |         |      [FA63]	[4F         ]	[O   ]	SWI_Funct(0x08):	CLR A	;SWI Call 0x08
  |||||             ||  | |     |         |      [FA64]	[5D         ]	[]   ]		TST B
@@ -1463,6 +1541,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||             ||||| |     |          L---->[FAEA]	[CE 40 00   ]	[ @  ]	A_FAEA:	LDX #0x4000
  |||||             ||||| |     |                [FAED]	[61 FE 00   ]	[a   ]		AIM #0xFE, 0x00, X
  |||||             ||||| |     |           r--->[FAF0]	[39         ]	[9   ]	A_FAF0:	RTS
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;SWI_Funct(0x08) SWI_Funct(0x07) ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;SWI_Funct(0x04) vvvvvvvvvvvvvvvvvvvv
  |||||             ||||| |r----|-----------|--->[FAF1]	[3F         ]	[?   ]	A_FAF1:	SWI
  |||||             ||||| ||    |           |    [FAF2]	[09         ]	[    ]		DB	0x09	;SWI Parameter
  |||||             ||||| ||    |           |    [FAF3]	[C4 02      ]	[    ]		AND B #0x02
@@ -1645,6 +1727,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||             ||||||||||||||        |      [FC4B]	[0D         ]	[    ]		DB	0x0D	;SWI Parameter
  |||||             ||||||||||||||        L-----<[FC4C]	[27 AA      ]	['   ]		BEQ A_FBF8
  |||||             |||||||||||||L--------------<[FC4E]	[7E FB AA   ]	[~   ]		JMP A_FBAA
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;SWI_Funct(0x04) ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;SWI_Funct(0x0E) SWI_Funct(0x06) SWI_Funct(0x09) SWI_Funct(0x0C) SWI_Funct(0x0D) SWI_Funct(0x14) vvvvvvvvvvvvvvvvvvvv
  |||||             |||||||||||||     r---------<[FC51]	[8D 69      ]	[ i  ]	SWI_Funct(0x0E):	BSR A_FCBC	;SWI Call 0x0E
  |||||             |||||||||||||    r|---------<[FC53]	[26 0A      ]	[&   ]		BNE A_FC5F
  |||||             |||||||||||||  r-||---------<[FC55]	[8D 2C      ]	[ ,  ]		BSR A_FC83
@@ -1826,6 +1912,10 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||             | |||| ||||||||    |     |   [FDA9]	[61 02 00   ]	[a   ]		AIM #0x02, 0x00, X
  |||||             | |||| ||||||||    |     |   [FDAC]	[62 FD 00   ]	[b   ]		OIM #0xFD, 0x00, X
  |||||             | |||| ||||||||    |     L-->[FDAF]	[39         ]	[9   ]	A_FDAF:	RTS
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;SWI_Funct(0x0E) SWI_Funct(0x06) SWI_Funct(0x09) SWI_Funct(0x0C) SWI_Funct(0x0D) SWI_Funct(0x14) ^^^^^^^^^^^^^^^^^^^^
+
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;SWI_Funct(0x15) vvvvvvvvvvvvvvvvvvvv
  |||||             | |||| ||||||||    |         [FDB0]	[97 97      ]	[    ]	SWI_Funct(0x15):	STA A A_97
  |||||             | ||L|-||||||||----|-------->[FDB2]	[CE 80 00   ]	[    ]	A_FDB2:	LDX #0x8000
  |||||             | || | ||||||||    |         [FDB5]	[DF 99      ]	[    ]		STX (RAM_INT)DataPacket_Data
@@ -1907,6 +1997,8 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||               || |  |     |          L--<[FE52]	[26 F5      ]	[&   ]		BNE A_FE49
  |||||               || |  |     |              [FE54]	[9E 81      ]	[    ]		LDS (RAM_INT)StackPointerStorage
  |||||               || |  |     L-------------<[FE56]	[7E FD 79   ]	[~ y ]		JMP A_FD79
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;SWI_Funct(0x15) ^^^^^^^^^^^^^^^^^^^^
+
 
 ;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Packet checksum code vvvvvvvvvvvvvvvvvvvv
  |||||               || |  |                    [FE59]	[DE 99      ]	[    ]	Checksum_1:	LDX (RAM_INT)DataPacket_Data	;SWI Call 0x12
@@ -1953,6 +2045,8 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||               || |  |                    [FE99]	[39         ]	[9   ]		RTS
 ;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;Packet checksum code ^^^^^^^^^^^^^^^^^^^^
 
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;SWI_Funct(0x0B) vvvvvvvvvvvvvvvvvvvv
  |||||               || |  |                    [FE9A]	[72 04 80   ]	[r   ]	SWI_Funct(0x0B):	OIM #0x04, (RAM_INT)BAUD_Setting	;SWI Call 0x0B
  |||||               || |  |                    [FE9D]	[96 80      ]	[    ]		LDA A (RAM_INT)BAUD_Setting
  |||||               || |  |                    [FE9F]	[B7 40 01   ]	[ @  ]		STA A (CPLD)4001
@@ -1968,6 +2062,8 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||||               || |  |               L--->[FEB1]	[86 1C      ]	[    ]	A_FEB1:	LDA A #0x1C
  |||||               || |  |                    [FEB3]	[97 A7      ]	[    ]		STA A A_A7
  |||||               || |  |                    [FEB5]	[39         ]	[9   ]		RTS
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;SWI_Funct(0x0B) ^^^^^^^^^^^^^^^^^^^^
+
 
 ;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;Clear Memory at X for B or D bytes vvvvvvvvvvvvvvvvvvvv
  ||L||---------------||-|--|------------------->[FEB6]	[4F         ]	[O   ]	Clear_X_Size_B:	CLR A	;Clear A and X for B bytes
