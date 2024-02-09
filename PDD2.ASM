@@ -15,7 +15,7 @@
 * Included File: c:\dcDisasm\PDD2\PDD2_Misc.inc
 * Included File: c:\dcDisasm\PDD2\PDD2_Tables.inc
 *
-* Date: 2024.02.04 Time: 20:15:32
+* Date: 2024.02.08 Time: 20:31:49
 ****************************************************************
 
 
@@ -145,6 +145,8 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  ||||  ||                           |   |       [F0EE]	[49         ]	[I   ]		ROL A
  ||||  ||                           |   |       [F0EF]	[84 01      ]	[    ]		AND A #0x01
  ||||  ||                           |   |       [F0F1]	[97 DB      ]	[    ]		STA A A_DB
+
+;vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv ;FMT Command Interperter vvvvvvvvvvvvvvvvvvvv
  ||||  ||                           |   |       [F0F3]	[C4 3F      ]	[ ?  ]		AND B #0x3F	;bitmask command FMT
  ||||  ||                           |   |       [F0F5]	[C1 23      ]	[ #  ]		CMP B #0x23	;if command = 0x23 change it to 0x09
  ||||  ||                           |   |   r--<[F0F7]	[26 02      ]	[&   ]		BNE A_F0FB
@@ -168,6 +170,8 @@ L|||---------------------------------------|---<[F09E]	[BD 80 13   ]	[    ]		JSR
  |||| |||     |    |                |   |       [F11E]	[4F         ]	[O   ]		CLR A
  |||| |||     |    |                |   |       [F11F]	[97 8E      ]	[    ]		STA A A_8E
  |||| |||     |    |                |   |       [F121]	[AD 00      ]	[    ]		JSR 0x00, X
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ;FMT Command Interperter ^^^^^^^^^^^^^^^^^^^^
+
  |||| ||}-----|----|----------------|---|------>[F123]	[D6 9F      ]	[    ]	A_F123:	LDA B (RAM_INT)BAUD_DelayLoop
  |||| |||     |    |                |   |       [F125]	[3F         ]	[?   ]		SWI
  |||| |||     |    |                |   |       [F126]	[0F         ]	[    ]		DB	0x0F	;JSR DelayLoop_B:
