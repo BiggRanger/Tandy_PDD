@@ -189,6 +189,7 @@ comment 0xF076					;Test Serial DSR
 ;----------------------------------------------------------
 ;FMT Command interperter
 ;----------------------------------------------------------
+box		0xF0F3	0xF121			;FMT Command Interperter
 comment 0xF0F3					;bitmask command FMT
 comment	0xF0F5					;is command 0x23 (get version number)
 comment 0xF0F5					;if command = 0x23 change it to 0x09
